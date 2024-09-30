@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const app = express();
 const morgan = require("morgan");
+const connectDB = require("./config/configDatabase");
 
 // config env
 dotenv.config();
@@ -15,7 +16,7 @@ app.use(cors());
 app.use(morgan("common"));
 
 // connect DB
-
+connectDB();
 // Routes
 
 app.get("/", (req, res) => {
