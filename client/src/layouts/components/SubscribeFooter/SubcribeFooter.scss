@@ -1,0 +1,51 @@
+.footer-subcribe {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 0;
+  background-image: url("../../../assets/img/subscribe.svg");
+  position: relative;
+
+  .subcribe-desc {
+    flex: 1;
+
+    h4 {
+      width: 250px;
+      margin-left: auto;
+      margin-right: 67px;
+      color: black;
+      font-size: 18px;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+  }
+
+  .img-player {
+    position: absolute;
+    height: 300px;
+    top: -48px;
+    left: 19%;
+  }
+}
+
+.subcribe-form {
+  padding-left: 30px;
+  flex: 1;
+
+  input {
+    margin-right: 20px;
+    width: 148px;
+    height: 48px;
+    border-radius: 4px;
+    padding: 0 8px;
+  }
+
+  .btn-send {
+    width: 124px;
+    height: 48px;
+    border-radius: 4px;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+  }
+}
