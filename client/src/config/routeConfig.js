@@ -1,6 +1,6 @@
 const routeConfig = {
   home: "/",
-  sportsField: "/sportsField",
+  sportFields: "/sportFields",
 };
 
 export default routeConfig;

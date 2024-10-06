@@ -1,19 +1,37 @@
+import { NavLink } from "react-router-dom";
+import routeConfig from "~/config/routeConfig";
 import "./Header.scss";
 
 function Header() {
   return (
     <div className="header">
       <div className="header-content">
-        <img src="" alt="" className="header-logo" />
+        <p style={{ fontSize: 20, margin: 0, color: "white" }}>Logo</p>
 
         <nav className="header-nav">
-          <li>Trang chủ</li>
-          <li>Danh sách sân bãi</li>
-          <li>Giới thiệu</li>
-          <li>Chính sách</li>
-          <li>Điều khoản</li>
-          <li>Dành cho chủ sân</li>
-          <li>Liên hệ</li>
+          <NavLink to={routeConfig.home} className="navlink">
+            Trang chủ
+          </NavLink>
+
+          <NavLink to={routeConfig.sportFields} className="navlink">
+            Danh sách sân bãi
+          </NavLink>
+
+          <NavLink to="/a" className="navlink">
+            Giới thiệu
+          </NavLink>
+          <NavLink to="/b" className="navlink">
+            Chính sách
+          </NavLink>
+          <NavLink to="/c" className="navlink">
+            Điều khoản
+          </NavLink>
+          <NavLink to="/d" className="navlink">
+            Dành cho chủ sân
+          </NavLink>
+          <NavLink to="/e" className="navlink">
+            Liên hệ
+          </NavLink>
         </nav>
 
         <div className="group-btn">

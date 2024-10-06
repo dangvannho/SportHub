@@ -1,7 +1,7 @@
 .footer {
   background-color: var(--primary-color);
 
-  .content {
+  .footer-content {
     max-width: 1140px;
     margin: 0 auto;
     height: 100%;
@@ -9,7 +9,7 @@
   }
 }
 
-.content {
+.footer-content {
   .footer-heading {
     font-size: 14px;
     color: white;
@@ -79,11 +79,7 @@
     font-size: 12px;
     font-weight: 600;
     color: white;
-  }
-
-  .number-phone {
-    display: inline-block;
-    margin-top: 8px;
+    margin: 0;
   }
 
   .number-phone-button {
@@ -98,6 +94,11 @@
     position: relative;
     left: 85px;
     top: -5px;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: #3aaced;
+    }
   }
 }
 
@@ -105,7 +106,7 @@
   padding: 25px;
   background-color: #061b41;
 
-  .content-2 {
+  .footer-content-2 {
     max-width: 1140px;
     margin: 0 auto;
     height: 100%;
