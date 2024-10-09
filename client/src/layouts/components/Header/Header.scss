@@ -1,0 +1,39 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+
+  .header-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 100px;
+    background-color: var(--primary-color);
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      transform: translateX(45px);
+    }
+
+    .group-btn {
+      display: flex;
+      gap: 0 10px;
+    }
+  }
+}
+
+.header-nav {
+  .navlink {
+    padding: 10px 15px;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+
+    &.active {
+      color: #f9b90f;
+    }
+  }
+}
