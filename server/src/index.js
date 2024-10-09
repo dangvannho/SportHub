@@ -6,9 +6,9 @@ const app = express();
 const morgan = require("morgan");
 const connectDB = require("./config/configDatabase");
 
-const userRoutes = require('./routes/UserRoutes')
-const ownerRoutes = require('./routes/OwnerRoutes')
+
 const tournamentRoutes = require('./routes/TournamentRoutes')
+const adminRoutes = require('./routes/AdminRoutes')
 // config env
 dotenv.config();
 const port = process.env.POST || 4000;
@@ -26,9 +26,7 @@ connectDB();
 
 // Routes
 
-app.use('/api/users', userRoutes)
-
-app.use('/api/owners', ownerRoutes)
+app.use('/api/admin', adminRoutes)
 
 app.use('/api/tournaments', tournamentRoutes)
 app.get("/", (req, res) => {
