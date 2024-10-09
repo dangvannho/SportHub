@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+import routeConfig from "~/config/routeConfig";
+
 function FieldItem() {
+  const navigate = useNavigate();
   return (
     <div className="field-item">
       <div className="field-item__image">
@@ -18,7 +22,12 @@ function FieldItem() {
           <span>Số 2 Phạm Văn Đồng</span>
         </div>
       </div>
-      <button className="button-detail">Chi tiết</button>
+      <button
+        className="button-detail"
+        onClick={() => navigate(routeConfig.fieldDetail.replace(":id", 1))}
+      >
+        Chi tiết
+      </button>
     </div>
   );
 }

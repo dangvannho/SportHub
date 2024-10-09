@@ -1,0 +1,24 @@
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+
+  .login-container {
+    width: 500px;
+    height: 300px;
+    background-color: red;
+    padding: 50px 42px;
+
+    .title-login {
+      color: #171923;
+      font-size: 48px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .sign-up {
+    }
+  }
+}
