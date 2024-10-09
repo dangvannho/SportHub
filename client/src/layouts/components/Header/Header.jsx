@@ -1,8 +1,11 @@
 import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import routeConfig from "~/config/routeConfig";
 import "./Header.scss";
 
 function Header() {
+  const navigate = useNavigate();
+
   return (
     <div className="header">
       <div className="header-content">
@@ -35,8 +38,18 @@ function Header() {
         </nav>
 
         <div className="group-btn">
-          <button className="btn btn-dark">Đăng nhập</button>
-          <button className="btn btn-light">Đăng kí</button>
+          <button
+            className="btn btn-dark"
+            onClick={() => navigate(routeConfig.login)}
+          >
+            Đăng nhập
+          </button>
+          <button
+            className="btn btn-light"
+            onClick={() => navigate(routeConfig.register)}
+          >
+            Đăng kí
+          </button>
         </div>
       </div>
     </div>

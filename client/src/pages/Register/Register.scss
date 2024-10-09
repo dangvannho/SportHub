@@ -1,4 +1,4 @@
-.login-wrapper {
+.register-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,7 +16,7 @@
     z-index: 1;
   }
 
-  .login-container {
+  .register-container {
     width: 500px;
     padding: 60px 42px 30px 42px;
     background-color: #fff;
@@ -25,8 +25,8 @@
   }
 }
 
-.login-container {
-  .title-login {
+.register-container {
+  .title-register {
     color: #171923;
     font-size: 30px;
     font-style: normal;
@@ -35,7 +35,7 @@
     text-align: center;
   }
 
-  .form-login {
+  .form-register {
     margin-top: 20px;
 
     .form-group {
@@ -46,7 +46,7 @@
       position: relative;
     }
 
-    .submit-login {
+    .submit-register {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -63,31 +63,12 @@
         background-color: #204f39;
       }
     }
-
-    .sign-up {
-      margin-top: 34px;
-      color: #718096;
-      font-size: 15px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 1.5;
-      text-align: center;
-
-      a {
-        color: #1c4532;
-        font-size: 15px;
-        font-style: normal;
-        font-weight: 500;
-        line-height: 150%;
-        text-decoration-line: underline;
-      }
-    }
   }
 
   .back-home {
     text-align: center;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 20px;
   }
 }
 
