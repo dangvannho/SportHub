@@ -12,7 +12,7 @@ const fieldRoutes = require("./routes/FieldRoutes");
 
 // config env
 dotenv.config();
-const port = process.env.POST || 4000;
+const port = process.env.PORT || 4000;
 
 app.use(express.json());
 app.use(cookieParser());
@@ -28,6 +28,11 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/", fieldRoutes);
 app.use("/api/tournaments", tournamentRoutes);
 
+app.use("/api", require("./routes/FieldRoutes"));
+
+app.use("/api/admin", adminRoutes);
+
+app.use("/api/tournaments", tournamentRoutes);
 app.get("/", (req, res) => {
   res.send("Project");
 });
