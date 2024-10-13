@@ -1,0 +1,153 @@
+.field-wrapper {
+  display: flex;
+  gap: 0 20px;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 20px;
+
+  .field-quantity {
+    width: 280px;
+    height: 450px;
+    padding: 25px 30px;
+    border: 1px solid #eee;
+    background-color: #fff;
+  }
+
+  .field-content {
+    flex: 1;
+  }
+}
+
+.field-quantity {
+  .field-quantity__heading {
+    font-size: 16px;
+    font-weight: 600;
+    color: #183c7d;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #eee;
+  }
+
+  .field-group__type {
+    list-style: none;
+  }
+}
+
+.field-group__type {
+  padding: 0;
+
+  .field-item__type {
+    display: flex;
+    justify-content: space-between;
+    padding: 25px 0 5px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #1976d2;
+    border-bottom: 2px solid #eee;
+  }
+}
+
+.field-content {
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #18458b;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .separator {
+    display: block;
+    width: 50px;
+    height: 4px;
+    background: #3aaced;
+    margin: 15px auto 30px;
+  }
+
+  .field-group {
+    display: grid;
+    grid-template-columns: repeat(3, 300px);
+    grid-auto-rows: 450px;
+    height: 1430px;
+    gap: 40px 20px;
+  }
+
+  .pagination {
+    margin-top: 50px;
+    justify-content: center;
+  }
+}
+
+.field-item {
+  background-color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 0 4px 8px rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+
+  .field-item__image {
+    height: 200px;
+    padding: 10px 10px 0;
+    border-radius: 20px 20px 0 0;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      transition: all 2s cubic-bezier(0.19, 1, 0.22, 1);
+
+      &:hover {
+        transform: scale(1.3);
+      }
+    }
+  }
+
+  .field-item__name {
+    padding: 0 12px;
+    font-weight: 700;
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #19458a;
+    margin: 12px 0 15px;
+  }
+
+  .field-info {
+    padding: 0 12px;
+  }
+
+  .button-detail {
+    display: block;
+    width: 124px;
+    height: 35px;
+    margin: 60px auto 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #19458a;
+    color: white;
+    outline: none;
+    font-weight: 500;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: #163b75;
+    }
+  }
+}
+
+.field-info {
+  .field-info__sdt,
+  .field-info__address {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 400;
+    font-size: 14px;
+    color: #979797;
+  }
+
+  .field-info__address {
+    margin-top: 10px;
+  }
+}

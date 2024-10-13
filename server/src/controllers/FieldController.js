@@ -1,5 +1,8 @@
+
 const Field = require('../models/Field');
 const Pagination = require('../utils/Pagination');
+
+const Field = require("../models/Field");
 
 // Function to get all sport fields with pagination
 const getAllFields = async (req, res) => {
@@ -49,6 +52,12 @@ const getFieldById = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'Server Error' });
     }
+  try {
+    const Fields = await Field.find();
+    res.json(Fields);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
 };
 
 //Function tìm kiếm sân theo tên với tính năng autocomplete

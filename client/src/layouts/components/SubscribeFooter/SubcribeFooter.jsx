@@ -8,8 +8,9 @@ function SubcribeFooter() {
         <h4>
           Bạn muốn đăng ký sử dụng phần mềm quản lý sân SportHub MIỄN PHÍ ?
         </h4>
-        <img src={imgPlayer} alt="" className="img-player" />
       </div>
+
+      <img src={imgPlayer} alt="" className="img-player" />
 
       <div className="subcribe-form">
         <input type="text" placeholder="Họ & tên*" />
