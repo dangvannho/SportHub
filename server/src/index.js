@@ -19,9 +19,8 @@ app.use(morgan("common"));
 connectDB();
 // Routes
 
-app.get("/", (req, res) => {
-  res.send("Project");
-});
+app.use('/api', require('./routes/FieldRoutes'));
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
