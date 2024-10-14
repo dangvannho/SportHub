@@ -9,6 +9,7 @@ const connectDB = require("./config/configDatabase");
 
 const tournamentRoutes = require('./routes/TournamentRoutes')
 const adminRoutes = require('./routes/AdminRoutes')
+const imageRoutes = require('./routes/ImgRoutes')
 // config env
 dotenv.config();
 const port = process.env.PORT || 4000;
@@ -28,7 +29,7 @@ connectDB();
 
 app.use('/api', require('./routes/FieldRoutes'));
 
-
+app.use('/api/img', imageRoutes);
 app.use('/api/admin', adminRoutes)
 
 app.use('/api/tournaments', tournamentRoutes)
