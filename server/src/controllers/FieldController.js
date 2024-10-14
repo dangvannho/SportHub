@@ -52,12 +52,6 @@ const getFieldById = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'Server Error' });
     }
-  try {
-    const Fields = await Field.find();
-    res.json(Fields);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
-  }
 };
 
 //Function tìm kiếm sân theo tên với tính năng autocomplete
