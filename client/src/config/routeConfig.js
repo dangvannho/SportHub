@@ -4,8 +4,8 @@ const routeConfig = {
   fieldDetail: "/fieldDetail/:id",
   login: "/login",
   register: "/register",
-  manageCustomer: "/admin",
-  manageOwner: "/admin/manageCustomer",
+  manageCustomer: "/admin/manageCustomer",
+  manageOwner: "/admin/manageOwner",
   managePayment: "/admin/managePayment",
   notFound: "*",
 };

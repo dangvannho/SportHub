@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import routeConfig from "~/config/routeConfig";
 
-function FieldItem() {
+function FieldItem({ data }) {
   const navigate = useNavigate();
   return (
     <div className="field-item">
@@ -11,7 +11,7 @@ function FieldItem() {
           alt=""
         />
       </div>
-      <h4 className="field-item__name">Sân bóng Duy Hưng - ĐH Sư phạm</h4>
+      <h4 className="field-item__name">{data.name}</h4>
       <div className="field-info">
         <div className="field-info__sdt">
           <i className="fa-solid fa-mobile"></i>
@@ -19,7 +19,7 @@ function FieldItem() {
         </div>
         <div className="field-info__address">
           <i className="fa-solid fa-location-dot"></i>
-          <span>Số 2 Phạm Văn Đồng</span>
+          <span>{data.location}</span>
         </div>
       </div>
       <button

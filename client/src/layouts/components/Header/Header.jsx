@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import routeConfig from "~/config/routeConfig";
 import "./Header.scss";
@@ -9,7 +9,9 @@ function Header() {
   return (
     <div className="header">
       <div className="header-content">
-        <p style={{ fontSize: 20, margin: 0, color: "white" }}>Logo</p>
+        <Link to={routeConfig.home} className="logo">
+          LOGO
+        </Link>
 
         <nav className="header-nav">
           <NavLink to={routeConfig.home} className="navlink">

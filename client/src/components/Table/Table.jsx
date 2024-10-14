@@ -1,86 +1,68 @@
 import ReactPaginate from "react-paginate";
 import "./Table.scss";
 
-function Table() {
+function Table({
+  header,
+  data,
+  currentPage,
+  setCurrentPage,
+  totalPage,
+  handleClickBtnDelete,
+}) {
+  const handlePageClick = (event) => {
+    setCurrentPage(+event.selected + 1);
+    console.log(`User requested page number ${event.selected}`);
+  };
+
   return (
     <div className="wapper-table">
       <table className="table table-bordered table-striped table-hover ">
         <thead>
           <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Username</th>
-            <th scope="col">Email</th>
-            <th scope="col">Role</th>
-            <th scope="col">Action</th>
+            {header.map((item, index) => {
+              return (
+                <th key={index} scope="col">
+                  {item.title}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Nguyễn Văn A</td>
-            <td>Abc@gmail.com</td>
-            <td>User</td>
-            <td className="group-btn">
-              <button className="btn btn-secondary">View</button>
-              <button className="btn btn-warning">Update</button>
-              <button className="btn btn-danger">Delete</button>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td>Nguyễn Văn A</td>
-            <td>Abc@gmail.com</td>
-            <td>User</td>
-            <td className="group-btn">
-              <button className="btn btn-secondary">View</button>
-              <button className="btn btn-warning">Update</button>
-              <button className="btn btn-danger">Delete</button>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td>Nguyễn Văn A</td>
-            <td>Abc@gmail.com</td>
-            <td>User</td>
-            <td className="group-btn">
-              <button className="btn btn-secondary">View</button>
-              <button className="btn btn-warning">Update</button>
-              <button className="btn btn-danger">Delete</button>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td>Nguyễn Văn A</td>
-            <td>Abc@gmail.com</td>
-            <td>User</td>
-            <td className="group-btn">
-              <button className="btn btn-secondary">View</button>
-              <button className="btn btn-warning">Update</button>
-              <button className="btn btn-danger">Delete</button>
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">1</th>
-            <td>Nguyễn Văn A</td>
-            <td>Abc@gmail.com</td>
-            <td>User</td>
-            <td className="group-btn">
-              <button className="btn btn-secondary">View</button>
-              <button className="btn btn-warning">Update</button>
-              <button className="btn btn-danger">Delete</button>
-            </td>
-          </tr>
+          {data.map((row, rowIndex) => {
+            return (
+              <tr key={rowIndex}>
+                {header.map((cell, cellIndex) => {
+                  if (cell.key) {
+                    return <td key={cellIndex}>{row[cell.key]}</td>;
+                  }
+                  return null;
+                })}
+                <td className="group-btn">
+                  <button className="btn btn-secondary">View</button>
+                  <button className="btn btn-warning">Update</button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => {
+                      handleClickBtnDelete(row);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
+      {data.length === 0 && <p>Danh sách người dùng rỗng</p>}
 
       <ReactPaginate
         nextLabel="next >"
-        onPageChange={() => {
-          console.log(123);
-        }}
+        onPageChange={handlePageClick}
         pageRangeDisplayed={3}
         marginPagesDisplayed={2}
-        pageCount={5}
+        pageCount={totalPage}
         previousLabel="< previous"
         pageClassName="page-item"
         pageLinkClassName="page-link"
@@ -94,6 +76,7 @@ function Table() {
         containerClassName="pagination"
         activeClassName="active"
         renderOnZeroPageCount={null}
+        forcePage={currentPage - 1}
       />
     </div>
   );

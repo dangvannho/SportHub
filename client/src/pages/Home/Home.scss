@@ -4,8 +4,9 @@
     justify-content: center;
     align-items: center;
     height: 500px;
-    background-image: url("../../assets/img/background.jpg");
+    background-image: url("../../assets/img/background-home.jpg");
     background-position: center;
+    background-size: cover;
     background-repeat: no-repeat;
     opacity: 0;
     transition: all 0.3s;
@@ -16,7 +17,7 @@
       position: absolute;
       inset: 0;
       background-color: black;
-      opacity: 0.2;
+      opacity: 0.5;
       z-index: 1;
     }
 
