@@ -1,11 +1,20 @@
 const Owner = require('../models/Owner');
 const User = require('../models/User');
+const Pagination = require('../utils/Pagination');
 
 // Owner Controllers
 const getAllOwner = async (req, res) => {
     try {
-        const owners = await Owner.find({});
-        res.status(200).json(owners);
+
+
+        const page = req.query.page && req.query.page > 0 ? parseInt(req.query.page) : 1;
+        const limit = req.query.limit && req.query.limit > 0 ? parseInt(req.query.limit) : 9;
+
+        const pagination = new Pagination(Owner.find(), page, limit);
+
+        const paginatedFields = await pagination.paginate();
+
+        res.status(200).json(paginatedFields);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -60,8 +69,15 @@ const deleteOwner = async (req, res) => {
 // User Controllers
 const getAllUser = async (req, res) => {
     try {
-        const users = await User.find({});
-        res.status(200).json(users);
+
+        const page = req.query.page && req.query.page > 0 ? parseInt(req.query.page) : 1;
+        const limit = req.query.limit && req.query.limit > 0 ? parseInt(req.query.limit) : 9;
+
+        const pagination = new Pagination(User.find(), page, limit);
+
+        const paginatedFields = await pagination.paginate();
+
+        res.status(200).json(paginatedFields);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
