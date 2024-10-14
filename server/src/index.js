@@ -8,8 +8,6 @@ const connectDB = require("./config/configDatabase");
 
 const tournamentRoutes = require("./routes/TournamentRoutes");
 const adminRoutes = require("./routes/AdminRoutes");
-const fieldRoutes = require("./routes/FieldRoutes");
-
 // config env
 dotenv.config();
 const port = process.env.PORT || 4000;
@@ -19,14 +17,11 @@ app.use(cookieParser());
 app.use(cors());
 app.use(morgan("common"));
 express.urlencoded({ extended: true });
-
 // connect DB
 connectDB();
+// import models
 
 // Routes
-app.use("/api/admin", adminRoutes);
-app.use("/api/", fieldRoutes);
-app.use("/api/tournaments", tournamentRoutes);
 
 app.use("/api", require("./routes/FieldRoutes"));
 
