@@ -14,10 +14,11 @@ dotenv.config();
 const port = process.env.PORT || 4000;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
 app.use(morgan("common"));
-express.urlencoded({ extended: true });
+
 // connect DB
 connectDB();
 // import models
