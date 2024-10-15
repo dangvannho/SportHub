@@ -82,6 +82,10 @@
     margin: 0;
   }
 
+  .number-phone {
+    color: white;
+  }
+
   .number-phone-button {
     display: inline-block;
     text-decoration: none;
@@ -105,6 +109,7 @@
 .footer-2 {
   padding: 25px;
   background-color: #061b41;
+  background-color: #222222;
 
   .footer-content-2 {
     max-width: 1140px;

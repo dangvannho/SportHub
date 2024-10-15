@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
     verified: { type: Boolean, default: false },
     account_status: { type: String, enum: ['active', 'inactive', 'suspended'], default: 'active' },
     user_role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    profile_picture: { type: String },
     verificationToken: { type: String },
     isVerified: { type: Boolean, default: false }
 }, { timestamps: true });

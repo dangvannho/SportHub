@@ -43,6 +43,15 @@
     font-weight: 400;
     color: #1976d2;
     border-bottom: 2px solid #eee;
+    cursor: pointer;
+
+    &:hover {
+      color: #f9b90f;
+    }
+
+    &.active {
+      color: #f9b90f;
+    }
   }
 }
 
@@ -67,8 +76,9 @@
     display: grid;
     grid-template-columns: repeat(3, 300px);
     grid-auto-rows: 450px;
-    height: 1430px;
+    max-height: 1430px;
     gap: 40px 20px;
+    overflow: hidden;
   }
 
   .pagination {
