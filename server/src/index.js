@@ -9,7 +9,11 @@ const connectDB = require("./config/configDatabase");
 
 const tournamentRoutes = require('./routes/TournamentRoutes')
 const adminRoutes = require('./routes/AdminRoutes')
+
 const imageRoutes = require('./routes/ImgRoutes')
+
+const authRoutes = require('./routes/AuthRoutes');
+
 // config env
 dotenv.config();
 const port = process.env.PORT || 4000;
@@ -37,6 +41,8 @@ app.get("/", (req, res) => {
   res.send("Project");
 });
 
+
+app.use('/api/auth', authRoutes);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

@@ -27,7 +27,19 @@ const getAllFields = async (req, res) => {
         // Thực hiện phân trang và trả về kết quả
         const paginatedFields = await pagination.paginate();
 
-        res.status(200).json(paginatedFields);
+        const totalFieldsByType = await Field.aggregate([
+            {
+                $group: {
+                    _id: "$type",  // Nhóm theo loại sân (type)
+                    total: { $sum: 1 }  // Đếm tổng số sân của mỗi loại
+                }
+            }
+        ]);
+
+        res.status(200).json(
+            {   paginatedFields,
+                totalFieldsByType
+            });
     } catch (err) {
         res.status(500).json({ message: 'Server Error' });
     }
