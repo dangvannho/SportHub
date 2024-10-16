@@ -2,7 +2,6 @@ const Owner = require('../models/Owner');
 const User = require('../models/User');
 const Pagination = require('../utils/Pagination');
 const upload = require('../middlewares/uploadIMG')
-const zlib = require('zlib');
 const sharp = require('sharp');
 // Owner Controllers
 const getAllOwner = async (req, res) => {
@@ -81,12 +80,12 @@ const updateOwner = async (req, res) => {
 
         let profile_picture = null;
         if (req.file) {
-            const resizedBuffer = await sharp(req.file.buffer)
-                .resize(50, 50) 
-                .jpeg({ quality: 80 }) 
-                .toBuffer();
-            const compressedBuffer = zlib.deflateSync(resizedBuffer);
-            profile_picture = compressedBuffer.toString('base64');
+           const resizedBuffer = await sharp(req.file.buffer)
+           .resize(50, 50)
+           .jpeg({ quality: 80 })
+           .toBuffer();
+            profile_picture = resizedBuffer.toString('base64');
+
         }
 
         
@@ -144,8 +143,19 @@ const getAllUser = async (req, res) => {
 const getUser = async (req, res) => {
     try {
         const { id } = req.params;
+
         const user = await User.findById(id);
-        res.status(200).json(user);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }    
+        let profilePicture = null;
+        if (user.profile_picture) {
+            profilePicture = `data:image/png;base64,${user.profile_picture}`;
+        }   
+        res.status(200).json({
+            user,
+            profilePicture
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -157,11 +167,11 @@ const addUser = async (req, res) => {
         let profile_picture = null;
         if (req.file) {
             const resizedBuffer = await sharp(req.file.buffer)
-                .resize(50, 50) 
-                .jpeg({ quality: 80 }) 
-                .toBuffer();
-            const compressedBuffer = zlib.deflateSync(resizedBuffer);
-            profile_picture = compressedBuffer.toString('base64');
+            .resize(50, 50)
+            .jpeg({ quality: 80 })
+            .toBuffer();
+            profile_picture = resizedBuffer.toString('base64');
+        
         }
 
         const user = await User.create({ ...req.body, profile_picture });
@@ -174,30 +184,42 @@ const addUser = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
+        const { name, address, phone_number, email, password, citizen_identification_card, account_status, user_role, verified, verificationToken, isVerified } = req.body;
 
-       
         let profile_picture = null;
         if (req.file) {
-            const resizedBuffer = await sharp(req.file.buffer)
-                .resize(50, 50) 
-                .jpeg({ quality: 80 }) 
-                .toBuffer();
-            const compressedBuffer = zlib.deflateSync(resizedBuffer);
-            profile_picture = compressedBuffer.toString('base64');
+        const resizedBuffer = await sharp(req.file.buffer)
+        .resize(50, 50)
+        .jpeg({ quality: 80 })
+        .toBuffer();
+profile_picture = resizedBuffer.toString('base64');
+
         }
 
-        
-        const user = await User.findByIdAndUpdate(id, { ...req.body, profile_picture }, { new: true });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            {
+                name,
+                address,
+                phone_number,
+                email,
+                password,
+                profile_picture,
+                citizen_identification_card,
+                account_status,
+                user_role,
+                verified,
+                verificationToken,
+                isVerified
+            },
+            { new: true }
+        );
 
-        res.status(200).json(user);
+        res.status(200).json(updatedUser);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
-
 
 const deleteUser = async (req, res) => {
     try {
