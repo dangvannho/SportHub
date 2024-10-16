@@ -2,7 +2,7 @@ const Owner = require('../models/Owner');
 const User = require('../models/User');
 const Pagination = require('../utils/Pagination');
 const upload = require('../middlewares/uploadIMG')
-const sharp = require('sharp');
+const { processImage } = require('../utils/ProcessIMG');
 // Owner Controllers
 const getAllOwner = async (req, res) => {
     try {
@@ -75,20 +75,13 @@ const addOwner = async (req, res) => {
 const updateOwner = async (req, res) => {
     try {
         const { id } = req.params;
-        const { business_name, address, phone_number, email,password, citizen_identification_card, account_status } = req.body;
-
+        const { business_name, address, phone_number, email, password, citizen_identification_card, account_status } = req.body;
 
         let profile_picture = null;
         if (req.file) {
-           const resizedBuffer = await sharp(req.file.buffer)
-           .resize(50, 50)
-           .jpeg({ quality: 80 })
-           .toBuffer();
-            profile_picture = resizedBuffer.toString('base64');
-
+            profile_picture = await processImage(req.file.buffer);
         }
 
-        
         const updatedOwner = await Owner.findByIdAndUpdate(
             id,
             {
@@ -109,6 +102,7 @@ const updateOwner = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 const deleteOwner = async (req, res) => {
     try {
@@ -188,12 +182,7 @@ const updateUser = async (req, res) => {
 
         let profile_picture = null;
         if (req.file) {
-        const resizedBuffer = await sharp(req.file.buffer)
-        .resize(50, 50)
-        .jpeg({ quality: 80 })
-        .toBuffer();
-profile_picture = resizedBuffer.toString('base64');
-
+            profile_picture = await processImage(req.file.buffer);
         }
 
         const updatedUser = await User.findByIdAndUpdate(
