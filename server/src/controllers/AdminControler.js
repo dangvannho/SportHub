@@ -157,19 +157,26 @@ const getUser = async (req, res) => {
 
 const addUser = async (req, res) => {
     try {
-       
-        let profile_picture = null;
-        if (req.file) {
-            const resizedBuffer = await sharp(req.file.buffer)
-            .resize(50, 50)
-            .jpeg({ quality: 80 })
-            .toBuffer();
-            profile_picture = resizedBuffer.toString('base64');
-        
-        }
+        const { name, address, phone_number, email, password, citizen_identification_card, account_status, user_role, verified, verificationToken, isVerified } = req.body;
+        const profile_picture = req.file ? req.file.buffer.toString('base64') : null;
 
-        const user = await User.create({ ...req.body, profile_picture });
-        res.status(200).json(user);
+        const newUser = new User({
+            name,
+            address,
+            phone_number,
+            email,
+            password,
+            profile_picture,
+            citizen_identification_card,
+            account_status,
+            user_role,
+            verified,
+            verificationToken,
+            isVerified
+        });
+
+        await newUser.save();
+        res.status(201).json(newUser);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
