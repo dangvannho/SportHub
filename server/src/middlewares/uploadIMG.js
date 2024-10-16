@@ -3,7 +3,7 @@
 const multer = require('multer');
 
 // Cấu hình lưu trữ
-const storage = multer.memoryStorage(); // Lưu trữ file trong bộ nhớ
+const storage = multer.memoryStorage() // Lưu trữ file trong bộ nhớ
 
 // Cấu hình upload
 const upload = multer({

@@ -2,19 +2,13 @@
 
 const express = require('express');
 const router = express.Router();
-const upload = require('../middlewares/ImageHandler');
-const { uploadImg, getImg, deleteImg, getImgById } = require('../controllers/ImageControler');
+const path = require('path');
 
-
-router.post('/upload', upload.single('image'), uploadImg);
-
-
-router.get('/', getImg);
-
-router.get('/:id', getImgById);
-
-router.delete('/delete/:id', deleteImg);
-
-
+// Endpoint để truy xuất ảnh
+router.get('/uploads/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const filepath = path.join(__dirname, '..', 'uploads', filename);
+    res.sendFile(filepath);
+});
 
 module.exports = router;

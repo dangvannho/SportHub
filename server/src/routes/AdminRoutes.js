@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const upload = require('../middlewares/uploadIMG');
 const { getAllOwner, getOwner, addOwner, updateOwner, deleteOwner,
-    getAllUser, getUser, addUser, updateUser, deleteUser } = require('../controllers/AdminControler');
+    getAllUser, getUser, addUser, updateUser, deleteUser }
+     = require('../controllers/AdminControler');
 
 // Owner Routes
 router.get('/owners', getAllOwner);

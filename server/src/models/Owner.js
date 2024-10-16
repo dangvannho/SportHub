@@ -5,6 +5,7 @@ const OwnerSchema = new mongoose.Schema({
     address: { type: String, required: true },
     phone_number: { type: String, required: true },
     email: { type: String, required: true },
+    password: { type: String, required: true },
     profile_picture: { type: String },
     citizen_identification_card: { type: String },
     account_status: { type: String, enum: ['active', 'inactive', 'suspended'], default: 'active' }

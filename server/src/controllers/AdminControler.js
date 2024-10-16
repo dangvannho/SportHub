@@ -25,41 +25,49 @@ const getAllOwner = async (req, res) => {
 const getOwner = async (req, res) => {
     try {
         const { id } = req.params;
+
         const owner = await Owner.findById(id);
-        res.status(200).json(owner);
+        if (!owner) {
+            return res.status(404).json({ message: "Owner not found" });
+        }
+
+        // Chuyển đổi ảnh profile_picture từ base64 thành Buffer
+        let profilePicture = null;
+        if (owner.profile_picture) {
+            profilePicture = `data:image/png;base64,${owner.profile_picture}`;
+        }
+
+        // Trả về thông tin Owner và ảnh profile_picture
+        res.status(200).json({
+            owner,
+            profilePicture
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
+
 const addOwner = async (req, res) => {
     try {
-        // Lấy dữ liệu từ form-data
-        const { business_name, address, phone_number, email, citizen_identification_card, account_status } = req.body;
-        
-        // Giảm kích thước và nén hình ảnh trước khi chuyển đổi sang base64 nếu có
-        let profile_picture = null;
-        if (req.file) {
-            const resizedBuffer = await sharp(req.file.buffer)
-                .resize(100, 100) 
-                .jpeg({ quality: 80 }) 
-                .toBuffer();
-            const compressedBuffer = zlib.deflateSync(resizedBuffer);
-            profile_picture = compressedBuffer.toString('base64');
-        }
+       
+        const { business_name, address, phone_number, email, citizen_identification_card, account_status, password } = req.body;
+        const profile_picture = req.file ? req.file.buffer.toString('base64') : null;
 
-        // Tạo đối tượng Owner mới
-        const owner = await Owner.create({
+        const newOwner = new Owner({
             business_name,
             address,
             phone_number,
             email,
-            profile_picture,
+            password,
             citizen_identification_card,
-            account_status
+            account_status,
+            profile_picture,
+            
         });
 
-        res.status(200).json(owner);
+        await newOwner.save();
+        res.status(201).json(newOwner);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -68,13 +76,13 @@ const addOwner = async (req, res) => {
 const updateOwner = async (req, res) => {
     try {
         const { id } = req.params;
-        const { business_name, address, phone_number, email, citizen_identification_card, account_status } = req.body;
+        const { business_name, address, phone_number, email,password, citizen_identification_card, account_status } = req.body;
 
 
         let profile_picture = null;
         if (req.file) {
             const resizedBuffer = await sharp(req.file.buffer)
-                .resize(100, 100) 
+                .resize(50, 50) 
                 .jpeg({ quality: 80 }) 
                 .toBuffer();
             const compressedBuffer = zlib.deflateSync(resizedBuffer);
@@ -89,6 +97,7 @@ const updateOwner = async (req, res) => {
                 address,
                 phone_number,
                 email,
+                password,
                 profile_picture,
                 citizen_identification_card,
                 account_status
@@ -148,7 +157,7 @@ const addUser = async (req, res) => {
         let profile_picture = null;
         if (req.file) {
             const resizedBuffer = await sharp(req.file.buffer)
-                .resize(100, 100) 
+                .resize(50, 50) 
                 .jpeg({ quality: 80 }) 
                 .toBuffer();
             const compressedBuffer = zlib.deflateSync(resizedBuffer);
@@ -170,7 +179,7 @@ const updateUser = async (req, res) => {
         let profile_picture = null;
         if (req.file) {
             const resizedBuffer = await sharp(req.file.buffer)
-                .resize(200, 200) 
+                .resize(50, 50) 
                 .jpeg({ quality: 80 }) 
                 .toBuffer();
             const compressedBuffer = zlib.deflateSync(resizedBuffer);
