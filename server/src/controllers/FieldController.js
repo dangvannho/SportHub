@@ -1,6 +1,8 @@
 const Field = require("../models/Field");
 const Pagination = require("../utils/Pagination");
 
+
+
 // Function to get all sport fields with pagination
 const getAllFields = async (req, res) => {
   try {
