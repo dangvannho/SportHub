@@ -106,9 +106,17 @@ const updateOwner = async (req, res) => {
             { new: true }
         );
 
-        res.status(200).json(updatedOwner);
+        res.status(200).json({
+            "EC": 1,
+            "EM": "Success",  
+            updatedOwner
+
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            "EC": 0,
+            "EM": error.message,  
+        });
     }
 };
 
