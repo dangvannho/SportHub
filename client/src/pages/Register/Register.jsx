@@ -1,15 +1,63 @@
 import { useState } from "react";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import routeConfig from "~/config/routeConfig";
+import registerUser from "~/services/Auth/registerUser";
 import "./Register.scss";
 
+
 function Register() {
-  const [hidepassword, setShowPassword] = useState(true);
-  const [typePassword, setTypePassword] = useState("password");
+  const [hidePassword, setHidePassword] = useState(true);
+  const [typePassword, setTypePassword] = useState("password"); 
+
+  const [hideConfirmPassword, setHideConfirmPassword] = useState(true);
+  const [typeConfirmPassword, setTypeConfirmPassword] = useState("password");
+
+
+  const [name, setName] = useState("") 
+  const [email, setEmail] = useState("")
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
 
   const navigate = useNavigate();
+
+    // validateEmail
+    const validateEmail = (email) => {
+      return String(email)
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    }; 
+
+    const handleRegisterUser = async () =>{
+      const isValidEmail = validateEmail(email);
+
+    if (!isValidEmail) {
+      toast.error("Invalid email!");
+      return;
+    }
+
+    if (!password) {
+      toast.error("Invalid password!");
+      return;
+    }
+
+    if (!confirmPassword) {
+      toast.error("Invalid confirm password!");
+      return;
+    }
+
+    // call api 
+    const data = await registerUser(name,email, phoneNumber, password, confirmPassword)
+
+    toast.success(data.message) 
+    navigate(routeConfig.login)
+
+    }
 
   return (
     <div className="register-wrapper">
@@ -18,39 +66,44 @@ function Register() {
         <h2 className="title-register">Đăng kí</h2>
         <div className="form-register">
           <div className="form-group">
+
+            {/* name */}
             <label htmlFor="">Tên</label>
-            <input type="text" placeholder="nguyen van a" />
+            <input type="text" placeholder="nguyen van a" value={name} onChange={(e) => setName(e.target.value)}/>
           </div>
 
+          {/* E-mail */}
           <div className="form-group">
             <label htmlFor="">E-mail</label>
-            <input type="Email" placeholder="example@gmail.com" />
+            <input type="Email" placeholder="example@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)}/>
           </div>
 
+          {/* Phone number */}
           <div className="form-group">
             <label htmlFor="">Số điện thoại</label>
-            <input type="text" placeholder="090531361" />
+            <input type="text" placeholder="090531361" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}/>
           </div>
 
+          {/* Password */}
           <div className="form-group">
             <label htmlFor="">Mật khẩu</label>
-            <input type={typePassword} placeholder="password123" />
-            {hidepassword && (
+            <input type={typePassword} placeholder="password123" value={password} onChange={(e) => setPassword(e.target.value)}/>
+            {hidePassword && (
               <div
                 className="eye"
                 onClick={() => {
-                  setShowPassword(!hidepassword);
+                  setHidePassword(!hidePassword);
                   setTypePassword("text");
                 }}
               >
                 <IoEyeOutline size={20} />
               </div>
             )}
-            {!hidepassword && (
+            {!hidePassword && (
               <div
                 className="eye"
                 onClick={() => {
-                  setShowPassword(!hidepassword);
+                  setHidePassword(!hidePassword);
                   setTypePassword("password");
                 }}
               >
@@ -59,26 +112,27 @@ function Register() {
             )}
           </div>
 
+            {/* Confirm password */}
           <div className="form-group">
             <label htmlFor="">Nhập lại mật khẩu</label>
-            <input type={typePassword} placeholder="password123" />
-            {hidepassword && (
+            <input type={typeConfirmPassword} placeholder="password123" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
+            {hideConfirmPassword && (
               <div
                 className="eye"
                 onClick={() => {
-                  setShowPassword(!hidepassword);
-                  setTypePassword("text");
+                  setHideConfirmPassword(!hideConfirmPassword);
+                  setTypeConfirmPassword("text");
                 }}
               >
                 <IoEyeOutline size={20} />
               </div>
             )}
-            {!hidepassword && (
+            {!hideConfirmPassword && (
               <div
                 className="eye"
                 onClick={() => {
-                  setShowPassword(!hidepassword);
-                  setTypePassword("password");
+                  setHideConfirmPassword(!hideConfirmPassword);
+                  setTypeConfirmPassword("password");
                 }}
               >
                 <IoEyeOffOutline size={20} />
@@ -86,7 +140,7 @@ function Register() {
             )}
           </div>
 
-          <button className="submit-register">Đăng kí</button>
+          <button className="submit-register" onClick={handleRegisterUser}>Đăng kí</button>
 
           <p className="sign-in">
             Bạn đã có tài khoản?

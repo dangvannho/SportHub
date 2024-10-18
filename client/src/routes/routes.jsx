@@ -14,7 +14,7 @@ import ManageOwner from "~/pages/Admin/ManageOwner/ManageOwner";
 import ManagePayment from "~/pages/Admin/ManagePayment/ManagePayment";
 import NotFound from "~/pages/NotFound/NotFound";
 
-import AdminRoute from "./AdminRoute";
+import { AdminRoute } from "./ProtectRoute";
 
 const publicRoutes = [
   // Main layout

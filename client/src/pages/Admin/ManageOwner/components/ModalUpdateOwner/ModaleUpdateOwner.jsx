@@ -73,12 +73,20 @@ function ModalUpdateOwner({
       email,
       password,
       image
-    );
+    ); 
 
     console.log(ownerUpdate);
-    toast.success("Owner updated");
-    handleClose();
-    fetchAllOwner();
+    
+    if(ownerUpdate.EC === 1) {
+      toast.success(ownerUpdate.EM)
+      fetchAllOwner();
+      handleClose();
+    } 
+    else{
+      toast.error()
+    }
+   
+   
   };
 
   return (
