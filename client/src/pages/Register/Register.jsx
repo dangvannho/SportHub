@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 import routeConfig from "~/config/routeConfig";
 import "./Register.scss";
 
@@ -20,9 +21,15 @@ function Register() {
             <label htmlFor="">Tên</label>
             <input type="text" placeholder="nguyen van a" />
           </div>
+
           <div className="form-group">
             <label htmlFor="">E-mail</label>
             <input type="Email" placeholder="example@gmail.com" />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="">Số điện thoại</label>
+            <input type="text" placeholder="090531361" />
           </div>
 
           <div className="form-group">
@@ -52,7 +59,39 @@ function Register() {
             )}
           </div>
 
+          <div className="form-group">
+            <label htmlFor="">Nhập lại mật khẩu</label>
+            <input type={typePassword} placeholder="password123" />
+            {hidepassword && (
+              <div
+                className="eye"
+                onClick={() => {
+                  setShowPassword(!hidepassword);
+                  setTypePassword("text");
+                }}
+              >
+                <IoEyeOutline size={20} />
+              </div>
+            )}
+            {!hidepassword && (
+              <div
+                className="eye"
+                onClick={() => {
+                  setShowPassword(!hidepassword);
+                  setTypePassword("password");
+                }}
+              >
+                <IoEyeOffOutline size={20} />
+              </div>
+            )}
+          </div>
+
           <button className="submit-register">Đăng kí</button>
+
+          <p className="sign-in">
+            Bạn đã có tài khoản?
+            <Link to={routeConfig.login}>Đăng nhập tại đây</Link>
+          </p>
         </div>
 
         <p className="back-home" onClick={() => navigate(routeConfig.home)}>

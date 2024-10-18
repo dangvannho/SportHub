@@ -63,6 +63,25 @@
         background-color: #204f39;
       }
     }
+
+    .sign-in {
+      margin-top: 34px;
+      color: #718096;
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 1.5;
+      text-align: center;
+
+      a {
+        color: #1c4532;
+        font-size: 15px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 150%;
+        text-decoration-line: underline;
+      }
+    }
   }
 
   .back-home {

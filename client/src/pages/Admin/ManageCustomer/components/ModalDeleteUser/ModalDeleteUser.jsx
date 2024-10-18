@@ -4,10 +4,10 @@ import { toast } from "react-toastify";
 import deleteUser from "~/services/User/deleteUser";
 import getAllUser from "~/services/User/getAllUser";
 
-function ModalDeleteCustomer({
+function ModalDeleteUser({
   showModalDelete,
   setShowModalDelete,
-  dataDelete,
+  personalData,
   currentPage,
   setCurrentPage,
   fetchAllUser,
@@ -16,7 +16,7 @@ function ModalDeleteCustomer({
   const handleClose = () => setShowModalDelete(false);
 
   const handleSubmitDeleteUser = async () => {
-    const res = await deleteUser(dataDelete._id);
+    const res = await deleteUser(personalData._id);
     toast.success(res.message);
     handleClose();
     // Fetch lại danh sách người dùng
@@ -39,7 +39,7 @@ function ModalDeleteCustomer({
         </Modal.Header>
         <Modal.Body>
           Bạn có muốn xoá khách hàng có email:
-          <strong> {dataDelete.email ? dataDelete.email : ""} ?</strong>
+          <strong> {personalData.email ? personalData.email : ""} ?</strong>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
@@ -59,4 +59,4 @@ function ModalDeleteCustomer({
   );
 }
 
-export default ModalDeleteCustomer;
+export default ModalDeleteUser;

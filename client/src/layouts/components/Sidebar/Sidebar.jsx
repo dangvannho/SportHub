@@ -2,11 +2,17 @@ import { Link } from "react-router-dom";
 import { FaUser, FaUserTie } from "react-icons/fa";
 import { AiOutlineTransaction } from "react-icons/ai";
 import { IoIosLogOut } from "react-icons/io";
-
+import { useNavigate } from "react-router-dom";
 import routeConfig from "~/config/routeConfig";
 
 import "./SideBar.scss";
 function SideBar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    navigate(routeConfig.adminLogin);
+  };
   return (
     <aside className="sidebar-wrapper">
       <h2 className="heading">ADMIN</h2>
@@ -27,7 +33,7 @@ function SideBar() {
             Quản lý thanh toán
           </Link>
         </div>
-        <button className="btn-logout">
+        <button className="btn-logout" onClick={handleLogout}>
           <IoIosLogOut />
           Logout
         </button>

@@ -3,10 +3,12 @@ import "./Table.scss";
 
 function Table({
   header,
+  viewbtn,
   data,
   currentPage,
   setCurrentPage,
   totalPage,
+  handleClickBtnUpdate,
   handleClickBtnDelete,
 }) {
   const handlePageClick = (event) => {
@@ -39,8 +41,17 @@ function Table({
                   return null;
                 })}
                 <td className="group-btn">
-                  <button className="btn btn-secondary">View</button>
-                  <button className="btn btn-warning">Update</button>
+                  {viewbtn ?? (
+                    <button className="btn btn-secondary">View</button>
+                  )}
+                  <button
+                    className="btn btn-warning"
+                    onClick={() => {
+                      handleClickBtnUpdate(row);
+                    }}
+                  >
+                    Update
+                  </button>
                   <button
                     className="btn btn-danger"
                     onClick={() => {
