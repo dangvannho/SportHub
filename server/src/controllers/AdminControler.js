@@ -1,8 +1,10 @@
 const Owner = require('../models/Owner');
 const User = require('../models/User');
 const Pagination = require('../utils/Pagination');
-const upload = require('../middlewares/uploadIMG')
+
 const { processImage } = require('../utils/ProcessIMG');
+const bcrypt = require('bcrypt');
+const { hashPassword } = require('../utils/Password');
 // Owner Controllers
 const getAllOwner = async (req, res) => {
     try {
@@ -49,20 +51,21 @@ const getOwner = async (req, res) => {
 
 const addOwner = async (req, res) => {
     try {
-       
         const { business_name, address, phone_number, email, citizen_identification_card, account_status, password } = req.body;
         const profile_picture = req.file ? req.file.buffer.toString('base64') : null;
+
+        // Mã hóa mật khẩu
+        const hashedPassword = await hashPassword(password);
 
         const newOwner = new Owner({
             business_name,
             address,
             phone_number,
             email,
-            password,
+            password: hashedPassword, // Lưu mật khẩu đã mã hóa
             citizen_identification_card,
             account_status,
             profile_picture,
-            
         });
 
         await newOwner.save();
@@ -82,6 +85,12 @@ const updateOwner = async (req, res) => {
             profile_picture = await processImage(req.file.buffer);
         }
 
+      
+        let hashedPassword = password;
+        if (password) {
+            hashedPassword = await hashPassword(password);
+        }
+
         const updatedOwner = await Owner.findByIdAndUpdate(
             id,
             {
@@ -89,7 +98,7 @@ const updateOwner = async (req, res) => {
                 address,
                 phone_number,
                 email,
-                password,
+                password: hashedPassword, // Lưu mật khẩu đã mã hóa
                 profile_picture,
                 citizen_identification_card,
                 account_status
@@ -160,12 +169,14 @@ const addUser = async (req, res) => {
         const { name, address, phone_number, email, password, citizen_identification_card, account_status, user_role, verified, verificationToken, isVerified } = req.body;
         const profile_picture = req.file ? req.file.buffer.toString('base64') : null;
 
+        const hashedPassword = await hashPassword(password);
+
         const newUser = new User({
             name,
             address,
             phone_number,
             email,
-            password,
+            password: hashedPassword, 
             profile_picture,
             citizen_identification_card,
             account_status,
@@ -192,6 +203,11 @@ const updateUser = async (req, res) => {
             profile_picture = await processImage(req.file.buffer);
         }
 
+        let hashedPassword = password;
+        if (password) {
+            hashedPassword = await hashPassword(password);
+        }
+
         const updatedUser = await User.findByIdAndUpdate(
             id,
             {
@@ -199,7 +215,7 @@ const updateUser = async (req, res) => {
                 address,
                 phone_number,
                 email,
-                password,
+                password: hashedPassword, // Lưu mật khẩu đã mã hóa
                 profile_picture,
                 citizen_identification_card,
                 account_status,

@@ -5,7 +5,7 @@ const path = require('path');
 
 // Cấu hình lưu trữ
 const storage = multer.memoryStorage(); // Lưu trữ ảnh trong bộ nhớ
-
+        
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
