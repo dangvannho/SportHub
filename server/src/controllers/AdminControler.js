@@ -2,7 +2,7 @@ const Owner = require('../models/Owner');
 const User = require('../models/User');
 const Pagination = require('../utils/Pagination');
 
-const { processImage } = require('../utils/ProcessIMG');
+const {  getProfilePicture } = require('../utils/ProcessIMG');
 const bcrypt = require('bcrypt');
 const { hashPassword } = require('../utils/Password');
 // Owner Controllers
@@ -69,7 +69,11 @@ const addOwner = async (req, res) => {
         });
 
         await newOwner.save();
-        res.status(201).json(newOwner);
+        res.status(200).json({
+            "EC": 1,
+            "EM": "Owner Created",
+             newOwner
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -78,49 +82,49 @@ const addOwner = async (req, res) => {
 const updateOwner = async (req, res) => {
     try {
         const { id } = req.params;
-        const { business_name, address, phone_number, email, password, citizen_identification_card, account_status } = req.body;
+        const { business_name, address, phone_number, password, citizen_identification_card, account_status } = req.body;
 
-        let profile_picture = null;
-        if (req.file) {
-            profile_picture = await processImage(req.file.buffer);
+        // Lấy thông tin chủ sở hữu hiện tại
+        const owner = await Owner.findById(id);
+        if (!owner) {
+            return res.status(404).json({ message: "Owner not found" });
         }
 
-      
-        let hashedPassword = password;
-        if (password) {
-            hashedPassword = await hashPassword(password);
-        }
+        // Sử dụng hàm getProfilePicture để xử lý ảnh hồ sơ
+        const profile_picture = await getProfilePicture(req, owner.profile_picture);
+
+        // Mã hóa mật khẩu nếu có thay đổi, nếu không giữ mật khẩu cũ
+        let hashedPassword = password ? await hashPassword(password) : owner.password;
+
+        // Tạo đối tượng updateData chứa các trường cần cập nhật
+        let updateData = {
+            business_name,
+            address,
+            phone_number,
+            password: hashedPassword, // Lưu mật khẩu đã mã hóa hoặc giữ mật khẩu cũ
+            profile_picture,          // Giữ hình ảnh cũ nếu không thay đổi
+            citizen_identification_card,
+            account_status
+        };
 
         const updatedOwner = await Owner.findByIdAndUpdate(
             id,
-            {
-                business_name,
-                address,
-                phone_number,
-                email,
-                password: hashedPassword, // Lưu mật khẩu đã mã hóa
-                profile_picture,
-                citizen_identification_card,
-                account_status
-            },
+            updateData,
             { new: true }
         );
 
         res.status(200).json({
             "EC": 1,
-            "EM": "Success",  
-            updatedOwner
-
+            "EM": "Owner Updated",
+            "data": updatedOwner
         });
     } catch (error) {
         res.status(500).json({
             "EC": 0,
-            "EM": error.message,  
+            "EM": error.message,
         });
     }
 };
-
-
 const deleteOwner = async (req, res) => {
     try {
         const { id } = req.params;
@@ -195,52 +199,70 @@ const addUser = async (req, res) => {
         });
 
         await newUser.save();
-        res.status(201).json(newUser);
+        res.status(200).json({
+            "EC": 1,
+            "EM": "User Created",  
+            newUser
+
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            "EC": 0,
+            "EM": error.message,
+             });
     }
 };
 
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, address, phone_number, email, password, citizen_identification_card, account_status, user_role, verified, verificationToken, isVerified } = req.body;
+        const { name, address, phone_number, password, citizen_identification_card, account_status, user_role, verified, verificationToken, isVerified } = req.body;
 
-        let profile_picture = null;
-        if (req.file) {
-            profile_picture = await processImage(req.file.buffer);
+        // Lấy thông tin người dùng hiện tại
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
 
-        let hashedPassword = password;
-        if (password) {
-            hashedPassword = await hashPassword(password);
-        }
+        // Sử dụng hàm getProfilePicture để xử lý ảnh hồ sơ
+        const profile_picture = await getProfilePicture(req, user.profile_picture);
+
+        // Mã hóa mật khẩu nếu có thay đổi, nếu không giữ mật khẩu cũ
+        let hashedPassword = password ? await hashPassword(password) : user.password;
+
+        // Tạo đối tượng updateData chứa các trường cần cập nhật
+        let updateData = {
+            name,
+            address,
+            phone_number,
+            password: hashedPassword, // Lưu mật khẩu đã mã hóa hoặc giữ mật khẩu cũ
+            profile_picture,          // Giữ hình ảnh cũ nếu không thay đổi
+            citizen_identification_card,
+            account_status,
+            user_role,
+            verified,
+            verificationToken,
+            isVerified
+        };
 
         const updatedUser = await User.findByIdAndUpdate(
             id,
-            {
-                name,
-                address,
-                phone_number,
-                email,
-                password: hashedPassword, // Lưu mật khẩu đã mã hóa
-                profile_picture,
-                citizen_identification_card,
-                account_status,
-                user_role,
-                verified,
-                verificationToken,
-                isVerified
-            },
+            updateData,
             { new: true }
         );
 
-        res.status(200).json(updatedUser);
+        res.status(200).json({
+            "EC": 1,
+            "EM": "User Updated",
+            "data": updatedUser
+        });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            "EC": 0,
+            "EM": error.message,
+        });
     }
 };
-
 const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -248,9 +270,15 @@ const deleteUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        res.status(200).json({ message: "User Deleted" });
+        res.status(200).json({ 
+            "EC": 1,
+            "EM": "User Deleted",
+            });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ 
+            "EC": 0,
+            "EM": error.message,
+        });
     }
 };
 

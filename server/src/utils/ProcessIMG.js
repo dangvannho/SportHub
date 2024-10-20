@@ -4,7 +4,7 @@ const processImage = async (buffer) => {
     try {
         const resizedBuffer = await sharp(buffer)
             .resize(300, 200)
-            .jpeg({ quality: 80 })//chat luong anh 80
+            .jpeg({ quality: 80 }) // Chất lượng ảnh 80%
             .toBuffer();
         return resizedBuffer.toString('base64');
     } catch (error) {
@@ -12,6 +12,19 @@ const processImage = async (buffer) => {
     }
 };
 
+const getProfilePicture = async (req, currentProfilePicture) => {
+    let profile_picture;
+    if (req.file) {
+        // Nếu có ảnh mới, xử lý ảnh mới
+        profile_picture = await processImage(req.file.buffer);
+    } else {
+        // Nếu không có ảnh mới, giữ lại ảnh cũ
+        profile_picture = currentProfilePicture;
+    }
+    return profile_picture;
+};
+
 module.exports = {
     processImage,
+    getProfilePicture,
 };
