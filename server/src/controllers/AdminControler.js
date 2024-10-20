@@ -2,7 +2,7 @@ const Owner = require('../models/Owner');
 const User = require('../models/User');
 const Pagination = require('../utils/Pagination');
 
-const {  getProfilePicture } = require('../utils/ProcessIMG');
+const {  processImage , getProfilePicture } = require('../utils/ProcessIMG');
 const bcrypt = require('bcrypt');
 const { hashPassword } = require('../utils/Password');
 // Owner Controllers
@@ -16,6 +16,7 @@ const getAllOwner = async (req, res) => {
         const pagination = new Pagination(Owner.find(), page, limit);
 
         const paginatedFields = await pagination.paginate();
+        
 
         res.status(200).json(paginatedFields);
     } catch (error) {
@@ -52,8 +53,8 @@ const getOwner = async (req, res) => {
 const addOwner = async (req, res) => {
     try {
         const { business_name, address, phone_number, email, citizen_identification_card, account_status, password } = req.body;
-        const profile_picture = req.file ? req.file.buffer.toString('base64') : null;
-
+        const profile_picture = req.file ? await processImage(req.file.buffer) : null;
+        
         // Mã hóa mật khẩu
         const hashedPassword = await hashPassword(password);
 
@@ -69,13 +70,17 @@ const addOwner = async (req, res) => {
         });
 
         await newOwner.save();
+       
         res.status(200).json({
             "EC": 1,
             "EM": "Owner Created",
-             newOwner
+            newOwner
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({
+            "EC": 0,
+            "EM": error.message,
+            });
     }
 };
 
@@ -130,11 +135,20 @@ const deleteOwner = async (req, res) => {
         const { id } = req.params;
         const owner = await Owner.findByIdAndDelete(id);
         if (!owner) {
-            return res.status(404).json({ message: "Owner not found" });
+            return res.status(404).json({ 
+                "EC": 0,
+                "EM": "Owner not found",
+                });
         }
-        res.status(200).json({ message: "Owner Deleted" });
+        res.status(200).json({ 
+            "EC": 1,
+            "EM": "Owner Deleted",
+            });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ 
+            "EC": 0,
+            "EM": "Something went wrong",
+            message: error.message });
     }
 };
 
@@ -179,7 +193,7 @@ const getUser = async (req, res) => {
 const addUser = async (req, res) => {
     try {
         const { name, address, phone_number, email, password, citizen_identification_card, account_status, user_role, verified, verificationToken, isVerified } = req.body;
-        const profile_picture = req.file ? req.file.buffer.toString('base64') : null;
+        const profile_picture = req.file ? await processImage(req.file.buffer) : null;
 
         const hashedPassword = await hashPassword(password);
 
@@ -254,7 +268,7 @@ const updateUser = async (req, res) => {
         res.status(200).json({
             "EC": 1,
             "EM": "User Updated",
-            "data": updatedUser
+            updatedUser
         });
     } catch (error) {
         res.status(500).json({
@@ -268,7 +282,10 @@ const deleteUser = async (req, res) => {
         const { id } = req.params;
         const user = await User.findByIdAndDelete(id);
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ 
+                "EC": 0,
+                "EM" :  "User not found",
+                });
         }
         res.status(200).json({ 
             "EC": 1,
