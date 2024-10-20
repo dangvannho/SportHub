@@ -17,17 +17,22 @@ function ModalDeleteUser({
 
   const handleSubmitDeleteUser = async () => {
     const res = await deleteUser(personalData._id);
-    toast.success(res.message);
-    handleClose();
-    // Fetch lại danh sách người dùng
-    const data = await getAllUser(currentPage, itemsPerPage);
+    if (res.EC === 1) {
+      toast.success(res.EM);
+      handleClose();
 
-    // Kiểm tra nếu không còn người dùng nào
-    if (data.results.length === 0 && currentPage > 1) {
-      setCurrentPage(currentPage - 1); // Giảm trang
+      // Fetch lại danh sách người dùng
+      const data = await getAllUser(currentPage, itemsPerPage);
+
+      // Kiểm tra nếu không còn người dùng nào
+      if (data.results.length === 0 && currentPage > 1) {
+        setCurrentPage(currentPage - 1); // Giảm trang
+      } else {
+        // Nếu như còn người dùng thì gọi api của trang đó
+        fetchAllUser();
+      }
     } else {
-      // Nếu như còn người dùng thì gọi api của trang đó
-      fetchAllUser();
+      toast.error(res.EM);
     }
   };
 

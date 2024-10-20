@@ -71,7 +71,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
     }
 
     // call api
-    const data = await createOwner(
+    const res = await createOwner(
       businessName,
       address,
       phoneNumber,
@@ -79,10 +79,14 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
       password,
       image
     );
-    console.log(data);
-    toast.success("Create owner success");
-    handleClose();
-    fetchAllOwner();
+
+    if (res.EC === 1) {
+      toast.success(res.EM);
+      handleClose();
+      fetchAllOwner();
+    } else {
+      toast.error(res.EM);
+    }
   };
 
   return (

@@ -65,28 +65,21 @@ function ModalUpdateOwner({
   };
 
   const handleSubmitUpdate = async () => {
-    const ownerUpdate = await updateOwner(
+    const res = await updateOwner(
       id,
       businessName,
       address,
       phoneNumber,
-      email,
-      password,
       image
-    ); 
+    );
 
-    console.log(ownerUpdate);
-    
-    if(ownerUpdate.EC === 1) {
-      toast.success(ownerUpdate.EM)
+    if (res.EC === 1) {
+      toast.success(res.EM);
       fetchAllOwner();
       handleClose();
-    } 
-    else{
-      toast.error()
+    } else {
+      toast.error(res.EM);
     }
-   
-   
   };
 
   return (

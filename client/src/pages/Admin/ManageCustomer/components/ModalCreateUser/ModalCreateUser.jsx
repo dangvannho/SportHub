@@ -69,17 +69,14 @@ function ModalCreateUser({ showModalAdd, setShowModalAdd, fetchAllUser }) {
     }
 
     // call api
-    const data = await createUser(
-      username,
-      email,
-      password,
-      phoneNumber,
-      image
-    );
-    console.log(data);
-    toast.success("Create user success");
-    handleClose();
-    fetchAllUser();
+    const res = await createUser(username, email, password, phoneNumber, image);
+    if (res.EC === 1) {
+      toast.success(res.EM);
+      handleClose();
+      fetchAllUser();
+    } else {
+      toast.error(res.EM);
+    }
   };
 
   return (

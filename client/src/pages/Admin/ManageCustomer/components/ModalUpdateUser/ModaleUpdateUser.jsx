@@ -34,8 +34,10 @@ function ModalUpdateUser({
         setPreviewImage(
           `data:image/jpeg;base64,${personalData.profile_picture}`
         );
+        setImage(personalData.profile_picture);
       } else {
         setPreviewImage("");
+        setImage("");
       }
     }
   }, [personalData]);
@@ -56,24 +58,23 @@ function ModalUpdateUser({
 
     if (personalData.profile_picture) {
       setPreviewImage(`data:image/jpeg;base64,${personalData.profile_picture}`);
+      setImage(personalData.profile_picture);
     } else {
       setPreviewImage("");
+      setImage("");
     }
   };
 
   const handleSubmitUpdate = async () => {
-    const userUpdate = await updateUser(
-      id,
-      username,
-      email,
-      password,
-      phoneNumber,
-      image
-    );
-    console.log(userUpdate);
-    toast.success("User updated");
-    handleClose();
-    fetchAllUser();
+    const res = await updateUser(id, username, phoneNumber, image);
+
+    if (res.EC === 1) {
+      toast.success(res.EM);
+      handleClose();
+      fetchAllUser();
+    } else {
+      toast.error(res.EM);
+    }
   };
 
   return (
