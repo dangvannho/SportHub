@@ -23,6 +23,38 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
     };
   }, [previewImage]);
 
+  const handleChangeEmail = (e) => {
+    const emailValue = e.target.value;
+
+    if (!emailValue.startsWith(" ")) {
+      setEmail(emailValue);
+    }
+  };
+
+  const handleChangeBusinessName = (e) => {
+    const businessNameValue = e.target.value;
+
+    if (!businessNameValue.startsWith(" ")) {
+      setBusinessName(businessNameValue);
+    }
+  };
+
+  const handleChangePhone = (e) => {
+    const phoneValue = e.target.value;
+
+    if (!phoneValue.startsWith(" ")) {
+      setPhoneNumber(phoneValue);
+    }
+  };
+
+  const handleChangeAddress = (e) => {
+    const addressValue = e.target.value;
+
+    if (!addressValue.startsWith(" ")) {
+      setAddress(addressValue);
+    }
+  };
+
   // Xử lí ảnh
   const handleUploadImage = (e) => {
     if (e.target.files[0]) {
@@ -58,8 +90,13 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
 
   // submit create user
   const handleSubmitCreateOwner = async () => {
+    const trimEmail = email.trim();
+    const trimBusinessName = businessName.trim();
+    const trimPhoneNumber = phoneNumber.trim();
+    const trimAddress = address.trim();
+
     // validate
-    const isValidEmail = validateEmail(email);
+    const isValidEmail = validateEmail(trimEmail);
 
     if (!isValidEmail) {
       toast.error("Invalid email!");
@@ -70,12 +107,31 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
       return;
     }
 
+    if (!trimBusinessName) {
+      toast.error("Invalid business name!");
+      return;
+    }
+
+    if (
+      trimPhoneNumber.length !== 10 ||
+      /\s/.test(trimPhoneNumber) ||
+      /[a-zA-Z]/.test(trimPhoneNumber)
+    ) {
+      toast.error("Invalid phone number!");
+      return;
+    }
+
+    if (!trimAddress) {
+      toast.error("Invalid address!");
+      return;
+    }
+
     // call api
     const res = await createOwner(
-      businessName,
-      address,
-      phoneNumber,
-      email,
+      trimBusinessName,
+      trimAddress,
+      trimPhoneNumber,
+      trimEmail,
       password,
       image
     );
@@ -106,10 +162,10 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
             <div className="col-md-6">
               <label className="form-label">Email</label>
               <input
-                type="email"
+                type="text"
                 className="form-control"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleChangeEmail}
               />
             </div>
 
@@ -129,7 +185,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
                 type="text"
                 className="form-control"
                 value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
+                onChange={handleChangeBusinessName}
               />
             </div>
 
@@ -139,7 +195,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
                 type="text"
                 className="form-control"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={handleChangePhone}
               />
             </div>
 
@@ -149,7 +205,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
                 type="text"
                 className="form-control"
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                onChange={handleChangeAddress}
               />
             </div>
 

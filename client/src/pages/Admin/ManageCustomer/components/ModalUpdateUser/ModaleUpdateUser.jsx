@@ -42,6 +42,22 @@ function ModalUpdateUser({
     }
   }, [personalData]);
 
+  const handleChangeUsername = (e) => {
+    const usernameValue = e.target.value;
+
+    if (!usernameValue.startsWith(" ")) {
+      setUsername(usernameValue);
+    }
+  };
+
+  const handleChangePhone = (e) => {
+    const phoneValue = e.target.value;
+
+    if (!phoneValue.startsWith(" ")) {
+      setPhoneNumber(phoneValue);
+    }
+  };
+
   const handleUploadImage = (e) => {
     if (e.target.files[0]) {
       setPreviewImage(URL.createObjectURL(e.target.files[0]));
@@ -66,7 +82,24 @@ function ModalUpdateUser({
   };
 
   const handleSubmitUpdate = async () => {
-    const res = await updateUser(id, username, phoneNumber, image);
+    const trimUsername = username.trim();
+    const trimPhoneNumber = phoneNumber.trim();
+
+    if (!trimUsername || /\d/.test(trimUsername)) {
+      toast.error("Invalid name!");
+      return;
+    }
+
+    if (
+      trimPhoneNumber.length !== 10 ||
+      /\s/.test(trimPhoneNumber) ||
+      /[a-zA-Z]/.test(trimPhoneNumber)
+    ) {
+      toast.error("Invalid phone number!");
+      return;
+    }
+
+    const res = await updateUser(id, trimUsername, trimPhoneNumber, image);
 
     if (res.EC === 1) {
       toast.success(res.EM);
@@ -119,7 +152,7 @@ function ModalUpdateUser({
                 type="text"
                 className="form-control"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleChangeUsername}
               />
             </div>
 
@@ -129,7 +162,7 @@ function ModalUpdateUser({
                 type="text"
                 className="form-control"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={handleChangePhone}
               />
             </div>
 

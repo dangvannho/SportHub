@@ -22,6 +22,30 @@ function ModalCreateUser({ showModalAdd, setShowModalAdd, fetchAllUser }) {
     };
   }, [previewImage]);
 
+  const handleChangeEmail = (e) => {
+    const emailValue = e.target.value;
+
+    if (!emailValue.startsWith(" ")) {
+      setEmail(emailValue);
+    }
+  };
+
+  const handleChangeUsername = (e) => {
+    const usernameValue = e.target.value;
+
+    if (!usernameValue.startsWith(" ")) {
+      setUsername(usernameValue);
+    }
+  };
+
+  const handleChangePhone = (e) => {
+    const phoneValue = e.target.value;
+
+    if (!phoneValue.startsWith(" ")) {
+      setPhoneNumber(phoneValue);
+    }
+  };
+
   // Xử lí ảnh
   const handleUploadImage = (e) => {
     if (e.target.files[0]) {
@@ -56,20 +80,45 @@ function ModalCreateUser({ showModalAdd, setShowModalAdd, fetchAllUser }) {
 
   // submit create user
   const handleSubmitCreateUser = async () => {
+    const trimEmail = email.trim();
+    const trimUsername = username.trim();
+    const trimPhoneNumber = phoneNumber.trim();
+
     // validate
-    const isValidEmail = validateEmail(email);
+    const isValidEmail = validateEmail(trimEmail);
 
     if (!isValidEmail) {
       toast.error("Invalid email!");
       return;
     }
+
     if (!password) {
       toast.error("Invalid password!");
       return;
     }
 
+    if (!trimUsername || /\d/.test(trimUsername)) {
+      toast.error("Invalid name!");
+      return;
+    }
+
+    if (
+      trimPhoneNumber.length !== 10 ||
+      /\s/.test(trimPhoneNumber) ||
+      /[a-zA-Z]/.test(trimPhoneNumber)
+    ) {
+      toast.error("Invalid phone number!");
+      return;
+    }
+
     // call api
-    const res = await createUser(username, email, password, phoneNumber, image);
+    const res = await createUser(
+      trimUsername,
+      trimEmail,
+      password,
+      trimPhoneNumber,
+      image
+    );
     if (res.EC === 1) {
       toast.success(res.EM);
       handleClose();
@@ -96,10 +145,10 @@ function ModalCreateUser({ showModalAdd, setShowModalAdd, fetchAllUser }) {
             <div className="col-md-6">
               <label className="form-label">Email</label>
               <input
-                type="email"
+                type="text"
                 className="form-control"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleChangeEmail}
               />
             </div>
 
@@ -119,7 +168,7 @@ function ModalCreateUser({ showModalAdd, setShowModalAdd, fetchAllUser }) {
                 type="text"
                 className="form-control"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={handleChangeUsername}
               />
             </div>
 
@@ -129,7 +178,7 @@ function ModalCreateUser({ showModalAdd, setShowModalAdd, fetchAllUser }) {
                 type="text"
                 className="form-control"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={handleChangePhone}
               />
             </div>
 

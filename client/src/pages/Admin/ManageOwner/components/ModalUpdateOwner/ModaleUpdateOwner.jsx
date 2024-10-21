@@ -42,6 +42,30 @@ function ModalUpdateOwner({
     }
   }, [personalData]);
 
+  const handleChangeBusinessName = (e) => {
+    const businessNameValue = e.target.value;
+
+    if (!businessNameValue.startsWith(" ")) {
+      setBusinessName(businessNameValue);
+    }
+  };
+
+  const handleChangePhone = (e) => {
+    const phoneValue = e.target.value;
+
+    if (!phoneValue.startsWith(" ")) {
+      setPhoneNumber(phoneValue);
+    }
+  };
+
+  const handleChangeAddress = (e) => {
+    const addressValue = e.target.value;
+
+    if (!addressValue.startsWith(" ")) {
+      setAddress(addressValue);
+    }
+  };
+
   const handleUploadImage = (e) => {
     if (e.target.files[0]) {
       setPreviewImage(URL.createObjectURL(e.target.files[0]));
@@ -65,11 +89,34 @@ function ModalUpdateOwner({
   };
 
   const handleSubmitUpdate = async () => {
+    const trimBusinessName = businessName.trim();
+    const trimPhoneNumber = phoneNumber.trim();
+    const trimAddress = address.trim();
+
+    if (!trimBusinessName) {
+      toast.error("Invalid business name!");
+      return;
+    }
+
+    if (
+      trimPhoneNumber.length !== 10 ||
+      /\s/.test(trimPhoneNumber) ||
+      /[a-zA-Z]/.test(trimPhoneNumber)
+    ) {
+      toast.error("Invalid phone number!");
+      return;
+    }
+
+    if (!trimAddress) {
+      toast.error("Invalid address!");
+      return;
+    }
+
     const res = await updateOwner(
       id,
-      businessName,
-      address,
-      phoneNumber,
+      trimBusinessName,
+      trimAddress,
+      trimPhoneNumber,
       image
     );
 
@@ -124,7 +171,7 @@ function ModalUpdateOwner({
                 type="text"
                 className="form-control"
                 value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
+                onChange={handleChangeBusinessName}
               />
             </div>
 
@@ -134,7 +181,7 @@ function ModalUpdateOwner({
                 type="text"
                 className="form-control"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={handleChangePhone}
               />
             </div>
 
@@ -144,7 +191,7 @@ function ModalUpdateOwner({
                 type="text"
                 className="form-control"
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                onChange={handleChangeAddress}
               />
             </div>
 
