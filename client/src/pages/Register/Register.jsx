@@ -22,31 +22,6 @@ function Register() {
 
   const navigate = useNavigate();
 
-  // Xử lí không cho nhập khoảng trắng ở kí tự đầu
-  const handleChangeName = (e) => {
-    const nameValue = e.target.value;
-
-    if (!nameValue.startsWith(" ")) {
-      setName(nameValue);
-    }
-  };
-
-  const handleChangeEmail = (e) => {
-    const emailValue = e.target.value;
-
-    if (!emailValue.startsWith(" ")) {
-      setEmail(emailValue);
-    }
-  };
-
-  const handleChangePhone = (e) => {
-    const phoneValue = e.target.value;
-
-    if (!phoneValue.startsWith(" ")) {
-      setPhoneNumber(phoneValue);
-    }
-  };
-
   // validateEmail
   const validateEmail = (email) => {
     return String(email)
@@ -120,7 +95,7 @@ function Register() {
               type="text"
               placeholder="nguyen van a"
               value={name}
-              onChange={handleChangeName}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
@@ -131,7 +106,7 @@ function Register() {
               type="text"
               placeholder="example@gmail.com"
               value={email}
-              onChange={handleChangeEmail}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -142,7 +117,7 @@ function Register() {
               type="text"
               placeholder="090531361"
               value={phoneNumber}
-              onChange={handleChangePhone}
+              onChange={(e) => setPhoneNumber(e.target.value)}
             />
           </div>
 

@@ -18,7 +18,7 @@ function ManageOwner() {
   const [showModalUpdate, setShowModalUpdate] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const itemsPerPage = 3;
+  const itemsPerPage = 6;
 
   // config titles in table
   const header = [

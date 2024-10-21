@@ -22,30 +22,6 @@ function ModalCreateUser({ showModalAdd, setShowModalAdd, fetchAllUser }) {
     };
   }, [previewImage]);
 
-  const handleChangeEmail = (e) => {
-    const emailValue = e.target.value;
-
-    if (!emailValue.startsWith(" ")) {
-      setEmail(emailValue);
-    }
-  };
-
-  const handleChangeUsername = (e) => {
-    const usernameValue = e.target.value;
-
-    if (!usernameValue.startsWith(" ")) {
-      setUsername(usernameValue);
-    }
-  };
-
-  const handleChangePhone = (e) => {
-    const phoneValue = e.target.value;
-
-    if (!phoneValue.startsWith(" ")) {
-      setPhoneNumber(phoneValue);
-    }
-  };
-
   // Xử lí ảnh
   const handleUploadImage = (e) => {
     if (e.target.files[0]) {
@@ -148,7 +124,7 @@ function ModalCreateUser({ showModalAdd, setShowModalAdd, fetchAllUser }) {
                 type="text"
                 className="form-control"
                 value={email}
-                onChange={handleChangeEmail}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -168,7 +144,7 @@ function ModalCreateUser({ showModalAdd, setShowModalAdd, fetchAllUser }) {
                 type="text"
                 className="form-control"
                 value={username}
-                onChange={handleChangeUsername}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
 
@@ -178,7 +154,7 @@ function ModalCreateUser({ showModalAdd, setShowModalAdd, fetchAllUser }) {
                 type="text"
                 className="form-control"
                 value={phoneNumber}
-                onChange={handleChangePhone}
+                onChange={(e) => setPhoneNumber(e.target.value)}
               />
             </div>
 

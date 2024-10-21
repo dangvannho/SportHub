@@ -23,38 +23,6 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
     };
   }, [previewImage]);
 
-  const handleChangeEmail = (e) => {
-    const emailValue = e.target.value;
-
-    if (!emailValue.startsWith(" ")) {
-      setEmail(emailValue);
-    }
-  };
-
-  const handleChangeBusinessName = (e) => {
-    const businessNameValue = e.target.value;
-
-    if (!businessNameValue.startsWith(" ")) {
-      setBusinessName(businessNameValue);
-    }
-  };
-
-  const handleChangePhone = (e) => {
-    const phoneValue = e.target.value;
-
-    if (!phoneValue.startsWith(" ")) {
-      setPhoneNumber(phoneValue);
-    }
-  };
-
-  const handleChangeAddress = (e) => {
-    const addressValue = e.target.value;
-
-    if (!addressValue.startsWith(" ")) {
-      setAddress(addressValue);
-    }
-  };
-
   // Xử lí ảnh
   const handleUploadImage = (e) => {
     if (e.target.files[0]) {
@@ -165,7 +133,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
                 type="text"
                 className="form-control"
                 value={email}
-                onChange={handleChangeEmail}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -185,7 +153,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
                 type="text"
                 className="form-control"
                 value={businessName}
-                onChange={handleChangeBusinessName}
+                onChange={(e) => setBusinessName(e.target.value)}
               />
             </div>
 
@@ -195,7 +163,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
                 type="text"
                 className="form-control"
                 value={phoneNumber}
-                onChange={handleChangePhone}
+                onChange={(e) => setPhoneNumber(e.target.value)}
               />
             </div>
 
@@ -205,7 +173,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
                 type="text"
                 className="form-control"
                 value={address}
-                onChange={handleChangeAddress}
+                onChange={(e) => setAddress(e.target.value)}
               />
             </div>
 

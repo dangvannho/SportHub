@@ -19,7 +19,6 @@ function Account({ user, setUser }) {
         <div className="info-personal">
           <a href="#!">{user.name}</a>
           <a href="#!">Thông tin cá nhân</a>
-          <a href="#!">Thông tin cá nhân</a>
         </div>
 
         <button className="btn-logout" onClick={handleLogOut}>

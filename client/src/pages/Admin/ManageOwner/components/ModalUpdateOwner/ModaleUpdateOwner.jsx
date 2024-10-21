@@ -42,30 +42,6 @@ function ModalUpdateOwner({
     }
   }, [personalData]);
 
-  const handleChangeBusinessName = (e) => {
-    const businessNameValue = e.target.value;
-
-    if (!businessNameValue.startsWith(" ")) {
-      setBusinessName(businessNameValue);
-    }
-  };
-
-  const handleChangePhone = (e) => {
-    const phoneValue = e.target.value;
-
-    if (!phoneValue.startsWith(" ")) {
-      setPhoneNumber(phoneValue);
-    }
-  };
-
-  const handleChangeAddress = (e) => {
-    const addressValue = e.target.value;
-
-    if (!addressValue.startsWith(" ")) {
-      setAddress(addressValue);
-    }
-  };
-
   const handleUploadImage = (e) => {
     if (e.target.files[0]) {
       setPreviewImage(URL.createObjectURL(e.target.files[0]));
@@ -171,7 +147,7 @@ function ModalUpdateOwner({
                 type="text"
                 className="form-control"
                 value={businessName}
-                onChange={handleChangeBusinessName}
+                onChange={(e) => setBusinessName(e.target.value)}
               />
             </div>
 
@@ -181,7 +157,7 @@ function ModalUpdateOwner({
                 type="text"
                 className="form-control"
                 value={phoneNumber}
-                onChange={handleChangePhone}
+                onChange={(e) => setPhoneNumber(e.target.value)}
               />
             </div>
 
@@ -191,7 +167,7 @@ function ModalUpdateOwner({
                 type="text"
                 className="form-control"
                 value={address}
-                onChange={handleChangeAddress}
+                onChange={(e) => setAddress(e.target.value)}
               />
             </div>
 

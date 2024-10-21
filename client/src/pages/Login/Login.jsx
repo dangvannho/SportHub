@@ -16,15 +16,6 @@ function Login() {
 
   const navigate = useNavigate();
 
-  // Xử lí không cho nhập khoảng trắng ở kí tự đầu
-  const handleChangeEmail = (e) => {
-    const emailValue = e.target.value;
-
-    if (!emailValue.startsWith(" ")) {
-      setEmail(emailValue);
-    }
-  };
-
   // validateEmail
   const validateEmail = (email) => {
     return String(email)
@@ -36,11 +27,8 @@ function Login() {
 
   // Xử lí đăng nhập
   const handleSubmitLoginUser = async () => {
-    // Xóa khoảng trắng thừa email
-    const trimEmail = email.trim();
-
     // Kiểm tra định dạng email
-    const isValidEmail = validateEmail(trimEmail);
+    const isValidEmail = validateEmail(email);
 
     if (!isValidEmail) {
       toast.error("Invalid email!");
@@ -52,7 +40,7 @@ function Login() {
       return;
     }
 
-    const res = await loginUser(trimEmail, password);
+    const res = await loginUser(email, password);
     if (res.EC === 1) {
       localStorage.clear();
 
@@ -91,7 +79,7 @@ function Login() {
               placeholder="example@gmail.com"
               value={email}
               onKeyDown={handleKeyDown}
-              onChange={handleChangeEmail}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
