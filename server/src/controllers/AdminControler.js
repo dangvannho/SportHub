@@ -147,8 +147,8 @@ const deleteOwner = async (req, res) => {
     } catch (error) {
         res.status(500).json({ 
             "EC": 0,
-            "EM": "Something went wrong",
-            message: error.message });
+            "EM": error.message,
+               });
     }
 };
 
@@ -182,32 +182,35 @@ const getUser = async (req, res) => {
             profilePicture = `data:image/png;base64,${user.profile_picture}`;
         }   
         res.status(200).json({
+            "EC": 1,
+            "EM": "Users Found",
             user,
             profilePicture
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ 
+            "EC": 0,
+            "EM":  error.message,
+            });
     }
 };
 
 const addUser = async (req, res) => {
     try {
-        const { name, address, phone_number, email, password, citizen_identification_card, account_status, user_role, verified, verificationToken, isVerified } = req.body;
-        const profile_picture = req.file ? await processImage(req.file.buffer) : null;
+        const { name, email, password, phone_number, account_status, user_role, profile_picture, verificationToken, isVerified } = req.body;
+        const profilePicture = req.file ? await processImage(req.file.buffer) : null;
 
+        // Mã hóa mật khẩu
         const hashedPassword = await hashPassword(password);
 
         const newUser = new User({
             name,
-            address,
-            phone_number,
             email,
-            password: hashedPassword, 
-            profile_picture,
-            citizen_identification_card,
+            password: hashedPassword, // Lưu mật khẩu đã mã hóa
+            phone_number,
             account_status,
             user_role,
-            verified,
+            profile_picture: profilePicture,
             verificationToken,
             isVerified
         });
@@ -230,7 +233,7 @@ const addUser = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, address, phone_number, password, citizen_identification_card, account_status, user_role, verified, verificationToken, isVerified } = req.body;
+        const { name, email, password, phone_number, account_status, user_role, profile_picture, verificationToken, isVerified } = req.body;
 
         // Lấy thông tin người dùng hiện tại
         const user = await User.findById(id);
@@ -239,7 +242,7 @@ const updateUser = async (req, res) => {
         }
 
         // Sử dụng hàm getProfilePicture để xử lý ảnh hồ sơ
-        const profile_picture = await getProfilePicture(req, user.profile_picture);
+        const profilePicture = await getProfilePicture(req, user.profile_picture);
 
         // Mã hóa mật khẩu nếu có thay đổi, nếu không giữ mật khẩu cũ
         let hashedPassword = password ? await hashPassword(password) : user.password;
@@ -247,14 +250,12 @@ const updateUser = async (req, res) => {
         // Tạo đối tượng updateData chứa các trường cần cập nhật
         let updateData = {
             name,
-            address,
+            email,
             phone_number,
             password: hashedPassword, // Lưu mật khẩu đã mã hóa hoặc giữ mật khẩu cũ
-            profile_picture,          // Giữ hình ảnh cũ nếu không thay đổi
-            citizen_identification_card,
+            profile_picture: profilePicture, // Giữ hình ảnh cũ nếu không thay đổi
             account_status,
             user_role,
-            verified,
             verificationToken,
             isVerified
         };
@@ -264,6 +265,7 @@ const updateUser = async (req, res) => {
             updateData,
             { new: true }
         );
+
 
         res.status(200).json({
             "EC": 1,
