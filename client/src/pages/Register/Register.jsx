@@ -7,37 +7,77 @@ import routeConfig from "~/config/routeConfig";
 import registerUser from "~/services/Auth/registerUser";
 import "./Register.scss";
 
-
 function Register() {
   const [hidePassword, setHidePassword] = useState(true);
-  const [typePassword, setTypePassword] = useState("password"); 
+  const [typePassword, setTypePassword] = useState("password");
 
   const [hideConfirmPassword, setHideConfirmPassword] = useState(true);
   const [typeConfirmPassword, setTypeConfirmPassword] = useState("password");
 
-
-  const [name, setName] = useState("") 
-  const [email, setEmail] = useState("")
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigate = useNavigate();
 
-    // validateEmail
-    const validateEmail = (email) => {
-      return String(email)
-        .toLowerCase()
-        .match(
-          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-        );
-    }; 
+  // Xử lí không cho nhập khoảng trắng ở kí tự đầu
+  const handleChangeName = (e) => {
+    const nameValue = e.target.value;
 
-    const handleRegisterUser = async () =>{
-      const isValidEmail = validateEmail(email);
+    if (!nameValue.startsWith(" ")) {
+      setName(nameValue);
+    }
+  };
 
+  const handleChangeEmail = (e) => {
+    const emailValue = e.target.value;
+
+    if (!emailValue.startsWith(" ")) {
+      setEmail(emailValue);
+    }
+  };
+
+  const handleChangePhone = (e) => {
+    const phoneValue = e.target.value;
+
+    if (!phoneValue.startsWith(" ")) {
+      setPhoneNumber(phoneValue);
+    }
+  };
+
+  // validateEmail
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
+  const handleRegisterUser = async () => {
+    const trimName = name.trim();
+    const trimEmail = email.trim();
+    const trimPhoneNumber = phoneNumber.trim();
+
+    if (!trimName || /\d/.test(trimName)) {
+      toast.error("Invalid name!");
+      return;
+    }
+
+    const isValidEmail = validateEmail(trimEmail);
     if (!isValidEmail) {
       toast.error("Invalid email!");
+      return;
+    }
+
+    if (
+      trimPhoneNumber.length !== 10 ||
+      /\s/.test(trimPhoneNumber) ||
+      /[a-zA-Z]/.test(trimPhoneNumber)
+    ) {
+      toast.error("Invalid phone number!");
       return;
     }
 
@@ -51,13 +91,21 @@ function Register() {
       return;
     }
 
-    // call api 
-    const data = await registerUser(name,email, phoneNumber, password, confirmPassword)
-
-    toast.success(data.message) 
-    navigate(routeConfig.login)
-
+    // call api
+    const res = await registerUser(
+      trimName,
+      trimEmail,
+      trimPhoneNumber,
+      password,
+      confirmPassword
+    );
+    if (res.EC === 1) {
+      toast.success(res.EM);
+      navigate(routeConfig.login);
+    } else {
+      toast.error(res.EM);
     }
+  };
 
   return (
     <div className="register-wrapper">
@@ -66,28 +114,47 @@ function Register() {
         <h2 className="title-register">Đăng kí</h2>
         <div className="form-register">
           <div className="form-group">
-
             {/* name */}
             <label htmlFor="">Tên</label>
-            <input type="text" placeholder="nguyen van a" value={name} onChange={(e) => setName(e.target.value)}/>
+            <input
+              type="text"
+              placeholder="nguyen van a"
+              value={name}
+              onChange={handleChangeName}
+            />
           </div>
 
           {/* E-mail */}
           <div className="form-group">
             <label htmlFor="">E-mail</label>
-            <input type="Email" placeholder="example@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)}/>
+            <input
+              type="text"
+              placeholder="example@gmail.com"
+              value={email}
+              onChange={handleChangeEmail}
+            />
           </div>
 
           {/* Phone number */}
           <div className="form-group">
             <label htmlFor="">Số điện thoại</label>
-            <input type="text" placeholder="090531361" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}/>
+            <input
+              type="text"
+              placeholder="090531361"
+              value={phoneNumber}
+              onChange={handleChangePhone}
+            />
           </div>
 
           {/* Password */}
           <div className="form-group">
             <label htmlFor="">Mật khẩu</label>
-            <input type={typePassword} placeholder="password123" value={password} onChange={(e) => setPassword(e.target.value)}/>
+            <input
+              type={typePassword}
+              placeholder="password123"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
             {hidePassword && (
               <div
                 className="eye"
@@ -112,10 +179,15 @@ function Register() {
             )}
           </div>
 
-            {/* Confirm password */}
+          {/* Confirm password */}
           <div className="form-group">
             <label htmlFor="">Nhập lại mật khẩu</label>
-            <input type={typeConfirmPassword} placeholder="password123" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
+            <input
+              type={typeConfirmPassword}
+              placeholder="password123"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
             {hideConfirmPassword && (
               <div
                 className="eye"
@@ -140,7 +212,9 @@ function Register() {
             )}
           </div>
 
-          <button className="submit-register" onClick={handleRegisterUser}>Đăng kí</button>
+          <button className="submit-register" onClick={handleRegisterUser}>
+            Đăng kí
+          </button>
 
           <p className="sign-in">
             Bạn đã có tài khoản?

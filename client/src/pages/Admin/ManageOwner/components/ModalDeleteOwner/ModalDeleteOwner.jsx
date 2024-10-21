@@ -17,17 +17,21 @@ function ModalDeleteOwner({
 
   const handleSubmitDeleteOwner = async () => {
     const res = await deleteOwner(personalData._id);
-    toast.success(res.message);
-    handleClose();
-    // Fetch lại danh sách người dùng
-    const data = await getAllOnwer(currentPage, itemsPerPage);
+    if (res.EC === 1) {
+      toast.success(res.EM);
+      handleClose();
+      // Fetch lại danh sách người dùng
+      const data = await getAllOnwer(currentPage, itemsPerPage);
 
-    // Kiểm tra nếu không còn người dùng nào
-    if (data.results.length === 0 && currentPage > 1) {
-      setCurrentPage(currentPage - 1); // Giảm trang
+      // Kiểm tra nếu không còn người dùng nào
+      if (data.results.length === 0 && currentPage > 1) {
+        setCurrentPage(currentPage - 1); // Giảm trang
+      } else {
+        // Nếu như còn người dùng thì gọi api của trang đó
+        fetchAllOwner();
+      }
     } else {
-      // Nếu như còn người dùng thì gọi api của trang đó
-      fetchAllOwner();
+      toast.error(res.EM);
     }
   };
 

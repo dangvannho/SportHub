@@ -9,7 +9,7 @@ const registerUser = async (req, res) => {
     const { name, email, password, confirmPassword, phone_number } = req.body;
 
     if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
+      return res.status(400).json({ EC: 0, EM: "Passwords do not match" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -23,9 +23,9 @@ const registerUser = async (req, res) => {
     });
 
     const user = await newUser.save();
-    res.status(201).json({ message: "User registered successfully", user });
+    res.status(201).json({ EC: 1, EM: "User registered successfully", user });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ EC: 0, EM: "Email or phone number already exists" });
   }
 };
 //accessToken
@@ -69,7 +69,7 @@ const loginUser = async (req, res) => {
     }
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ EC: 0, EM: "Incorrect email or password" });
     }
 
     const validPassword = await bcrypt.compare(
@@ -87,9 +87,17 @@ const loginUser = async (req, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
       const { password, ...other } = user._doc;
-      res.status(200).json({ ...other, accessToken });
+      res.status(200).json({
+        ...other,
+        accessToken,
+        EC: 1,
+        EM: "Login success",
+      });
     } else {
-      res.status(400).json({ message: "Invalid credentials" });
+      res.status(400).json({
+        EC: 0,
+        EM: "Incorrect email or password",
+      });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -178,7 +186,10 @@ const loginAdmin = async (req, res) => {
     const { email, password } = req.body;
 
     if (email !== DEFAULT_ADMIN_EMAIL || password !== DEFAULT_ADMIN_PASSWORD) {
-      return res.status(401).json({ message: "Invalid admin credentials" });
+      return res.status(401).json({
+        EC: 0,
+        EM: "Incorrect email or password",
+      });
     }
 
     const adminUser = {
@@ -198,6 +209,8 @@ const loginAdmin = async (req, res) => {
     // });
 
     res.status(200).json({
+      EC: 1,
+      EM: "Login success",
       accessToken,
     });
   } catch (err) {

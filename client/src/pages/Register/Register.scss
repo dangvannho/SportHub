@@ -18,7 +18,7 @@
 
   .register-container {
     width: 500px;
-    padding: 0 42px 10px;
+    padding: 0 42px;
     background-color: #fff;
     border-radius: 20px;
     z-index: 2;
@@ -65,7 +65,7 @@
     }
 
     .sign-in {
-      margin-top: 34px;
+      margin-top: 12px;
       color: #718096;
       font-size: 15px;
       font-style: normal;
@@ -87,7 +87,7 @@
   .back-home {
     text-align: center;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 10px;
   }
 }
 

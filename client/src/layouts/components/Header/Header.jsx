@@ -1,10 +1,23 @@
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+
+import Account from "~/components/Account/Account";
 import routeConfig from "~/config/routeConfig";
 import "./Header.scss";
 
 function Header() {
+  const [user, setUser] = useState();
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (storedUser) {
+      setUser(storedUser);
+    }
+  }, []);
 
   return (
     <div className="header">
@@ -38,21 +51,24 @@ function Header() {
             Liên hệ
           </NavLink>
         </nav>
-
-        <div className="group-btn">
-          <button
-            className="btn btn-dark"
-            onClick={() => navigate(routeConfig.login)}
-          >
-            Đăng nhập
-          </button>
-          <button
-            className="btn btn-light"
-            onClick={() => navigate(routeConfig.register)}
-          >
-            Đăng kí
-          </button>
-        </div>
+        {user ? (
+          <Account user={user} setUser={setUser} />
+        ) : (
+          <div className="group-btn">
+            <button
+              className="btn btn-dark"
+              onClick={() => navigate(routeConfig.login)}
+            >
+              Đăng nhập
+            </button>
+            <button
+              className="btn btn-light"
+              onClick={() => navigate(routeConfig.register)}
+            >
+              Đăng kí
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

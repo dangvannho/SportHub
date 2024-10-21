@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import loginAdmin from "~/services/Auth/loginAdmin";
 import routeConfig from "~/config/routeConfig";
 import "./LoginAdmin.scss";
@@ -10,10 +12,56 @@ function LoginAdmin() {
 
   const navigate = useNavigate();
 
+  const handleChangeEmail = (e) => {
+    const emailValue = e.target.value;
+
+    if (!emailValue.startsWith(" ")) {
+      setEmail(emailValue);
+    }
+  };
+
+  // validateEmail
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   const handleSubmitLoginAdmin = async () => {
-    const data = await loginAdmin(email, password);
-    localStorage.setItem("accessToken", data.accessToken);
-    navigate(routeConfig.manageCustomer);
+    const trimEmail = email.trim();
+
+    // Kiểm tra định dạng email
+    const isValidEmail = validateEmail(trimEmail);
+
+    if (!isValidEmail) {
+      toast.error("Invalid email!");
+      return;
+    }
+
+    if (!password) {
+      toast.error("Invalid password!");
+      return;
+    }
+
+    const res = await loginAdmin(trimEmail, password);
+
+    if (res.EC === 1) {
+      localStorage.clear();
+
+      localStorage.setItem("accessToken", res.accessToken);
+      navigate(routeConfig.manageCustomer);
+    } else {
+      toast.error(res.EM);
+    }
+  };
+
+  // xử lý sự kiện Enter
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSubmitLoginAdmin();
+    }
   };
 
   return (
@@ -27,7 +75,8 @@ function LoginAdmin() {
               type="text"
               placeholder="Enter Email..."
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onChange={handleChangeEmail}
             />
           </div>
 
@@ -36,6 +85,7 @@ function LoginAdmin() {
               type="text"
               placeholder="Enter Password..."
               value={password}
+              onKeyDown={handleKeyDown}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>

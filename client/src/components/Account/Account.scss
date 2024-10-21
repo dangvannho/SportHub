@@ -1,0 +1,55 @@
+.account-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 25px;
+  height: 25px;
+  background-color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: inherit;
+  }
+
+  .info-wrapper {
+    position: absolute;
+    top: 40px;
+    left: -90px;
+    width: 200px;
+    height: 0;
+    padding: 0 8px;
+    background-color: white;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: all 0.3s;
+
+    &.active {
+      height: 177px;
+    }
+  }
+}
+
+.info-wrapper {
+  .info-personal {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid #ccc;
+
+    a {
+      padding: 10px 0;
+      text-decoration: none;
+      color: black;
+    }
+  }
+
+  .btn-logout {
+    padding: 10px 0;
+    background-color: white;
+  }
+}
