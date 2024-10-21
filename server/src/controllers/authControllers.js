@@ -177,8 +177,8 @@ const loginOwner = async (req, res) => {
   }
 };
 //login admin
-const DEFAULT_ADMIN_EMAIL = "admin@example.com";
-const DEFAULT_ADMIN_PASSWORD = "adminPassword123";
+const DEFAULT_ADMIN_EMAIL = "admin@gmail.com";
+const DEFAULT_ADMIN_PASSWORD = "admin123";
 
 // Admin login with default credentials
 const loginAdmin = async (req, res) => {
