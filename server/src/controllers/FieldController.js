@@ -39,6 +39,7 @@ const getAllFields = async (req, res) => {
           total: { $sum: 1 }, // Đếm tổng số sân của mỗi loại
         },
       },
+      { $sort: { _id: 1 } }, // Sắp xếp theo type (hoặc _id trong MongoDB)
     ]);
 
     res.status(200).json({ paginatedFields, totalFieldsByType });
