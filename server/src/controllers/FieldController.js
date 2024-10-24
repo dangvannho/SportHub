@@ -47,26 +47,27 @@ const getAllFields = async (req, res) => {
   }
 };
 
-// Function to get a sport field by Id
 const getFieldById = async (req, res) => {
   try {
     const fieldId = req.params.id;
 
-    const field = await Field.findById(fieldId).populate("owner_id");
+    if (fieldId) {
+        
+      const field = await Field.findById(fieldId).populate({
+        path: 'owner_id', 
+        select: 'business_name address phone_number email', 
+      });
 
-    if (!field) {
-      return res.status(404).json({ message: "Field not found" });
+      if (!field) {
+        return res.status(404).json({ message: "Field not found" });
+      }
+
+      return res.status(200).json(field);
     }
 
-    if (!field.availability_status) {
-      return res
-        .status(403)
-        .json({ message: "Field is locked or unavailable" });
-    }
-
-    res.status(200).json(field);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    res.status(400).json({ message: "Invalid field ID" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 

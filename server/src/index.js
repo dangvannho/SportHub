@@ -15,6 +15,8 @@ const imageRoutes = require('./routes/ImgRoutes')
 
 const authRoutes = require('./routes/AuthRoutes');
 
+const fieldAvailabilityRoutes = require('./routes/FieldAvailabilityRoutes');
+
 
 // config env
 dotenv.config();
@@ -35,9 +37,13 @@ connectDB();
 app.use("/api", require("./routes/FieldRoutes"));
 
 app.use('/api/img', imageRoutes);
+
 app.use('/api/admin', adminRoutes)
 
 app.use('/api/tournaments', tournamentRoutes)
+
+app.use('/api', fieldAvailabilityRoutes);
+
 app.get("/", (req, res) => {
   res.send("Project");
 });
