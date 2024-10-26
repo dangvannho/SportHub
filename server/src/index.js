@@ -6,9 +6,10 @@ const app = express();
 const morgan = require("morgan");
 const connectDB = require("./config/configDatabase");
 
-
+const fieldRoutes = require("./routes/FieldRoutes")
 
 const tournamentRoutes = require('./routes/TournamentRoutes')
+
 const adminRoutes = require('./routes/AdminRoutes')
 
 const imageRoutes = require('./routes/ImgRoutes')
@@ -34,7 +35,7 @@ connectDB();
 
 // Routes
 
-app.use("/api", require("./routes/FieldRoutes"));
+app.use("/api/fields", fieldRoutes);
 
 app.use('/api/img', imageRoutes);
 
@@ -42,7 +43,7 @@ app.use('/api/admin', adminRoutes)
 
 app.use('/api/tournaments', tournamentRoutes)
 
-app.use('/api', fieldAvailabilityRoutes);
+app.use('/api/fieldAvailability', fieldAvailabilityRoutes);
 
 app.get("/", (req, res) => {
   res.send("Project");
