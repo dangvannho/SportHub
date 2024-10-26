@@ -1,8 +1,6 @@
 const Field = require("../models/Field");
 const Pagination = require("../utils/Pagination");
 
-
-
 // Function to get all sport fields with pagination
 const getAllFields = async (req, res) => {
   try {
@@ -53,10 +51,9 @@ const getFieldById = async (req, res) => {
     const fieldId = req.params.id;
 
     if (fieldId) {
-        
       const field = await Field.findById(fieldId).populate({
-        path: 'owner_id', 
-        select: 'business_name address phone_number email', 
+        path: "owner_id",
+        select: "business_name address phone_number email",
       });
 
       if (!field) {
@@ -78,14 +75,14 @@ const searchFields = async (req, res) => {
     const query = req.query.query;
 
     // Kiểm tra nếu query không phải là chuỗi hoặc không được cung cấp
-    if (!query || typeof query !== 'string') {
+    if (!query || typeof query !== "string") {
       return res.status(400).json({ error: "Query must be a valid string" });
     }
 
     const fields = await Field.find({
       $or: [
-        { name: { $regex: query, $options: "i" } },  // Tìm theo tên
-        { location: { $regex: query, $options: "i" } },  // Tìm theo địa chỉ
+        { name: { $regex: query, $options: "i" } }, // Tìm theo tên
+        { location: { $regex: query, $options: "i" } }, // Tìm theo địa chỉ
       ],
     });
 
