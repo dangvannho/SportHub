@@ -117,7 +117,7 @@ const registerOwner = async (req, res) => {
     } = req.body;
 
     if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
+      return res.status(400).json({ EC: 0, EM: "Passwords do not match" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -132,9 +132,9 @@ const registerOwner = async (req, res) => {
     });
 
     const owner = await newOwner.save();
-    res.status(201).json({ message: "Owner registered successfully", owner });
+    res.status(201).json({ EC: 1, EM: "Owner registered successfully", owner });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ EC: 0, EM: "Email or phone number already exists" });
   }
 };
 
