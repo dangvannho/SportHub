@@ -53,10 +53,9 @@ const getFieldById = async (req, res) => {
     const fieldId = req.params.id;
 
     if (fieldId) {
-        
       const field = await Field.findById(fieldId).populate({
-        path: 'owner_id', 
-        select: 'business_name address phone_number email', 
+        path: "owner_id",
+        select: "business_name address phone_number email",
       });
 
       if (!field) {
@@ -72,23 +71,26 @@ const getFieldById = async (req, res) => {
   }
 };
 
-//Function tìm kiếm sân theo tên với tính năng autocomplete
-const searchFieldByName = async (req, res) => {
+// Tìm kiếm sân theo tên hoặc địa chỉ
+const searchFields = async (req, res) => {
   try {
-    const { name } = req.params.name;
-    // Nếu không có từ khóa tìm kiếm, trả về danh sách trống
-    if (!name) {
-      return res.json([]);
+    const query = req.query.query;
+
+    // Kiểm tra nếu query không phải là chuỗi hoặc không được cung cấp
+    if (!query || typeof query !== "string") {
+      return res.status(400).json({ error: "Query must be a valid string" });
     }
 
-    // Sử dụng regex để tìm kiếm tên sân chứa chuỗi người dùng nhập vào, không phân biệt hoa thường
-    const fields = await Field.find({ name: { $regex: name, $options: "i" } });
+    const fields = await Field.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } }, // Tìm theo tên
+        { location: { $regex: query, $options: "i" } }, // Tìm theo địa chỉ
+      ],
+    });
 
-    // Trả về danh sách sân tìm được
-    return res.status(200).json(fields);
-  } catch (err) {
-    console.error("Error in searchFieldByName:", err.message);
-    res.status(500).json({ message: "Server Error" });
+    res.status(200).json(fields);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -207,8 +209,9 @@ const deleteField = async (req, res) => {
 module.exports = {
   getAllFields,
   getFieldById,
-  searchFieldByName,
+  searchFields,
   addField,
   updateField,
   deleteField
+
 };

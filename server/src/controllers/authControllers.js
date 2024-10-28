@@ -56,53 +56,6 @@ const generateRefreshToken = (user) => {
     }
   );
 };
-// User login
-const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const isEmail = /\S+@\S+\.\S+/.test(email);
-
-    let user;
-    if (isEmail) {
-      user = await User.findOne({ email: email });
-    }
-
-    if (!user) {
-      return res.status(404).json({ EC: 0, EM: "Incorrect email or password" });
-    }
-
-    const validPassword = await bcrypt.compare(
-      req.body.password,
-      user.password
-    );
-    if (user && validPassword) {
-      const accessToken = generateAccessToken(user);
-      const refreshToken = generateRefreshToken(user);
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: false,
-        path: "/",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-      const { password, ...other } = user._doc;
-      res.status(200).json({
-        ...other,
-        accessToken,
-        EC: 1,
-        EM: "Login success",
-      });
-    } else {
-      res.status(400).json({
-        EC: 0,
-        EM: "Incorrect email or password",
-      });
-    }
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 
 // Owner registration
 const registerOwner = async (req, res) => {
@@ -117,7 +70,7 @@ const registerOwner = async (req, res) => {
     } = req.body;
 
     if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
+      return res.status(400).json({ EC: 0, EM: "Passwords do not match" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -132,46 +85,86 @@ const registerOwner = async (req, res) => {
     });
 
     const owner = await newOwner.save();
-    res.status(201).json({ message: "Owner registered successfully", owner });
+    res.status(201).json({ EC: 1, EM: "Owner registered successfully", owner });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ EC: 0, EM: "Email or phone number already exists" });
   }
 };
 
-// Owner login
-const loginOwner = async (req, res) => {
+
+const login = async (req, res) => {
   try {
-    const { login, password } = req.body;
+    const { email, password } = req.body;
+    const isEmail = /\S+@\S+\.\S+/.test(email);
 
-    const isEmail = /\S+@\S+\.\S+/.test(login);
-
-    let owner;
     if (isEmail) {
-      owner = await Owner.findOne({ email: login });
-    } else {
-      owner = await Owner.findOne({ phone_number: login });
+      const user = await User.findOne({ email: email });
+      if (user) {
+        // Đăng nhập user
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (validPassword) {
+          const accessToken = generateAccessToken(user);
+          const refreshToken = generateRefreshToken(user);
+          res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            path: "/",
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+          });
+          const { password, ...other } = user._doc;
+          return res.status(200).json({
+            ...other,
+            accessToken,
+            EC: 1,
+            EM: "User login success",
+          });
+        }
+      }
+
+      const owner = await Owner.findOne({ email: email });
+      if (owner) {
+        // Đăng nhập owner
+        const validPassword = await bcrypt.compare(password, owner.password);
+        if (validPassword) {
+          const accessToken = generateAccessToken(owner);
+          const refreshToken = generateRefreshToken(owner);
+          res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: false,
+            path: "/",
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+          });
+          const { password, ...other } = owner._doc;
+          return res.status(200).json({
+            ...other,
+            accessToken,
+            EC: 1,
+            EM: "Owner login success",
+          });
+        }
+      }
     }
 
-    if (!owner) {
-      return res.status(404).json("Owner not found");
-    }
-
-    const validPassword = await bcrypt.compare(password, owner.password);
-    if (owner && validPassword) {
-      const accessToken = generateAccessToken(owner);
-      const refreshToken = generateRefreshToken(owner);
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: false,
-        path: "/",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+    // Nếu không tìm thấy user hoặc owner, thử đăng nhập admin
+    if (email === DEFAULT_ADMIN_EMAIL && password === DEFAULT_ADMIN_PASSWORD) {
+      const adminUser = {
+        name: "Admin",
+        user_role: "admin",
+      };
+      const accessToken = generateAccessToken(adminUser);
+      return res.status(200).json({
+        EC: 1,
+        EM: "Admin login success",
+        accessToken,
       });
-      const { password, ...other } = owner._doc;
-      res.status(200).json({ ...other, accessToken, refreshToken });
-    } else {
-      res.status(400).json("Invalid credentials");
     }
+
+    return res.status(400).json({
+      EC: 0,
+      EM: "Incorrect email or password",
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -180,43 +173,7 @@ const loginOwner = async (req, res) => {
 const DEFAULT_ADMIN_EMAIL = "admin@gmail.com";
 const DEFAULT_ADMIN_PASSWORD = "admin123";
 
-// Admin login with default credentials
-const loginAdmin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
 
-    if (email !== DEFAULT_ADMIN_EMAIL || password !== DEFAULT_ADMIN_PASSWORD) {
-      return res.status(401).json({
-        EC: 0,
-        EM: "Incorrect email or password",
-      });
-    }
-
-    const adminUser = {
-      name: "Admin",
-      user_role: "admin",
-    };
-
-    const accessToken = generateAccessToken(adminUser);
-    const refreshToken = generateRefreshToken(adminUser);
-
-    // res.cookie("refreshToken", refreshToken, {
-    //     httpOnly: true,
-    //     secure: process.env.NODE_ENV === 'production',
-    //     path: "/",
-    //     sameSite: "strict",
-    //     maxAge: 7 * 24 * 60 * 60 * 1000
-    // });
-
-    res.status(200).json({
-      EC: 1,
-      EM: "Login success",
-      accessToken,
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 
 const refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
@@ -242,9 +199,9 @@ const refreshToken = async (req, res) => {
 
 module.exports = {
   registerUser,
-  loginUser,
+
   registerOwner,
-  loginOwner,
+
   refreshToken,
-  loginAdmin,
+  login,
 };
