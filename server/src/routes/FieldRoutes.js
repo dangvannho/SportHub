@@ -17,10 +17,10 @@ router.get('/:id', getFieldById);
 // Route tìm kiếm sân theo tên với tính năng autocomplete
 router.get('/fields/search/:name', ); // khong co trong field controller
 
-router.post('/fields', upload.single('images'), addField);
+router.post('/', middlewareController.verifyToken, upload.single('images'), addField);
 
-router.put('/fields/:id',upload.single('images'),updateField)
+router.put('/:id', middlewareController.verifyToken, upload.single('images'), updateField);
 
-router.delete('/fields/:id',deleteField)
+router.delete('/:id', middlewareController.verifyToken, deleteField);
 
 module.exports = router;

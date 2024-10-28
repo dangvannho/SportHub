@@ -1,8 +1,8 @@
 const Field = require("../models/Field");
 const Pagination = require("../utils/Pagination");
 const {processImage , getProfilePicture} = require('../utils/ProcessIMG')
-
-
+const jwt = require("jsonwebtoken");
+const Category = require("../models/Category");
 // Function to get all sport fields with pagination
 const getAllFields = async (req, res) => {
   try {
@@ -99,8 +99,18 @@ const searchFields = async (req, res) => {
 
 const addField = async (req, res) => {
   try {
+    // Lấy token từ header
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ message: "You are not authenticated" });
+    }
+
+    const accessToken = token.split(" ")[1];
+    const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+    const owner_id = decoded.id; // Giả sử token chứa thông tin owner_id
+
     const {
-      owner_id,
+      category_id,
       name,
       location,
       type,
@@ -108,10 +118,25 @@ const addField = async (req, res) => {
       availability_status,
     } = req.body;
 
+   
+    // Kiểm tra xem category_id có được cung cấp hay không
+    if (!category_id) {
+      return res.status(400).json({ EC: 0, EM: "category_id is required" });
+    }
+
+    // Tìm Category dựa trên category_id
+    const category = await Category.findById(category_id);
+    if (!category) {
+      return res.status(400).json({ EC: 0, EM: "Category not found" });
+    }
+
+   
     // Xử lý ảnh nếu có
     const images = req.file ? await processImage(req.file.buffer):null ;
 
     const newField = new Field({
+      category_id,
+      category_name: category.name,
       owner_id,
       name,
       location,
@@ -123,10 +148,14 @@ const addField = async (req, res) => {
 
     await newField.save();
 
+    // Trả về phản hồi với category_name
     res.status(200).json({
       EC: 1,
       EM: "Field Created",
       newField,
+       category_name: category.name  
+         // Thêm category_name vào phản hồi
+      
     });
   } catch (error) {
     res.status(500).json({
@@ -136,17 +165,28 @@ const addField = async (req, res) => {
   }
 };
 
+
 const updateField = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      owner_id,
+      category_id,
       name,
       location,
       type,
       description,
       availability_status,
     } = req.body;
+
+    // Lấy token từ header
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ message: "You are not authenticated" });
+    }
+
+    const accessToken = token.split(" ")[1];
+    const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+    const owner_id = decoded.id; // Giả sử token chứa thông tin owner_id
 
     // Lấy thông tin trường hiện tại
     const field = await Field.findById(id);
@@ -155,17 +195,18 @@ const updateField = async (req, res) => {
     }
 
     // Xử lý ảnh nếu có
-    const images = await getProfilePicture(req,field.images)
+    const images = await getProfilePicture(req, field.images);
 
     // Tạo đối tượng updateData chứa các trường cần cập nhật
     let updateData = {
       owner_id,
+      category_id,
       name,
       location,
       type,
       description,
       availability_status,
-      images, 
+      images,
     };
 
     const updatedField = await Field.findByIdAndUpdate(id, updateData, {
@@ -175,7 +216,7 @@ const updateField = async (req, res) => {
     res.status(200).json({
       EC: 1,
       EM: "Field Updated",
-      data: updatedField,
+       updatedField,
     });
   } catch (error) {
     res.status(500).json({
@@ -189,10 +230,29 @@ const deleteField = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const field = await Field.findByIdAndDelete(id);
+    // Lấy token từ header
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ message: "You are not authenticated" });
+    }
+
+    const accessToken = token.split(" ")[1];
+    const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+    const owner_id = decoded.id; // Giả sử token chứa thông tin owner_id
+
+    // Tìm field theo id
+    const field = await Field.findById(id);
     if (!field) {
       return res.status(404).json({ message: "Field not found" });
     }
+
+    // Kiểm tra xem owner_id của field có khớp với owner_id từ token hay không
+    if (field.owner_id.toString() !== owner_id) {
+      return res.status(403).json({ message: "You are not authorized to delete this field" });
+    }
+
+    // Xóa field
+    await Field.findByIdAndDelete(id);
 
     res.status(200).json({
       EC: 1,
