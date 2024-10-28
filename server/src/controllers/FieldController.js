@@ -76,19 +76,28 @@ const searchFields = async (req, res) => {
   try {
     const query = req.query.query;
 
+    const page =
+      req.query.page && req.query.page > 0 ? parseInt(req.query.page) : 1;
+    const limit =
+      req.query.limit && req.query.limit > 0 ? parseInt(req.query.limit) : 9;
+
     // Kiểm tra nếu query không phải là chuỗi hoặc không được cung cấp
     if (!query || typeof query !== "string") {
       return res.status(400).json({ error: "Query must be a valid string" });
     }
 
-    const fields = await Field.find({
+    const fields =  Field.find({
       $or: [
-        { name: { $regex: query, $options: "i" } }, // Tìm theo tên
-        { location: { $regex: query, $options: "i" } }, // Tìm theo địa chỉ
+        { name: { $regex: query, $options: "i" } }, 
+        { location: { $regex: query, $options: "i" } }, 
       ],
     });
 
-    res.status(200).json(fields);
+    // Khởi tạo phân trang
+    const pagination = new Pagination(fields, page, limit);
+    const paginatedResults = await pagination.paginate();
+
+    res.status(200).json(paginatedResults);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
