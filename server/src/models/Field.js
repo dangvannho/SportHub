@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Owner = require('../models/Owner');
-const Owner = require('../models/Category');
+
 const Category = require('../models/Category');
 
 
