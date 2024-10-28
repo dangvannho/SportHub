@@ -147,31 +147,28 @@ const updateOwner = async (req, res) => {
 };
 const deleteOwner = async (req, res) => {
   try {
-    const { id } = req.params;
+      const { id } = req.params;
 
-    const owner = await Owner.findByIdAndDelete(id);
-    if (!owner) {
-      return res.status(404).json({
-        EC: 0,
-        EM: "Owner not found"
+      // Xoá owner
+      const owner = await Owner.findByIdAndDelete(id);
+      if (!owner) {
+          return res.status(404).json({ 
+              "EC": 0,
+              "EM": "Owner not found",
+          });
+      }
+
+      res.status(200).json({ 
+          "EC": 1,
+          "EM": "Owner and their fields deleted successfully",
       });
-    }
-
-    // Xóa tất cả Field của Owner này
-    await Field.deleteMany({ owner_id: id });
-
-    res.status(200).json({
-      EC: 1,
-      EM: "Owner and their fields deleted"
-    });
   } catch (error) {
-    res.status(500).json({
-      EC: 0,
-      EM: error.message
-    });
+      res.status(500).json({ 
+          "EC": 0,
+          "EM": error.message,
+      });
   }
 };
-
 
 
 // User Controllers
