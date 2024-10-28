@@ -1,7 +1,7 @@
 const Field = require("../models/Field");
 const Pagination = require("../utils/Pagination");
 const {processImage , getProfilePicture} = require('../utils/ProcessIMG')
-const jwt = require("jsonwebtoken");
+const { authenticateUser } = require("../utils/checkOwner");
 const Category = require("../models/Category");
 // Function to get all sport fields with pagination
 const getAllFields = async (req, res) => {
@@ -99,15 +99,8 @@ const searchFields = async (req, res) => {
 
 const addField = async (req, res) => {
   try {
-    // Lấy token từ header
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).json({ message: "You are not authenticated" });
-    }
-
-    const accessToken = token.split(" ")[1];
-    const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
-    const owner_id = decoded.id; // Giả sử token chứa thông tin owner_id
+    const owner_id = authenticateUser(req, res);
+    if (!owner_id) return; // Nếu xác thực thất bại, hàm authenticateUser sẽ trả về phản hồi
 
     const {
       category_id,
@@ -118,7 +111,6 @@ const addField = async (req, res) => {
       availability_status,
     } = req.body;
 
-   
     // Kiểm tra xem category_id có được cung cấp hay không
     if (!category_id) {
       return res.status(400).json({ EC: 0, EM: "category_id is required" });
@@ -130,13 +122,12 @@ const addField = async (req, res) => {
       return res.status(400).json({ EC: 0, EM: "Category not found" });
     }
 
-   
     // Xử lý ảnh nếu có
-    const images = req.file ? await processImage(req.file.buffer):null ;
+    const images = req.file ? await processImage(req.file.buffer) : null;
 
     const newField = new Field({
       category_id,
-      category_name: category.name,
+      category_name: category.name, // Thêm category_name vào tài liệu Field
       owner_id,
       name,
       location,
@@ -153,9 +144,6 @@ const addField = async (req, res) => {
       EC: 1,
       EM: "Field Created",
       newField,
-       category_name: category.name  
-         // Thêm category_name vào phản hồi
-      
     });
   } catch (error) {
     res.status(500).json({
@@ -178,15 +166,9 @@ const updateField = async (req, res) => {
       availability_status,
     } = req.body;
 
-    // Lấy token từ header
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).json({ message: "You are not authenticated" });
-    }
+    const owner_id = authenticateUser(req, res);
+    if (!owner_id) return; // Nếu xác thực thất bại, hàm authenticateUser sẽ trả về phản hồi
 
-    const accessToken = token.split(" ")[1];
-    const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
-    const owner_id = decoded.id; // Giả sử token chứa thông tin owner_id
 
     // Lấy thông tin trường hiện tại
     const field = await Field.findById(id);
@@ -231,14 +213,8 @@ const deleteField = async (req, res) => {
     const { id } = req.params;
 
     // Lấy token từ header
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).json({ message: "You are not authenticated" });
-    }
-
-    const accessToken = token.split(" ")[1];
-    const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
-    const owner_id = decoded.id; // Giả sử token chứa thông tin owner_id
+     const owner_id = authenticateUser(req, res);
+    if (!owner_id) return;
 
     // Tìm field theo id
     const field = await Field.findById(id);
