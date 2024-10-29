@@ -2,8 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
+import { useContext } from "react";
 
-import loginUser from "~/services/Auth/loginUser";
+import { AppContext } from "~/context/AppContext";
+import login from "~/services/Auth/login";
 import routeConfig from "~/config/routeConfig";
 import "./Login.scss";
 
@@ -13,6 +16,8 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const { setUserData } = useContext(AppContext);
 
   const navigate = useNavigate();
 
@@ -40,19 +45,28 @@ function Login() {
       return;
     }
 
-    const res = await loginUser(email, password);
+    const res = await login(email, password);
     if (res.EC === 1) {
       localStorage.clear();
-
-      const user = {
-        name: res.name,
-        avatar: res.profile_picture || null,
-      };
-
       localStorage.setItem("accessToken", res.accessToken);
-      localStorage.setItem("user", JSON.stringify(user));
 
-      navigate(routeConfig.home);
+      const decodedToken = jwtDecode(res.accessToken);
+
+      if (decodedToken.user_role !== "admin") {
+        const user = {
+          id: res._id,
+          name: res.name || res.business_name,
+          avatar: res.profile_picture || null,
+        };
+        localStorage.setItem("user", JSON.stringify(user));
+        setUserData(user);
+      }
+
+      if (decodedToken.user_role == "admin") {
+        navigate(routeConfig.manageCustomer);
+      } else {
+        navigate(routeConfig.home);
+      }
     } else {
       toast.error(res.EM);
     }

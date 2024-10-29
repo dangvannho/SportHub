@@ -1,7 +1,7 @@
 const Owner = require("../models/Owner");
 const User = require("../models/User");
 const Pagination = require("../utils/Pagination");
-
+const Field = require("../models/Field");
 const { processImage, getProfilePicture } = require("../utils/ProcessIMG");
 const bcrypt = require("bcrypt");
 const { hashPassword } = require("../utils/Password");
@@ -146,25 +146,28 @@ const updateOwner = async (req, res) => {
   }
 };
 const deleteOwner = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const owner = await Owner.findByIdAndDelete(id);
-        if (!owner) {
-            return res.status(404).json({ 
-                "EC": 0,
-                "EM": "Owner not found",
-                });
-        }
-        res.status(200).json({ 
-            "EC": 1,
-            "EM": "Owner Deleted",
-            });
-    } catch (error) {
-        res.status(500).json({ 
-            "EC": 0,
-            "EM": error.message,
-               });
-    }
+  try {
+      const { id } = req.params;
+
+      // Xoá owner
+      const owner = await Owner.findByIdAndDelete(id);
+      if (!owner) {
+          return res.status(404).json({ 
+              "EC": 0,
+              "EM": "Owner not found",
+          });
+      }
+
+      res.status(200).json({ 
+          "EC": 1,
+          "EM": "Owner and their fields deleted successfully",
+      });
+  } catch (error) {
+      res.status(500).json({ 
+          "EC": 0,
+          "EM": error.message,
+      });
+  }
 };
 
 

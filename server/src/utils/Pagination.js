@@ -8,11 +8,13 @@ class Pagination {
 
     async paginate() {
         try {
+            // Áp dụng skip và limit trực tiếp trên query
             const results = await this.query
                 .skip(this.skip)
                 .limit(this.limit);
 
-            const totalDocuments = await this.query.model.countDocuments(this.query.getQuery());
+            // Đếm tổng số tài liệu phù hợp với query
+            const totalDocuments = await this.query.model.countDocuments(this.query._conditions);
 
             return {
                 page: this.page,

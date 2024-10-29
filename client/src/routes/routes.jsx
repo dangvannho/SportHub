@@ -7,8 +7,11 @@ import SportFields from "~/pages/SportFields/SportFields";
 import FieldDetail from "~/pages/FieldDetail/FieldDetail";
 import Login from "~/pages/Login/Login";
 import Register from "~/pages/Register/Register";
+import RegisterUser from "~/pages/RegisterUser/RegisterUser";
+import RegisterOwner from "~/pages/ResgiterOwner/RegisterOwner";
+import EditProfile from "~/pages/EditProfile/EditProfile";
 
-import LoginAdmin from "~/pages/Admin/LoginAdmin/LoginAdmin";
+// import LoginAdmin from "~/pages/Admin/LoginAdmin/LoginAdmin";
 import ManageCustomer from "~/pages/Admin/ManageCustomer/ManageCustomer";
 import ManageOwner from "~/pages/Admin/ManageOwner/ManageOwner";
 import ManagePayment from "~/pages/Admin/ManagePayment/ManagePayment";
@@ -21,11 +24,24 @@ const publicRoutes = [
   { path: routeConfig.home, component: <Home /> },
   { path: routeConfig.sportFields, component: <SportFields /> },
   { path: routeConfig.fieldDetail, component: <FieldDetail /> },
+  { path: routeConfig.editProfile, component: <EditProfile /> },
 
-  // // None layout
+  // None layout
   { path: routeConfig.login, component: <Login />, layout: null },
-  { path: routeConfig.register, component: <Register />, layout: null },
-  { path: routeConfig.adminLogin, component: <LoginAdmin />, layout: null },
+  // { path: routeConfig.adminLogin, component: <LoginAdmin />, layout: null },
+
+  {
+    path: routeConfig.register,
+    component: <Register />,
+    layout: null,
+  },
+  { path: routeConfig.registerUser, component: <RegisterUser />, layout: null },
+  {
+    path: routeConfig.registerOwner,
+    component: <RegisterOwner />,
+    layout: null,
+  },
+
   { path: routeConfig.notFound, component: <NotFound />, layout: null },
 
   // Dashboard layout

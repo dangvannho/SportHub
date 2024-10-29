@@ -1,23 +1,27 @@
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
+import { AppContext } from "~/context/AppContext";
 import Account from "~/components/Account/Account";
 import routeConfig from "~/config/routeConfig";
 import "./Header.scss";
 
 function Header() {
-  const [user, setUser] = useState();
+  // const [user, setUser] = useState();
+  const { userData, setUserData } = useContext(AppContext);
+
+  console.log(userData);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
+  // useEffect(() => {
+  //   const storedUser = JSON.parse(localStorage.getItem("user"));
 
-    if (storedUser) {
-      setUser(storedUser);
-    }
-  }, []);
+  //   if (storedUser) {
+  //     setUser(storedUser);
+  //   }
+  // }, []);
 
   return (
     <div className="header">
@@ -51,8 +55,8 @@ function Header() {
             Liên hệ
           </NavLink>
         </nav>
-        {user ? (
-          <Account user={user} setUser={setUser} />
+        {userData ? (
+          <Account userData={userData} setUserData={setUserData} />
         ) : (
           <div className="group-btn">
             <button

@@ -11,7 +11,7 @@ function SideBar() {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate(routeConfig.adminLogin);
+    navigate(routeConfig.login);
   };
   return (
     <aside className="sidebar-wrapper">

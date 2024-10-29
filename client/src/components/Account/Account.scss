@@ -4,8 +4,8 @@
   align-items: center;
   width: 25px;
   height: 25px;
-  background-color: white;
   border-radius: 50%;
+  background-color: #fff;
   cursor: pointer;
   position: relative;
 
@@ -49,6 +49,8 @@
   }
 
   .btn-logout {
+    text-align: left;
+    width: 100%;
     padding: 10px 0;
     background-color: white;
   }

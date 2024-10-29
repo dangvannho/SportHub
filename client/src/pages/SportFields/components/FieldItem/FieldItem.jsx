@@ -24,7 +24,9 @@ function FieldItem({ data }) {
       </div>
       <button
         className="button-detail"
-        onClick={() => navigate(routeConfig.fieldDetail.replace(":id", 1))}
+        onClick={() =>
+          navigate(routeConfig.fieldDetail.replace(":id", data._id))
+        }
       >
         Chi tiết
       </button>

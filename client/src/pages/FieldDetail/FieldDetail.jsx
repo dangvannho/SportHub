@@ -1,13 +1,39 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { MdOutlineStar } from "react-icons/md";
 import { IoMdCalendar } from "react-icons/io";
+import getFieldDetail from "~/services/Field/getFieldDetail";
+
 import Comment from "./components/Comment/Comment";
 import "./FieldDetail.scss";
 
 function FieldDetail() {
+  const { id } = useParams();
+  const [fieldDetail, setFieldDetail] = useState({});
+
+  useEffect(() => {
+    fetchFieldDetail();
+  }, []);
+
+  const fetchFieldDetail = async () => {
+    const data = await getFieldDetail(id);
+    setFieldDetail(data);
+  };
+
+  const images = [
+    "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2629&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1504305754058-2f08ccd89a0a?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1434648957308-5e6a859697e8?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1487466365202-1afdb86c764e?q=80&w=2673&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  ];
+
+  const [currentImage, setCurrentImage] = useState(images[0]);
+
   return (
     <div className="field-detail-wrapper">
       <div className="heading">
-        <h5 className="heading-name">Sân Ulis</h5>
+        <h5 className="heading-name">{fieldDetail.name}</h5>
 
         <ul className="heading-desc">
           <li className="star">
@@ -15,17 +41,14 @@ function FieldDetail() {
             <MdOutlineStar color="#f9b90f" />
           </li>
           <li className="item-desc">100 Đánh giá</li>
-          <li className="item-desc">Anh Linh</li>
-          <li className="item-desc">Số 2 Phạm Văn Đồng</li>
+          <li className="item-desc">{fieldDetail?.owner_id?.business_name}</li>
+          <li className="item-desc">{fieldDetail.location}</li>
         </ul>
       </div>
 
       <div className="detail-content">
         <div className="field-image">
-          <img
-            src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2629&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt=""
-          />
+          <img src={currentImage} alt="" />
         </div>
 
         <div className="owner-info">
@@ -33,58 +56,40 @@ function FieldDetail() {
           <div className="owner-info__content">
             <div className="owner owner-name">
               <i className="fa-solid fa-user"></i>
-              <span>Anh Linh</span>
+              <span>{fieldDetail?.owner_id?.business_name}</span>
             </div>
 
-            <button className="owner owner-sdt">
+            <div className="owner owner-sdt">
               <i className="fa-solid fa-phone"></i>
-              <span>0123456789</span>
-            </button>
+              <span>{fieldDetail?.owner_id?.phone_number}</span>
+            </div>
 
             <div className="owner owner-email">
               <i className="fa-solid fa-envelope"></i>
-              <span>phungvanlinh195@gmail.com</span>
+              <span>{fieldDetail?.owner_id?.email}</span>
             </div>
 
             <div className="owner owner-address">
               <i className="fa-solid fa-location-dot"></i>
-              <span>Số 2 Phạm Văn Đồng</span>
+              <span>{fieldDetail.location}</span>
             </div>
 
             <div className="map">Bản đồ</div>
           </div>
         </div>
+
         <div className="silde-image">
-          <div className="thumbnail">
-            <img
-              src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2629&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt=""
-            />
-          </div>
-          <div className="thumbnail">
-            <img
-              src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2629&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt=""
-            />
-          </div>
-          <div className="thumbnail">
-            <img
-              src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2629&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt=""
-            />
-          </div>
-          <div className="thumbnail">
-            <img
-              src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2629&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt=""
-            />
-          </div>
-          <div className="thumbnail">
-            <img
-              src="https://images.unsplash.com/photo-1526232761682-d26e03ac148e?q=80&w=2629&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt=""
-            />
-          </div>
+          {images.map((image, index) => {
+            return (
+              <div
+                className="thumbnail"
+                key={index}
+                onClick={() => setCurrentImage(image)}
+              >
+                <img src={image} alt="" />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -95,10 +100,7 @@ function FieldDetail() {
             <span>Đặt sân ngay</span>
           </button>
           <h3 className="introduction-title">Giới thiệu chung</h3>
-          <p className="introduct-desc">
-            Sân bóng Ulis. Địa chỉ : Đại học Ngoại ngữ, số 2 Phạm Văn Đồng, Cầu
-            Giấy, Hà Nội. Cụm sân gồm 2 sân bóng 7 người.
-          </p>
+          <p className="introduct-desc">{fieldDetail.description}</p>
         </div>
 
         <div className="row-2">

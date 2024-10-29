@@ -72,6 +72,12 @@
     margin: 15px auto 30px;
   }
 
+  .search-field {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  }
+
   .field-group {
     display: grid;
     grid-template-columns: repeat(3, 300px);
@@ -84,6 +90,25 @@
   .pagination {
     margin-top: 50px;
     justify-content: center;
+  }
+}
+
+.search-field {
+  input {
+    background-color: #fff;
+    height: 30px;
+    padding: 15px 5px;
+    border-radius: 5px 0 0 5px;
+    border: 1px solid var(--primary-color);
+  }
+
+  .search-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 10px;
+    border-radius: 0 5px 5px 0;
+    background-color: var(--primary-color);
   }
 }
 

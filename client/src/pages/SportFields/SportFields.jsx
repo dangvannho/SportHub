@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
+import { IoIosSearch } from "react-icons/io";
 import ReactPaginate from "react-paginate";
+
 import FieldItem from "./components/FieldItem/FieldItem";
 import StarIcon from "~/components/StarIcon/StarIcon";
-import getAllField from "~/services/Field/getAllFied";
+import getAllField from "~/services/Field/getAllField";
+import searchField from "~/services/Field/searchField";
 import "./SportFields.scss";
 
 function SportsField() {
@@ -12,12 +15,15 @@ function SportsField() {
   const [totalPage, setTotalPage] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [listTypeField, setListTypeField] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
 
   const itemsPerPage = 9;
 
   useEffect(() => {
     if (typeField === "Tất cả") {
       fetchAllField();
+    } else if (typeField === "Tìm kiếm") {
+      fetchSearchField();
     } else {
       fetchTypeField();
     }
@@ -39,9 +45,24 @@ function SportsField() {
     setTotalPage(data.paginatedFields.totalPages);
   };
 
+  // api tìm kiếm
+  const fetchSearchField = async () => {
+    const data = await searchField(searchValue, currentPage, itemsPerPage);
+    setListField(data.results);
+    setTotalPage(data.totalPages);
+  };
+
   const handlePageClick = (event) => {
     setCurrentPage(+event.selected + 1);
     console.log(`User requested page number ${event.selected}`);
+  };
+
+  const handleSearch = async () => {
+    if (!searchValue.trim()) {
+      return;
+    }
+    setCurrentPage(1);
+    setTypeField("Tìm kiếm");
   };
 
   return (
@@ -85,6 +106,20 @@ function SportsField() {
         <StarIcon />
         <h2 className="title">Danh sách sân bãi</h2>
         <span className="separator"></span>
+
+        <div className="search-field">
+          <input
+            type="text"
+            placeholder="Tìm kiếm sân..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="search-input"
+          />
+          <button className="search-button" onClick={handleSearch}>
+            <IoIosSearch size={20} color="white" />
+          </button>
+        </div>
+
         <div className="field-group">
           {listField.map((item, index) => {
             return <FieldItem data={item} key={index} />;
