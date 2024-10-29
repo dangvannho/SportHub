@@ -38,7 +38,7 @@ router.delete(
 
 // User Routes
 router.get("/users", middlewareController.verifyTokenAdmin, getAllUser);
-router.get("/users/:id", middlewareController.verifyTokenAdmin, getUser);
+router.get("/users/:id", middlewareController.verifyToken, getUser);
 router.post(
   "/users",
   middlewareController.verifyTokenAdmin,
