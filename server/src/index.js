@@ -12,6 +12,8 @@ const tournamentRoutes = require('./routes/TournamentRoutes')
 
 const adminRoutes = require('./routes/AdminRoutes')
 
+const ownerRoutes = require('./routes/OwnerRoutes')
+
 const imageRoutes = require('./routes/ImgRoutes')
 
 const authRoutes = require('./routes/AuthRoutes');
@@ -44,6 +46,9 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/tournaments', tournamentRoutes)
 
 app.use('/api/fieldAvailability', fieldAvailabilityRoutes);
+
+app.use('/api/owner', ownerRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Project");
