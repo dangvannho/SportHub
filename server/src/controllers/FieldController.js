@@ -3,6 +3,7 @@ const Pagination = require("../utils/Pagination");
 const {processImage , getProfilePicture} = require('../utils/ProcessIMG')
 const { authenticateUser } = require("../utils/checkOwner");
 const Category = require("../models/Category");
+
 // Function to get all sport fields with pagination
 const getAllFields = async (req, res) => {
   try {
@@ -131,7 +132,13 @@ const addField = async (req, res) => {
     }
 
     // Xử lý ảnh nếu có
-    const images = req.file ? await processImage(req.file.buffer) : null;
+     let images = [];
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const processedImage = await processImage(file.buffer);
+        images.push(processedImage);
+      }
+    }
 
     const newField = new Field({
       category_id,
@@ -185,7 +192,13 @@ const updateField = async (req, res) => {
     }
 
     // Xử lý ảnh nếu có
-    const images = await getProfilePicture(req, field.images);
+    let images = [];
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const processedImage = await processImage(file.buffer);
+        images.push(processedImage);
+      }
+    }
 
     // Tạo đối tượng updateData chứa các trường cần cập nhật
     let updateData = {
