@@ -1,14 +1,10 @@
 const mongoose = require("mongoose");
 const Owner = require("../models/Owner");
-const Category = require("../models/Category");
+
 
 const FieldSchema = new mongoose.Schema(
   {
-    category_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: Category,
-      required: true,
-    },
+   
     owner_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: Owner,

@@ -2,7 +2,7 @@ const Field = require("../models/Field");
 const Pagination = require("../utils/Pagination");
 const {processImage , getProfilePicture} = require('../utils/ProcessIMG')
 const { authenticateUser } = require("../utils/checkOwner");
-const Category = require("../models/Category");
+
 
 // Function to get all sport fields with pagination
 const getAllFields = async (req, res) => {
@@ -113,7 +113,6 @@ const addField = async (req, res) => {
     if (!owner_id) return; // Nếu xác thực thất bại, hàm authenticateUser sẽ trả về phản hồi
 
     const {
-      category_id,
       name,
       location,
       type,
@@ -121,16 +120,7 @@ const addField = async (req, res) => {
       availability_status,
     } = req.body;
 
-    // Kiểm tra xem category_id có được cung cấp hay không
-    if (!category_id) {
-      return res.status(400).json({ EC: 0, EM: "category_id is required" });
-    }
-
-    // Tìm Category dựa trên category_id
-    const category = await Category.findById(category_id);
-    if (!category) {
-      return res.status(400).json({ EC: 0, EM: "Category not found" });
-    }
+  
 
     // Xử lý ảnh nếu có
      let images = [];
@@ -142,8 +132,6 @@ const addField = async (req, res) => {
     }
 
     const newField = new Field({
-      category_id,
-      category_name: category.name, // Thêm category_name vào tài liệu Field
       owner_id,
       name,
       location,
@@ -174,7 +162,7 @@ const updateField = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      category_id,
+     
       name,
       location,
       type,
@@ -204,7 +192,6 @@ const updateField = async (req, res) => {
     // Tạo đối tượng updateData chứa các trường cần cập nhật
     let updateData = {
       owner_id,
-      category_id,
       name,
       location,
       type,
