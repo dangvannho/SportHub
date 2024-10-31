@@ -76,7 +76,6 @@ const getFieldById = async (req, res) => {
 const searchFields = async (req, res) => {
   try {
     const query = req.query.query;
-
     const page =
       req.query.page && req.query.page > 0 ? parseInt(req.query.page) : 1;
     const limit =

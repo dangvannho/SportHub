@@ -1,18 +1,20 @@
 const jwt = require("jsonwebtoken");
 
-const authenticateUser = (req, res) => {
+const authenticateUser = (req) => {
     const token = req.headers.authorization;
     if (!token) {
-      return res.status(401).json({ message: "You are not authenticated" });
+        // Trả về null để controller có thể xử lý phản hồi thay vì tự gửi phản hồi
+        return null;
     }
   
     const accessToken = token.split(" ")[1];
     try {
-      const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
-      return decoded.id; // Giả sử token chứa thông tin owner_id
+        const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+        return decoded.id; // Trả về owner_id nếu xác thực thành công
     } catch (error) {
-      return res.status(401).json({ message: "Invalid token" });
+        // Trả về null nếu token không hợp lệ
+        return null;
     }
-  };
-  
-  module.exports = { authenticateUser };
+};
+
+module.exports = { authenticateUser };
