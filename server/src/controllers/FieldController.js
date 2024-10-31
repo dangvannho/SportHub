@@ -161,7 +161,6 @@ const updateField = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-     
       name,
       location,
       type,
