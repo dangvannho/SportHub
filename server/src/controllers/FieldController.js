@@ -171,7 +171,6 @@ const updateField = async (req, res) => {
       type,
       description,
       availability_status,
-      imagesToDelete, // Thêm trường imagesToDelete để chỉ định các ảnh cần xóa
     } = req.body;
 
     const owner_id = authenticateUser(req, res);
@@ -185,13 +184,6 @@ const updateField = async (req, res) => {
 
     // Xử lý ảnh nếu có
     let images = field.images; // Giữ lại các ảnh hiện có
-
-    // Xóa các ảnh được chỉ định trong imagesToDelete
-    if (imagesToDelete && imagesToDelete.length > 0) {
-      images = images.filter(image => !imagesToDelete.includes(image));
-    }
-
-    // Thêm các ảnh mới nếu có
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
         const processedImage = await processImage(file.buffer);
