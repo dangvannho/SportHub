@@ -145,6 +145,7 @@ const updateOwner = async (req, res) => {
     });
   }
 };
+
 const deleteOwner = async (req, res) => {
   try {
       const { id } = req.params;
@@ -157,6 +158,9 @@ const deleteOwner = async (req, res) => {
               "EM": "Owner not found",
           });
       }
+
+      // Xoá tất cả các field có owner_id bằng ownerId
+      await Field.deleteMany({ owner_id: id });
 
       res.status(200).json({ 
           "EC": 1,
