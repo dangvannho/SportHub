@@ -179,8 +179,9 @@ const updateField = async (req, res) => {
     }
 
     // Xử lý ảnh nếu có
-    let images = [];
+    let images = field.images;
     if (req.files && req.files.length > 0) {
+      images = [];
       for (const file of req.files) {
         const processedImage = await processImage(file.buffer);
         images.push(processedImage);
