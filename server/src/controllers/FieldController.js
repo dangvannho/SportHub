@@ -23,9 +23,12 @@ const getAllFields = async (req, res) => {
       query.type = type;
     }
 
-    // Khởi tạo đối tượng Pagination với query
+    // Khởi tạo đối tượng Pagination với query và sử dụng populate để lấy thông tin owner
     const pagination = new Pagination(
-      Field.find(query).populate("type"),
+      Field.find(query).populate({
+        path: "owner_id",
+        select: "business_name address phone_number email",
+      }),
       page,
       limit
     );
@@ -33,6 +36,7 @@ const getAllFields = async (req, res) => {
     // Thực hiện phân trang và trả về kết quả
     const paginatedFields = await pagination.paginate();
 
+    // Đếm tổng số sân theo loại
     const totalFieldsByType = await Field.aggregate([
       {
         $group: {
@@ -48,6 +52,7 @@ const getAllFields = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 const getFieldById = async (req, res) => {
   try {
