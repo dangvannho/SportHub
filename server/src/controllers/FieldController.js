@@ -171,11 +171,11 @@ const updateField = async (req, res) => {
       type,
       description,
       availability_status,
+      imagesToDelete, // Thêm trường imagesToDelete để chỉ định các ảnh cần xóa
     } = req.body;
 
     const owner_id = authenticateUser(req, res);
     if (!owner_id) return; // Nếu xác thực thất bại, hàm authenticateUser sẽ trả về phản hồi
-
 
     // Lấy thông tin trường hiện tại
     const field = await Field.findById(id);
@@ -184,12 +184,18 @@ const updateField = async (req, res) => {
     }
 
     // Xử lý ảnh nếu có
-    let images = field.images;
+    let images = field.images; // Giữ lại các ảnh hiện có
+
+    // Xóa các ảnh được chỉ định trong imagesToDelete
+    if (imagesToDelete && imagesToDelete.length > 0) {
+      images = images.filter(image => !imagesToDelete.includes(image));
+    }
+
+    // Thêm các ảnh mới nếu có
     if (req.files && req.files.length > 0) {
-      images = [];
       for (const file of req.files) {
         const processedImage = await processImage(file.buffer);
-        images.push(processedImage);
+        images.push(processedImage); // Thêm ảnh mới vào mảng
       }
     }
 
@@ -211,7 +217,7 @@ const updateField = async (req, res) => {
     res.status(200).json({
       EC: 1,
       EM: "Field Updated",
-       updatedField,
+      updatedField,
     });
   } catch (error) {
     res.status(500).json({
