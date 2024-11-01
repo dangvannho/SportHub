@@ -1,13 +1,10 @@
-const mongoose = require("mongoose");
-const Owner = require("../models/Owner");
-
+const mongoose = require('mongoose');
 
 const FieldSchema = new mongoose.Schema(
   {
-   
     owner_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: Owner,
+      ref: 'Owner', 
       required: true,
     },
     name: { type: String, required: true },
@@ -20,4 +17,4 @@ const FieldSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Field", FieldSchema);
+module.exports = mongoose.model('Field', FieldSchema);
