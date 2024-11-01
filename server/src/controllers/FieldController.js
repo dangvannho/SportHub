@@ -1,6 +1,6 @@
 const Field = require("../models/Field");
 const Pagination = require("../utils/Pagination");
-const {processImage , getProfilePicture} = require('../utils/ProcessIMG')
+const {processFieldImage , getProfilePicture} = require('../utils/ProcessIMG')
 const { authenticateUser } = require("../utils/checkOwner");
 
 
@@ -130,7 +130,7 @@ const addField = async (req, res) => {
      let images = [];
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const processedImage = await processImage(file.buffer);
+        const processedImage = await processFieldImage (file.buffer);
         images.push(processedImage);
       }
     }
@@ -171,6 +171,7 @@ const updateField = async (req, res) => {
       type,
       description,
       availability_status,
+      imagesToDelete, // Thêm trường imagesToDelete để chỉ định các ảnh cần xóa
     } = req.body;
 
     const owner_id = authenticateUser(req, res);
@@ -183,15 +184,31 @@ const updateField = async (req, res) => {
     }
 
     // Xử lý ảnh nếu có
-    let images = field.images; // Giữ lại các ảnh hiện có
+    let images = field.images;
+
+// Xóa các ảnh được chỉ định trong imagesToDelete
+if (imagesToDelete && imagesToDelete.length > 0) {
+  images = images.filter(image => !imagesToDelete.includes(image));
+
+  try {
+    // Thực hiện xóa tất cả các ảnh đồng thời
+    await Promise.all(imagesToDelete.map(async (imageUrl) => {
+      await deleteImageFromStorage(imageUrl);
+    }));
+  } catch (error) {
+    console.error("Failed to delete one or more images", error);
+  }
+}
+
+
+    // Thêm các ảnh mới nếu có
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const processedImage = await processImage(file.buffer);
+        const processedImage = await processFieldImage(file.buffer);
         images.push(processedImage); // Thêm ảnh mới vào mảng
       }
     }
 
-    // Tạo đối tượng updateData chứa các trường cần cập nhật
     let updateData = {
       owner_id,
       name,

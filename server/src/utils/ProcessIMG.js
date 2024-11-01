@@ -12,6 +12,18 @@ const processImage = async (buffer) => {
     }
 };
 
+const processFieldImage = async (buffer) => {
+    try {
+        const resizedBuffer = await sharp(buffer)
+            .resize(1000, 1000)
+            .jpeg({ quality: 80 }) // Chất lượng ảnh 80%
+            .toBuffer();
+        return resizedBuffer.toString('base64');
+    } catch (error) {
+        throw new Error('Error processing image');
+    }
+};
+
 const getProfilePicture = async (req, currentProfilePicture) => {
     let profile_picture;
     if (req.file) {
@@ -27,4 +39,5 @@ const getProfilePicture = async (req, currentProfilePicture) => {
 module.exports = {
     processImage,
     getProfilePicture,
+    processFieldImage
 };
