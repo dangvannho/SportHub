@@ -171,7 +171,7 @@ const updateField = async (req, res) => {
       type,
       description,
       availability_status,
-      imagesToDelete, // Thêm trường imagesToDelete để chỉ định các ảnh cần xóa
+      imagesToDelete, // Danh sách các ảnh cần xóa
     } = req.body;
 
     const owner_id = authenticateUser(req, res);
@@ -183,22 +183,21 @@ const updateField = async (req, res) => {
       return res.status(404).json({ message: "Field not found" });
     }
 
-    // Xử lý ảnh nếu có
-    let images = field.images;
+    let images = [...field.images];
+    const deletedImages = new Set(); // Sử dụng Set để lưu các ảnh đã xóa
 
-// Xóa các ảnh được chỉ định trong imagesToDelete
-if (imagesToDelete && imagesToDelete.length > 0) {
-  images = images.filter(image => !imagesToDelete.includes(image));
-
-  try {
-    // Thực hiện xóa tất cả các ảnh đồng thời
-    await Promise.all(imagesToDelete.map(async (imageUrl) => {
-      await deleteImageFromStorage(imageUrl);
-    }));
-  } catch (error) {
-    console.error("Failed to delete one or more images", error);
+// Lọc các ảnh cần xóa khỏi mảng images
+images = images.filter((imageUrl) => {
+  if (imagesToDelete.includes(imageUrl) && !deletedImages.has(imageUrl)) {
+    deletedImages.add(imageUrl); // Đánh dấu ảnh đã xóa
+    return false; // Loại bỏ ảnh khỏi mảng
   }
-}
+  return true; // Giữ lại ảnh trong mảng
+});
+
+
+
+
 
 
     // Thêm các ảnh mới nếu có
@@ -209,6 +208,7 @@ if (imagesToDelete && imagesToDelete.length > 0) {
       }
     }
 
+    // Cập nhật dữ liệu
     let updateData = {
       owner_id,
       name,
@@ -229,12 +229,15 @@ if (imagesToDelete && imagesToDelete.length > 0) {
       updatedField,
     });
   } catch (error) {
+    console.error("Update failed:", error);
     res.status(500).json({
       EC: 0,
       EM: error.message,
     });
   }
 };
+
+
 
 const deleteField = async (req, res) => {
   try {
