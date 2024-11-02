@@ -9,7 +9,7 @@ const registerUser = async (req, res) => {
     const { name, email, password, confirmPassword, phone_number } = req.body;
 
     if (password !== confirmPassword) {
-      return res.status(400).json({ EC: 0, EM: "Passwords do not match" });
+      return res.status(400).json({ EC: 0, EM: "Mật khẩu không khớp!" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -23,9 +23,9 @@ const registerUser = async (req, res) => {
     });
 
     const user = await newUser.save();
-    res.status(201).json({ EC: 1, EM: "User registered successfully", user });
+    res.status(201).json({ EC: 1, EM: "Đăng ký thành công", user });
   } catch (err) {
-    res.status(500).json({ EC: 0, EM: "Email or phone number already exists" });
+    res.status(500).json({ EC: 0, EM: "Email hoặc số điện thoại đã tồn tại!" });
   }
 };
 //accessToken
@@ -70,7 +70,7 @@ const registerOwner = async (req, res) => {
     } = req.body;
 
     if (password !== confirmPassword) {
-      return res.status(400).json({ EC: 0, EM: "Passwords do not match" });
+      return res.status(400).json({ EC: 0, EM: "Mật khẩu không khớp!" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -85,9 +85,9 @@ const registerOwner = async (req, res) => {
     });
 
     const owner = await newOwner.save();
-    res.status(201).json({ EC: 1, EM: "Owner registered successfully", owner });
+    res.status(201).json({ EC: 1, EM: "Đăng ký thành công", owner });
   } catch (err) {
-    res.status(500).json({ EC: 0, EM: "Email or phone number already exists" });
+    res.status(500).json({ EC: 0, EM: "Email hoặc số điện thoại đã tồn tại!" });
   }
 };
 
@@ -140,7 +140,7 @@ const login = async (req, res) => {
             ...other,
             accessToken,
             EC: 1,
-            EM: "Owner login success",
+            EM: "Đăng nhập thành công",
           });
         }
       }
@@ -155,14 +155,14 @@ const login = async (req, res) => {
       const accessToken = generateAccessToken(adminUser);
       return res.status(200).json({
         EC: 1,
-        EM: "Admin login success",
+        EM: "Đăng nhập thành công",
         accessToken,
       });
     }
 
     return res.status(400).json({
       EC: 0,
-      EM: "Incorrect email or password",
+      EM: "Email hoặc mật khẩu không đúng",
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
