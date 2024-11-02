@@ -17,7 +17,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { setUserData } = useContext(AppContext);
+  const { setUserData, setOwnerData } = useContext(AppContext);
 
   const navigate = useNavigate();
 
@@ -36,12 +36,12 @@ function Login() {
     const isValidEmail = validateEmail(email);
 
     if (!isValidEmail) {
-      toast.error("Invalid email!");
+      toast.error("Email không hợp lệ!");
       return;
     }
 
     if (!password) {
-      toast.error("Invalid password!");
+      toast.error("Mật khẩu không được để trống!");
       return;
     }
 
@@ -52,20 +52,30 @@ function Login() {
 
       const decodedToken = jwtDecode(res.accessToken);
 
-      if (decodedToken.user_role !== "admin") {
-        const user = {
-          id: res._id,
-          name: res.name || res.business_name,
-          avatar: res.profile_picture || null,
-        };
+      const user = {
+        id: res._id,
+        name: res.name,
+        avatar: res.profile_picture || null,
+      };
+
+      const owner = {
+        id: res._id,
+        name: res.business_name,
+        avatar: res.profile_picture || null,
+      };
+
+      if (decodedToken.user_role === "user") {
         localStorage.setItem("user", JSON.stringify(user));
         setUserData(user);
-      }
-
-      if (decodedToken.user_role == "admin") {
+        navigate(routeConfig.home);
+      } else if (decodedToken.user_role === "owner") {
+        localStorage.setItem("owner", JSON.stringify(owner));
+        setOwnerData(owner);
+        navigate(routeConfig.manageField);
+      } else if (decodedToken.user_role === "admin") {
         navigate(routeConfig.manageCustomer);
       } else {
-        navigate(routeConfig.home);
+        toast.error("Invalid role!");
       }
     } else {
       toast.error(res.EM);

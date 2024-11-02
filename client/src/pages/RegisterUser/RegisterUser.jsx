@@ -37,13 +37,13 @@ function RegisterUser() {
     const trimPhoneNumber = phoneNumber.trim();
 
     if (!trimName || /\d/.test(trimName)) {
-      toast.error("Invalid name!");
+      toast.error("Tên không hợp lệ!");
       return;
     }
 
     const isValidEmail = validateEmail(trimEmail);
     if (!isValidEmail) {
-      toast.error("Invalid email!");
+      toast.error("Email không hợp lệ!");
       return;
     }
 
@@ -52,17 +52,17 @@ function RegisterUser() {
       /\s/.test(trimPhoneNumber) ||
       /[a-zA-Z]/.test(trimPhoneNumber)
     ) {
-      toast.error("Invalid phone number!");
+      toast.error("Số điện thoại không hợp lệ!");
       return;
     }
 
     if (!password) {
-      toast.error("Invalid password!");
+      toast.error("Mật khẩu không được để trống!");
       return;
     }
 
     if (!confirmPassword) {
-      toast.error("Invalid confirm password!");
+      toast.error("Xác nhận lại mật khẩu không được để trống!");
       return;
     }
 
@@ -90,7 +90,7 @@ function RegisterUser() {
         <div className="form-register">
           <div className="form-group">
             {/* name */}
-            <label htmlFor="">Tên</label>
+            <label htmlFor="">Họ và tên</label>
             <input
               type="text"
               placeholder="nguyen van a"

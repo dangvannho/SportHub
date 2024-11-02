@@ -17,19 +17,34 @@
     }
   }
 
-  .img-preview {
+  .img-preview-field {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 0 5px;
     height: 150px;
     border: 2px dashed #ccc;
     border-radius: 5px;
     color: #ccc;
 
-    img {
-      width: auto;
+    .img-item {
+      position: relative;
       height: 100%;
-      margin-left: 5px;
     }
+  }
+}
+
+.img-item {
+  img {
+    width: 200px;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .btn-remove {
+    position: absolute;
+    top: -4px;
+    right: 0;
+    background-color: transparent;
   }
 }

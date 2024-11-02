@@ -70,7 +70,7 @@ function ModalUpdateUser({
     const trimPhoneNumber = phoneNumber.trim();
 
     if (!trimUsername || /\d/.test(trimUsername)) {
-      toast.error("Invalid name!");
+      toast.error("Tên không hợp lệ!");
       return;
     }
 
@@ -79,7 +79,7 @@ function ModalUpdateUser({
       /\s/.test(trimPhoneNumber) ||
       /[a-zA-Z]/.test(trimPhoneNumber)
     ) {
-      toast.error("Invalid phone number!");
+      toast.error("Số điện thoại không hợp lệ!");
       return;
     }
 
@@ -120,7 +120,7 @@ function ModalUpdateUser({
             </div>
 
             <div className="col-md-6">
-              <label className="form-label">Password</label>
+              <label className="form-label">Mật khẩu</label>
               <input
                 type="password"
                 className="form-control"
@@ -131,7 +131,7 @@ function ModalUpdateUser({
             </div>
 
             <div className="col-md-6">
-              <label className="form-label">Username</label>
+              <label className="form-label">Họ và tên</label>
               <input
                 type="text"
                 className="form-control"
@@ -141,7 +141,7 @@ function ModalUpdateUser({
             </div>
 
             <div className="col-md-6">
-              <label className="form-label">Phone number</label>
+              <label className="form-label">Số điện thoại</label>
               <input
                 type="text"
                 className="form-control"
@@ -153,7 +153,7 @@ function ModalUpdateUser({
             <div className="col-md-12 btn-upload">
               <label className="label-upload" htmlFor="label-upload">
                 <FcPlus />
-                Upload File Image
+                Tải ảnh lên
               </label>
               <input
                 type="file"
@@ -175,10 +175,10 @@ function ModalUpdateUser({
 
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Đóng
           </Button>
           <Button variant="primary" onClick={handleSubmitUpdate}>
-            Update
+            Cập nhật
           </Button>
         </Modal.Footer>
       </Modal>

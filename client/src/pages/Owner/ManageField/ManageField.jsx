@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { FcPlus } from "react-icons/fc";
 
 import Table from "~/components/Table/Table";
-import ModalCreateUser from "./components/ModalCreateUser/ModalCreateUser";
-import ModalUpdateUser from "./components/ModalUpdateUser/ModaleUpdateUser";
-import ModalDeleteUser from "./components/ModalDeleteUser/ModalDeleteUser";
-import getAllUser from "~/services/User/getAllUser";
-import "./ManageCustomer.scss";
+import ModalCreateField from "./components/ModalCreateField/ModalCreateField";
+import ModalUpdateField from "./components/ModalUpdateField/ModalUpdateField";
+import ModalDeleteField from "./components/ModalDeleteField/ModalDeleteField";
+import getAllFieldOwner from "~/services/Field/getAllFieldOwner";
+import "./ManageField.scss";
 
-function ManageCustomer() {
-  const [listUser, setListUser] = useState([]);
+function ManageField() {
+  const [listFieldOwner, setListFieldOwner] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
   const [personalData, setPersonalData] = useState({});
@@ -18,23 +18,24 @@ function ManageCustomer() {
   const [showModalUpdate, setShowModalUpdate] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const itemsPerPage = 6;
+  const itemsPerPage = 3;
 
   // config titles in table
   const header = [
-    { title: "Họ và tên", key: "name" },
-    { title: "Email", key: "email" },
-    { title: "Số điện thoại", key: "phone_number" },
+    { title: "Tên sân", key: "name" },
+    { title: "Địa chỉ", key: "location" },
+    { title: "Loại sân", key: "type" },
+    { title: "Mô tả", key: "description" },
     { title: "" },
   ];
 
   useEffect(() => {
-    fetchAllUser();
+    fetchAllFieldOwner();
   }, [currentPage]);
 
-  const fetchAllUser = async () => {
-    const data = await getAllUser(currentPage, itemsPerPage);
-    setListUser(data.results);
+  const fetchAllFieldOwner = async () => {
+    const data = await getAllFieldOwner(currentPage, itemsPerPage);
+    setListFieldOwner(data.results);
     setTotalPage(data.totalPages);
   };
 
@@ -51,55 +52,48 @@ function ManageCustomer() {
   };
 
   return (
-    <div className="manage-user-container">
-      <h3>Thông tin khách hàng</h3>
-
+    <div className="manage-field-container">
       <button
         className="btn btn-primary btn-add"
         onClick={() => setShowModalAdd(true)}
       >
         <FcPlus />
-        Thêm khách hàng
+        Thêm sân
       </button>
-
       <Table
         header={header}
-        addPriceBtn={false}
-        data={listUser}
+        data={listFieldOwner}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         totalPage={totalPage}
         handleClickBtnUpdate={handleClickBtnUpdate}
         handleClickBtnDelete={handleClickBtnDelete}
       />
-
       {/* Modal add */}
-      <ModalCreateUser
+      <ModalCreateField
         showModalAdd={showModalAdd}
         setShowModalAdd={setShowModalAdd}
-        fetchAllUser={fetchAllUser}
+        fetchAllFieldOwner={fetchAllFieldOwner}
       />
-
       {/* Modal update*/}
-      <ModalUpdateUser
+      <ModalUpdateField
         showModalUpdate={showModalUpdate}
         setShowModalUpdate={setShowModalUpdate}
         personalData={personalData}
-        fetchAllUser={fetchAllUser}
+        fetchAllFieldOwner={fetchAllFieldOwner}
       />
-
       {/* Modal delete */}
-      <ModalDeleteUser
+      <ModalDeleteField
         showModalDelete={showModalDelete}
         setShowModalDelete={setShowModalDelete}
         personalData={personalData}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
-        fetchAllUser={fetchAllUser}
+        fetchAllFieldOwner={fetchAllFieldOwner}
         itemsPerPage={itemsPerPage}
       />
     </div>
   );
 }
 
-export default ManageCustomer;
+export default ManageField;

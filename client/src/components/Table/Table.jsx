@@ -3,7 +3,7 @@ import "./Table.scss";
 
 function Table({
   header,
-  viewbtn,
+  addPriceBtn,
   data,
   currentPage,
   setCurrentPage,
@@ -41,8 +41,10 @@ function Table({
                   return null;
                 })}
                 <td className="group-btn">
-                  {viewbtn ?? (
-                    <button className="btn btn-secondary">View</button>
+                  {addPriceBtn ?? (
+                    <button className="btn btn-secondary">
+                      Thêm giờ và giá
+                    </button>
                   )}
                   <button
                     className="btn btn-warning"
@@ -50,7 +52,7 @@ function Table({
                       handleClickBtnUpdate(row);
                     }}
                   >
-                    Update
+                    Sửa
                   </button>
                   <button
                     className="btn btn-danger"
@@ -58,7 +60,7 @@ function Table({
                       handleClickBtnDelete(row);
                     }}
                   >
-                    Delete
+                    Xoá
                   </button>
                 </td>
               </tr>
@@ -66,7 +68,7 @@ function Table({
           })}
         </tbody>
       </table>
-      {data.length === 0 && <p>Danh sách người dùng rỗng</p>}
+      {data.length === 0 && <p>Danh sách rỗng</p>}
 
       <ReactPaginate
         nextLabel="next >"

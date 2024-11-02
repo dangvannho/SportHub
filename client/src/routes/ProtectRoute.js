@@ -15,4 +15,4 @@ const UserRoute = ({ children }) => {
   return children;
 };
 
-export {AdminRoute, OwnerRoute, UserRoute}
+export { AdminRoute, OwnerRoute, UserRoute };

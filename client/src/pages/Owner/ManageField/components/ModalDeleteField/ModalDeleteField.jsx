@@ -1,50 +1,48 @@
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
-import deleteUser from "~/services/User/deleteUser";
-import getAllUser from "~/services/User/getAllUser";
+import deleteField from "~/services/Field/deleteField";
+import getAllFieldOwner from "~/services/Field/getAllFieldOwner";
 
-function ModalDeleteUser({
+function ModalDeleteField({
   showModalDelete,
   setShowModalDelete,
   personalData,
   currentPage,
   setCurrentPage,
-  fetchAllUser,
+  fetchAllFieldOwner,
   itemsPerPage,
 }) {
   const handleClose = () => setShowModalDelete(false);
 
-  const handleSubmitDeleteUser = async () => {
-    const res = await deleteUser(personalData._id);
+  const handleSubmitDeleteField = async () => {
+    const res = await deleteField(personalData._id);
     if (res.EC === 1) {
       toast.success(res.EM);
       handleClose();
-
       // Fetch lại danh sách người dùng
-      const data = await getAllUser(currentPage, itemsPerPage);
+      const data = await getAllFieldOwner(currentPage, itemsPerPage);
 
       // Kiểm tra nếu không còn người dùng nào
       if (data.results.length === 0 && currentPage > 1) {
         setCurrentPage(currentPage - 1); // Giảm trang
       } else {
         // Nếu như còn người dùng thì gọi api của trang đó
-        fetchAllUser();
+        fetchAllFieldOwner();
       }
     } else {
       toast.error(res.EM);
     }
   };
-
   return (
     <>
       <Modal show={showModalDelete} onHide={handleClose} backdrop="static">
         <Modal.Header closeButton>
-          <Modal.Title>Xoá khách hàng?</Modal.Title>
+          <Modal.Title>Xoá sân?</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Bạn có muốn xoá khách hàng có email:
-          <strong> {personalData.email ? personalData.email : ""} ?</strong>
+          Bạn có muốn xoá sân có tên là:
+          <strong> {personalData.name}?</strong>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
@@ -53,7 +51,7 @@ function ModalDeleteUser({
           <Button
             variant="primary"
             onClick={() => {
-              handleSubmitDeleteUser();
+              handleSubmitDeleteField();
             }}
           >
             Xác nhận
@@ -64,4 +62,4 @@ function ModalDeleteUser({
   );
 }
 
-export default ModalDeleteUser;
+export default ModalDeleteField;
