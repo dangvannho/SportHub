@@ -23,6 +23,8 @@ import ManageOwner from "~/pages/Admin/ManageOwner/ManageOwner";
 import ManagePayment from "~/pages/Admin/ManagePayment/ManagePayment";
 import NotFound from "~/pages/NotFound/NotFound";
 
+import Calendar from "~/pages/Calendar/Calendar";
+
 import { AdminRoute, OwnerRoute } from "./ProtectRoute";
 
 const publicRoutes = [
@@ -47,6 +49,8 @@ const publicRoutes = [
     component: <RegisterOwner />,
     layout: null,
   },
+
+  { path: routeConfig.calendar, component: <Calendar />, layout: null },
 
   { path: routeConfig.notFound, component: <NotFound />, layout: null },
 

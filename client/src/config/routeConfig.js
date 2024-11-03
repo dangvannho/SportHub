@@ -13,6 +13,7 @@ const routeConfig = {
   editProfile: "/editProfile",
   manageField: "/owner/manageField",
   editProfileOwner: "/owner/editProfile",
+  calendar: "/calendar",
   notFound: "*",
 };
 

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { MdOutlineStar } from "react-icons/md";
 import { IoMdCalendar } from "react-icons/io";
 import getFieldDetail from "~/services/Field/getFieldDetail";
 
 import Comment from "./components/Comment/Comment";
+import routeConfig from "~/config/routeConfig";
 import "./FieldDetail.scss";
 
 function FieldDetail() {
@@ -12,6 +13,8 @@ function FieldDetail() {
   const [fieldDetail, setFieldDetail] = useState({});
   const [images, setImages] = useState([]);
   const [currentImage, setCurrentImage] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchFieldDetail();
@@ -100,7 +103,10 @@ function FieldDetail() {
 
       <div className="detail-content-2">
         <div className="row-1">
-          <button className="booking-btn">
+          <button
+            className="booking-btn"
+            onClick={() => navigate(routeConfig.calendar)}
+          >
             <IoMdCalendar size={19} />
             <span>Đặt sân ngay</span>
           </button>
