@@ -9,8 +9,8 @@ export const AppProvider = ({ children }) => {
   });
 
   const [ownerData, setOwnerData] = useState(() => {
-    const savedUser = localStorage.getItem("owner");
-    return savedUser ? JSON.parse(savedUser) : null;
+    const savedOwner = localStorage.getItem("owner");
+    return savedOwner ? JSON.parse(savedOwner) : null;
   });
   return (
     <AppContext.Provider

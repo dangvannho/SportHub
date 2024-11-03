@@ -12,6 +12,7 @@ const routeConfig = {
   managePayment: "/admin/managePayment",
   editProfile: "/editProfile",
   manageField: "/owner/manageField",
+  editProfileOwner: "/owner/editProfile",
   notFound: "*",
 };
 

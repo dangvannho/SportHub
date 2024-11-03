@@ -11,8 +11,12 @@ import Register from "~/pages/Register/Register";
 import RegisterUser from "~/pages/RegisterUser/RegisterUser";
 import RegisterOwner from "~/pages/ResgiterOwner/RegisterOwner";
 import EditProfile from "~/pages/EditProfile/EditProfile";
-import ManageField from "~/pages/Owner/ManageField/ManageField";
 
+// Owner
+import ManageField from "~/pages/Owner/ManageField/ManageField";
+import EditProfileOwner from "~/pages/Owner/EditProfileOwner/EditProfileOwner";
+
+// admin
 // import LoginAdmin from "~/pages/Admin/LoginAdmin/LoginAdmin";
 import ManageCustomer from "~/pages/Admin/ManageCustomer/ManageCustomer";
 import ManageOwner from "~/pages/Admin/ManageOwner/ManageOwner";
@@ -81,6 +85,15 @@ const publicRoutes = [
     component: (
       <OwnerRoute>
         <ManageField />
+      </OwnerRoute>
+    ),
+    layout: OwnerLayout,
+  },
+  {
+    path: routeConfig.editProfileOwner,
+    component: (
+      <OwnerRoute>
+        <EditProfileOwner />
       </OwnerRoute>
     ),
     layout: OwnerLayout,

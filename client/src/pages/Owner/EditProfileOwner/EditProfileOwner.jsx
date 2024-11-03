@@ -1,60 +1,50 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { FcPlus } from "react-icons/fc";
 import { toast } from "react-toastify";
 import { useContext } from "react";
 
 import { AppContext } from "~/context/AppContext";
-import routeConfig from "~/config/routeConfig";
-import getUserById from "~/services/User/getUserById";
-import updateUser from "~/services/User/updateUser";
-import "./EditProfile.scss";
+import getOwnerById from "~/services/Owner/getOwnerById";
+import updateOwner from "~/services/Owner/updateOwner";
+import "./EditProfileOwner.scss";
 
-function EditProfile() {
+function EditProfileOwner() {
   const [id, setId] = useState("");
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
+  const [businessName, setBusinessName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const [image, setImage] = useState("");
 
-  const { setUserData } = useContext(AppContext);
-
-  const navigate = useNavigate();
+  const { setOwnerData } = useContext(AppContext);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!token || !user) {
-      navigate(routeConfig.login);
-      return;
-    }
-    setId(user.id);
+    const owner = JSON.parse(localStorage.getItem("owner"));
+    setId(owner.id);
   }, []);
 
   useEffect(() => {
     if (id) {
-      fetchUserById();
+      fetchOwnerById();
     }
   }, [id]);
 
-  const fetchUserById = async () => {
-    const res = await getUserById(id);
-    if (res.EC === 1) {
-      setEmail(res.user.email);
-      setUsername(res.user.name);
-      setPhoneNumber(res.user.phone_number);
+  const fetchOwnerById = async () => {
+    const res = await getOwnerById(id);
 
-      if (res.user.profile_picture) {
-        setPreviewImage(`data:image/jpeg;base64,${res.user.profile_picture}`);
-        setImage(res.user.profile_picture);
-      } else {
-        setPreviewImage("");
-        setImage("");
-      }
+    setEmail(res.owner.email);
+    setBusinessName(res.owner.business_name);
+    setPhoneNumber(res.owner.phone_number);
+    setAddress(res.owner.address);
+
+    if (res.owner.profile_picture) {
+      setPreviewImage(`data:image/jpeg;base64,${res.owner.profile_picture}`);
+      setImage(res.owner.profile_picture);
     } else {
-      toast.error(res.EM);
+      setPreviewImage("");
+      setImage("");
     }
   };
 
@@ -65,11 +55,12 @@ function EditProfile() {
     }
   };
 
-  const handleUpdateUser = async () => {
-    const trimUsername = username.trim();
+  const handleUpdateOwner = async () => {
+    const trimBusinessName = businessName.trim();
+    const trimAddress = address.trim();
     const trimPhoneNumber = phoneNumber.trim();
 
-    if (!trimUsername || /\d/.test(trimUsername)) {
+    if (!trimBusinessName || /\d/.test(trimBusinessName)) {
       toast.error("Họ và tên không hợp lệ!");
       return;
     }
@@ -83,32 +74,37 @@ function EditProfile() {
       return;
     }
 
-    const res = await updateUser(id, trimUsername, trimPhoneNumber, image);
+    if (!trimAddress) {
+      toast.error("Địa chỉ không được bỏ trống!");
+    }
+
+    const res = await updateOwner(
+      id,
+      trimBusinessName,
+      trimAddress,
+      trimPhoneNumber,
+      image
+    );
     if (res.EC === 1) {
       toast.success(res.EM);
 
-      const userUpdated = JSON.parse(localStorage.getItem("user"));
-      userUpdated.name = res.updatedUser.name;
-      userUpdated.avatar = res.updatedUser.profile_picture;
+      const ownerUpdated = JSON.parse(localStorage.getItem("owner"));
+      ownerUpdated.name = res.data.business_name;
+      ownerUpdated.avatar = res.data.profile_picture;
 
-      console.log(userUpdated);
+      localStorage.setItem("owner", JSON.stringify(ownerUpdated));
 
-      localStorage.setItem("user", JSON.stringify(userUpdated));
+      setOwnerData(ownerUpdated);
 
-      setUserData(userUpdated);
-
-      fetchUserById();
+      fetchOwnerById();
     } else {
       toast.error(res.EM);
     }
   };
 
   return (
-    <div className="profile-wrapper">
-      <h3 className="profile-title">Thông tin cá nhân</h3>
-      <span className="line"></span>
-
-      <div className="edit-profile">
+    <div className="profile-owner-wrapper">
+      <div className="edit-profile-owner">
         <div className="edit-profile-left">
           <h4>Chỉnh sửa thông tin</h4>
 
@@ -129,8 +125,8 @@ function EditProfile() {
               <input
                 type="text"
                 className="form-control"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
               />
             </div>
 
@@ -143,11 +139,21 @@ function EditProfile() {
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
             </div>
+
+            <div className="col-12">
+              <label className="form-label">Địa chỉ</label>
+              <input
+                type="text"
+                className="form-control"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
           </form>
 
           <button
             className=" btn btn-primary btn-update"
-            onClick={handleUpdateUser}
+            onClick={handleUpdateOwner}
           >
             Cập nhật
           </button>
@@ -180,4 +186,4 @@ function EditProfile() {
   );
 }
 
-export default EditProfile;
+export default EditProfileOwner;

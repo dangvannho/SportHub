@@ -1,9 +1,8 @@
 .dashboard-container {
   display: flex;
-  gap: 0 20px;
 
   .content {
-    margin-top: 20px;
+    padding: 20px;
     flex: 1;
   }
 }

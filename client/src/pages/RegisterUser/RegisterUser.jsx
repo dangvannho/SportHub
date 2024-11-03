@@ -56,8 +56,10 @@ function RegisterUser() {
       return;
     }
 
-    if (!password) {
-      toast.error("Mật khẩu không được để trống!");
+    if (password.length < 8 || !/(?=.*[0-9])|(?=.*[!@#$%^&*])/.test(password)) {
+      toast.error(
+        "Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất một chữ số hoặc ký tự đặc biệt!"
+      );
       return;
     }
 

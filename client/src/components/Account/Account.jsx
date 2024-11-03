@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 
@@ -7,6 +7,7 @@ import "./Account.scss";
 
 function Account({ userData, setUserData }) {
   const [show, setShow] = useState(false);
+  const accountRef = useRef(null);
 
   const navigate = useNavigate();
 
@@ -16,8 +17,31 @@ function Account({ userData, setUserData }) {
     navigate(routeConfig.login);
   };
 
+  const handleClickOutside = (event) => {
+    if (accountRef.current && !accountRef.current.contains(event.target)) {
+      setShow(false);
+    }
+  };
+
+  useEffect(() => {
+    if (show) {
+      document.addEventListener("click", handleClickOutside);
+    } else {
+      document.removeEventListener("click", handleClickOutside);
+    }
+
+    // Cleanup event listener khi component bị unmount
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [show]);
+
   return (
-    <div className="account-container" onClick={() => setShow(!show)}>
+    <div
+      ref={accountRef}
+      className="account-container"
+      onClick={() => setShow(!show)}
+    >
       {userData.avatar ? (
         <img src={`data:image/jpeg;base64,${userData.avatar}`} alt="" />
       ) : (

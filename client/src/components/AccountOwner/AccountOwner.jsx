@@ -1,6 +1,4 @@
-// import { useState } from "react";
 import { FaUserTie } from "react-icons/fa";
-import { FaChevronDown } from "react-icons/fa";
 
 import "./AccountOwner.scss";
 
@@ -15,7 +13,6 @@ function AccountOwner({ ownerData }) {
         )}
       </div>
       <p className="name-owner">{ownerData.name} </p>
-      <FaChevronDown size={13} />
     </div>
   );
 }

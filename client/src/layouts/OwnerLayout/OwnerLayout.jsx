@@ -1,4 +1,5 @@
 import { GiSoccerField } from "react-icons/gi";
+import { FaUserEdit } from "react-icons/fa";
 import { useContext } from "react";
 
 import { AppContext } from "~/context/AppContext";
@@ -15,6 +16,12 @@ function OwnerLayout({ children }) {
       title: "Quản lý sân",
       path: routeConfig.manageField,
       icon: <GiSoccerField size={25} />,
+    },
+
+    {
+      title: "Thông tin cá nhân",
+      path: routeConfig.editProfileOwner,
+      icon: <FaUserEdit size={25} />,
     },
   ];
   return (

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import routeConfig from "~/config/routeConfig";
@@ -18,10 +18,10 @@ function SideBar({ heading = "ADMIN", menuItems = [] }) {
         <div className="group">
           {menuItems.map((item, index) => {
             return (
-              <Link key={index} to={item.path} className="item">
+              <NavLink key={index} to={item.path} className="item">
                 {item.icon}
                 {item.title}
-              </Link>
+              </NavLink>
             );
           })}
         </div>
