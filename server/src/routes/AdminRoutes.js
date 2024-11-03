@@ -17,7 +17,7 @@ const middlewareController = require("../controllers/middlewareControler");
 
 // Owner Routes
 router.get("/owners", middlewareController.verifyTokenAdmin, getAllOwner);
-router.get("/owners/:id", middlewareController.verifyTokenAdmin, getOwner);
+router.get("/owners/:id", middlewareController.verifyToken, getOwner);
 router.post(
   "/owners",
   middlewareController.verifyTokenAdmin,
