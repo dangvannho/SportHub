@@ -22,11 +22,11 @@ function ManageOwner() {
 
   // config titles in table
   const header = [
-    { title: "Business name", key: "business_name" },
+    { title: "Tên chủ sân", key: "business_name" },
     { title: "Email", key: "email" },
-    { title: "Phone number", key: "phone_number" },
-    { title: "Address", key: "address" },
-    { title: "Action" },
+    { title: "Số điện thoại", key: "phone_number" },
+    { title: "Địa chỉ", key: "address" },
+    { title: "" },
   ];
 
   useEffect(() => {
@@ -65,7 +65,7 @@ function ManageOwner() {
 
       <Table
         header={header}
-        viewbtn={false}
+        addPriceBtn={false}
         data={listOwner}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}

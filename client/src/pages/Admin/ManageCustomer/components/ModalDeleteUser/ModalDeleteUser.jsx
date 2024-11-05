@@ -48,7 +48,7 @@ function ModalDeleteUser({
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Đóng
           </Button>
           <Button
             variant="primary"
@@ -56,7 +56,7 @@ function ModalDeleteUser({
               handleSubmitDeleteUser();
             }}
           >
-            Confirm
+            Xác nhận
           </Button>
         </Modal.Footer>
       </Modal>

@@ -70,7 +70,7 @@ function EditProfile() {
     const trimPhoneNumber = phoneNumber.trim();
 
     if (!trimUsername || /\d/.test(trimUsername)) {
-      toast.error("Invalid name!");
+      toast.error("Họ và tên không hợp lệ!");
       return;
     }
 
@@ -79,7 +79,7 @@ function EditProfile() {
       /\s/.test(trimPhoneNumber) ||
       /[a-zA-Z]/.test(trimPhoneNumber)
     ) {
-      toast.error("Invalid phone number!");
+      toast.error("Số điện thoại không hợp lệ!");
       return;
     }
 
@@ -125,7 +125,7 @@ function EditProfile() {
             </div>
 
             <div className="col-md-6">
-              <label className="form-label">Tên</label>
+              <label className="form-label">Họ và tên</label>
               <input
                 type="text"
                 className="form-control"
@@ -143,13 +143,6 @@ function EditProfile() {
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
             </div>
-
-            {/* Address*/}
-            {/* <div className="col-12">
-              <label className="form-label">Địa chỉ</label>
-              <input type="text" className="form-control" />
-            </div> 
-            */}
           </form>
 
           <button

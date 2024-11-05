@@ -1,0 +1,22 @@
+.owner-container {
+  display: flex;
+
+  .content {
+    flex: 1;
+  }
+}
+
+.content {
+  .header-content {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 45px;
+    padding: 0 35px;
+    border-bottom: 1px solid #000;
+  }
+
+  .content-page {
+    padding: 20px 0 0 20px;
+  }
+}

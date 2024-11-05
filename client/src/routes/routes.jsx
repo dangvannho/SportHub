@@ -1,6 +1,7 @@
 import routeConfig from "~/config/routeConfig";
 
 import DashboardLayout from "~/layouts/DashboardLayout/DashboardLayout";
+import OwnerLayout from "~/layouts/OwnerLayout/OwnerLayout";
 
 import Home from "~/pages/Home/Home";
 import SportFields from "~/pages/SportFields/SportFields";
@@ -11,13 +12,20 @@ import RegisterUser from "~/pages/RegisterUser/RegisterUser";
 import RegisterOwner from "~/pages/ResgiterOwner/RegisterOwner";
 import EditProfile from "~/pages/EditProfile/EditProfile";
 
+// Owner
+import ManageField from "~/pages/Owner/ManageField/ManageField";
+import EditProfileOwner from "~/pages/Owner/EditProfileOwner/EditProfileOwner";
+
+// admin
 // import LoginAdmin from "~/pages/Admin/LoginAdmin/LoginAdmin";
 import ManageCustomer from "~/pages/Admin/ManageCustomer/ManageCustomer";
 import ManageOwner from "~/pages/Admin/ManageOwner/ManageOwner";
 import ManagePayment from "~/pages/Admin/ManagePayment/ManagePayment";
 import NotFound from "~/pages/NotFound/NotFound";
 
-import { AdminRoute } from "./ProtectRoute";
+import Calendar from "~/pages/Calendar/Calendar";
+
+import { AdminRoute, OwnerRoute } from "./ProtectRoute";
 
 const publicRoutes = [
   // Main layout
@@ -41,6 +49,8 @@ const publicRoutes = [
     component: <RegisterOwner />,
     layout: null,
   },
+
+  { path: routeConfig.calendar, component: <Calendar />, layout: null },
 
   { path: routeConfig.notFound, component: <NotFound />, layout: null },
 
@@ -71,6 +81,26 @@ const publicRoutes = [
       </AdminRoute>
     ),
     layout: DashboardLayout,
+  },
+
+  // Owner Layout
+  {
+    path: routeConfig.manageField,
+    component: (
+      <OwnerRoute>
+        <ManageField />
+      </OwnerRoute>
+    ),
+    layout: OwnerLayout,
+  },
+  {
+    path: routeConfig.editProfileOwner,
+    component: (
+      <OwnerRoute>
+        <EditProfileOwner />
+      </OwnerRoute>
+    ),
+    layout: OwnerLayout,
   },
 ];
 

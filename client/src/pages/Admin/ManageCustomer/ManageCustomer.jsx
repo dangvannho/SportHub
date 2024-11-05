@@ -22,10 +22,10 @@ function ManageCustomer() {
 
   // config titles in table
   const header = [
-    { title: "Username", key: "name" },
+    { title: "Họ và tên", key: "name" },
     { title: "Email", key: "email" },
-    { title: "Phone number", key: "phone_number" },
-    { title: "Action" },
+    { title: "Số điện thoại", key: "phone_number" },
+    { title: "" },
   ];
 
   useEffect(() => {
@@ -64,7 +64,7 @@ function ManageCustomer() {
 
       <Table
         header={header}
-        viewbtn={false}
+        addPriceBtn={false}
         data={listUser}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}

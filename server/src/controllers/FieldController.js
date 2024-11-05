@@ -1,6 +1,6 @@
 const Field = require("../models/Field");
 const Pagination = require("../utils/Pagination");
-const {processImage , getProfilePicture} = require('../utils/ProcessIMG')
+const {processFieldImage , getProfilePicture} = require('../utils/ProcessIMG')
 const { authenticateUser } = require("../utils/checkOwner");
 
 
@@ -130,7 +130,7 @@ const addField = async (req, res) => {
      let images = [];
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const processedImage = await processImage(file.buffer);
+        const processedImage = await processFieldImage (file.buffer);
         images.push(processedImage);
       }
     }
@@ -171,11 +171,11 @@ const updateField = async (req, res) => {
       type,
       description,
       availability_status,
+      imagesToDelete, // Danh sách các ảnh cần xóa
     } = req.body;
 
     const owner_id = authenticateUser(req, res);
     if (!owner_id) return; // Nếu xác thực thất bại, hàm authenticateUser sẽ trả về phản hồi
-
 
     // Lấy thông tin trường hiện tại
     const field = await Field.findById(id);
@@ -183,16 +183,32 @@ const updateField = async (req, res) => {
       return res.status(404).json({ message: "Field not found" });
     }
 
-    // Xử lý ảnh nếu có
-    let images = [];
+    let images = [...field.images];
+    const deletedImages = new Set(); // Sử dụng Set để lưu các ảnh đã xóa
+
+// Lọc các ảnh cần xóa khỏi mảng images
+images = images.filter((imageUrl) => {
+  if (imagesToDelete.includes(imageUrl) && !deletedImages.has(imageUrl)) {
+    deletedImages.add(imageUrl); // Đánh dấu ảnh đã xóa
+    return false; // Loại bỏ ảnh khỏi mảng
+  }
+  return true; // Giữ lại ảnh trong mảng
+});
+
+
+
+
+
+
+    // Thêm các ảnh mới nếu có
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const processedImage = await processImage(file.buffer);
-        images.push(processedImage);
+        const processedImage = await processFieldImage(file.buffer);
+        images.push(processedImage); // Thêm ảnh mới vào mảng
       }
     }
 
-    // Tạo đối tượng updateData chứa các trường cần cập nhật
+    // Cập nhật dữ liệu
     let updateData = {
       owner_id,
       name,
@@ -210,15 +226,18 @@ const updateField = async (req, res) => {
     res.status(200).json({
       EC: 1,
       EM: "Field Updated",
-       updatedField,
+      updatedField,
     });
   } catch (error) {
+    console.error("Update failed:", error);
     res.status(500).json({
       EC: 0,
       EM: error.message,
     });
   }
 };
+
+
 
 const deleteField = async (req, res) => {
   try {

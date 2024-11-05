@@ -47,7 +47,7 @@ function ModalDeleteOwner({
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Đóng
           </Button>
           <Button
             variant="primary"
@@ -55,7 +55,7 @@ function ModalDeleteOwner({
               handleSubmitDeleteOwner();
             }}
           >
-            Confirm
+            Xác nhận
           </Button>
         </Modal.Footer>
       </Modal>

@@ -138,7 +138,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
             </div>
 
             <div className="col-md-6">
-              <label className="form-label">Password</label>
+              <label className="form-label">Mật khẩu</label>
               <input
                 type="password"
                 className="form-control"
@@ -148,7 +148,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
             </div>
 
             <div className="col-md-6">
-              <label className="form-label">Business name</label>
+              <label className="form-label">Họ và tên</label>
               <input
                 type="text"
                 className="form-control"
@@ -158,7 +158,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
             </div>
 
             <div className="col-md-6">
-              <label className="form-label">Phone number</label>
+              <label className="form-label">Số điện thoại</label>
               <input
                 type="text"
                 className="form-control"
@@ -168,7 +168,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
             </div>
 
             <div className="col-md-12">
-              <label className="form-label">Address</label>
+              <label className="form-label">Địa chỉ</label>
               <input
                 type="text"
                 className="form-control"
@@ -180,7 +180,7 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
             <div className="col-md-12 btn-upload">
               <label className="label-upload" htmlFor="label-upload">
                 <FcPlus />
-                Upload File Image
+                Tải ảnh lên
               </label>
               <input
                 type="file"
@@ -202,10 +202,10 @@ function ModalCreateOwner({ showModalAdd, setShowModalAdd, fetchAllOwner }) {
 
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Đóng
           </Button>
           <Button variant="primary" onClick={handleSubmitCreateOwner}>
-            Add
+            Thêm
           </Button>
         </Modal.Footer>
       </Modal>

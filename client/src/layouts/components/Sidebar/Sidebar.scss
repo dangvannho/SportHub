@@ -1,12 +1,11 @@
 .sidebar-wrapper {
-  width: 17%;
+  width: 16%;
   height: 100vh;
   background-color: #1a1919;
   padding: 24px;
 
   .heading {
     padding: 24px 0;
-    color: #fff;
     color: orange;
     margin-left: 17px;
     font-size: 26px;
@@ -30,12 +29,17 @@
       align-items: center;
       gap: 0 20px;
       padding: 20px 16px;
-      color: white;
+      color: #ffffff8a;
       border-radius: 4px;
       text-decoration: none;
 
       &:hover {
         background-color: #5932ea;
+        color: #fff;
+      }
+
+      &.active {
+        color: #fff;
       }
     }
   }

@@ -7,8 +7,15 @@ export const AppProvider = ({ children }) => {
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
+
+  const [ownerData, setOwnerData] = useState(() => {
+    const savedOwner = localStorage.getItem("owner");
+    return savedOwner ? JSON.parse(savedOwner) : null;
+  });
   return (
-    <AppContext.Provider value={{ userData, setUserData }}>
+    <AppContext.Provider
+      value={{ userData, setUserData, ownerData, setOwnerData }}
+    >
       {children}
     </AppContext.Provider>
   );

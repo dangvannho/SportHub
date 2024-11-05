@@ -1,0 +1,50 @@
+.row-custom {
+  gap: 20px 0;
+
+  .btn-upload {
+    .label-upload {
+      display: inline-flex;
+      align-items: center;
+      gap: 0 5px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      background-color: #eeeeee;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #dbdada;
+      }
+    }
+  }
+
+  .img-preview-field {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0 5px;
+    height: 150px;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    color: #ccc;
+
+    .img-item {
+      position: relative;
+      height: 100%;
+    }
+  }
+}
+
+.img-item {
+  img {
+    width: 200px;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .btn-remove {
+    position: absolute;
+    top: -4px;
+    right: 0;
+    background-color: transparent;
+  }
+}

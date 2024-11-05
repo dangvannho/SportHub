@@ -11,6 +11,9 @@ const routeConfig = {
   manageOwner: "/admin/manageOwner",
   managePayment: "/admin/managePayment",
   editProfile: "/editProfile",
+  manageField: "/owner/manageField",
+  editProfileOwner: "/owner/editProfile",
+  calendar: "/calendar",
   notFound: "*",
 };
 

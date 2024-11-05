@@ -94,9 +94,10 @@
 .silde-image {
   display: flex;
   gap: 0 8px;
+  justify-content: center;
 
   .thumbnail {
-    flex: 1;
+    width: 140px;
     cursor: pointer;
 
     img {
