@@ -30,7 +30,6 @@ const getFieldsByOwnerId = async (req, res) => {
 };
 
 const addFieldRates = async (req, res) => {
-
     const { field_id, startHour, endHour, price, is_weekend } = req.body;
 
     try {
@@ -46,14 +45,14 @@ const addFieldRates = async (req, res) => {
             field.price = [];
         }
 
-        // Kiểm tra xung đột với các khung giờ đã có
+        // Kiểm tra xung đột với các khung giờ đã có (so sánh chuỗi)
         const isConflict = field.price.some(existingSlot => {
             return (
-                existingSlot.is_weekend === is_weekend && // Kiểm tra nếu là cùng loại ngày (cuối tuần/ngày thường)
+                existingSlot.is_weekend === is_weekend &&
                 (
-                    (startHour >= existingSlot.startHour && startHour < existingSlot.endHour) || // Khung giờ mới bắt đầu trong khung giờ đã có
-                    (endHour > existingSlot.startHour && endHour <= existingSlot.endHour) ||    // Khung giờ mới kết thúc trong khung giờ đã có
-                    (existingSlot.startHour >= startHour && existingSlot.endHour <= endHour)   // Khung giờ đã có nằm trong khung giờ mới
+                    (startHour >= existingSlot.startHour && startHour < existingSlot.endHour) || 
+                    (endHour > existingSlot.startHour && endHour <= existingSlot.endHour) ||    
+                    (existingSlot.startHour >= startHour && existingSlot.endHour <= endHour)
                 )
             );
         });
@@ -63,19 +62,24 @@ const addFieldRates = async (req, res) => {
         }
 
         // Thêm khung giờ mới vào mảng price
-        field.price.push({ startHour, endHour, price, is_weekend });
+        const newPriceSlot = { startHour, endHour, price, is_weekend };
+        field.price.push(newPriceSlot);
 
-        // Lưu tài liệu Field đã cập nhật
+        // Lưu tài liệu Field đã cập nhật và lấy ID của khung giờ mới thêm
         await field.save();
+        const addedPriceSlot = field.price[field.price.length - 1];
+        const priceId = addedPriceSlot._id;
 
         const startDate = new Date();
         const endDate = new Date();
         endDate.setMonth(startDate.getMonth() + 1);
 
-        // Khung giờ từng tiếng
         const timeSlots = [
-            "5:00", "6:00", "7:00", "8:00", "9:00", "10:00", "11:00", "12:00",
-            "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"
+            "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
+            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
+            "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
+            "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", 
+            "21:00", "21:30", "22:00"
         ];
 
         const fieldAvailabilityRecords = [];
@@ -83,35 +87,32 @@ const addFieldRates = async (req, res) => {
         // Tạo các bản ghi khung giờ cho từng ngày trong tháng tới
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
             const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-
-            // Chỉ tạo các bản ghi cho nhóm giờ có is_weekend tương ứng
+            // kiểm tra ngày hiện tại có phải cuối tuần k
             if (isWeekend !== is_weekend) {
-                continue; // Bỏ qua các ngày không phù hợp với is_weekend của rate
+                continue;
             }
 
-            timeSlots.forEach((startTime, index) => {
-                const startHourSlot = parseInt(startTime.split(":")[0]);
-
-                // Kiểm tra nếu startHourSlot nằm trong khung giờ đã thêm vào
-                if (startHourSlot >= startHour && startHourSlot < endHour) {
+            for (let index = 0; index < timeSlots.length; index++) {
+                const startTime = timeSlots[index];
+                if (startTime >= startHour && startTime < endHour) {
                     fieldAvailabilityRecords.push({
                         field_id,
                         availability_date: new Date(d),
                         start_time: startTime,
-                        end_time: timeSlots[index + 1] || "23:00",
+                        end_time: timeSlots[index + 2] || "23:00",
                         is_available: true,
-                        price: price,
-                        is_weekend: isWeekend
+                        price,
+                        price_id: priceId
                     });
+                    index+=1;
                 }
-            });
+                
+            };
         }
 
-        // Lưu tất cả các bản ghi FieldAvailability vào database
         if (fieldAvailabilityRecords.length > 0) {
             await FieldAvailability.insertMany(fieldAvailabilityRecords);
         }
-
 
         res.status(200).json({
             message: 'Thêm nhóm giờ và thiết lập giá cho các khung giờ thành công trong tháng tiếp theo.',
@@ -123,8 +124,10 @@ const addFieldRates = async (req, res) => {
     }
 };
 
+
+
 const updateFieldRate = async (req, res) => {
-    const { field_id, startHour, endHour, is_weekend, newPrice } = req.body;
+    const { field_id, price_id, newPrice } = req.body;
 
     try {
         // Find the field by ID
@@ -133,13 +136,9 @@ const updateFieldRate = async (req, res) => {
             return res.status(404).json({ message: "Không tìm thấy sân" });
         }
 
-        // Locate the specific time slot to update in the field's price array
-        const slotIndex = field.price.findIndex(slot =>
-            slot.startHour === startHour &&
-            slot.endHour === endHour &&
-            slot.is_weekend === is_weekend
-        );
-
+        // Locate the specific time slot to update in the field's price array using price_id
+        const slotIndex = field.price.findIndex(slot => slot._id.toString() === price_id);
+        
         if (slotIndex === -1) {
             return res.status(404).json({ message: "Không tìm thấy nhóm giờ để cập nhật" });
         }
@@ -152,9 +151,7 @@ const updateFieldRate = async (req, res) => {
         await FieldAvailability.updateMany(
             {
                 field_id,
-                start_time: `${startHour}:00`,
-                end_time: `${endHour}:00`,
-                is_weekend
+                price_id
             },
             { $set: { price: newPrice } }
         );
@@ -167,8 +164,9 @@ const updateFieldRate = async (req, res) => {
 };
 
 
+
 const deleteFieldRate = async (req, res) => {
-    const { field_id, startHour, endHour, is_weekend } = req.body;
+    const { field_id, price_id } = req.body;
 
     try {
         // Find the field by ID
@@ -177,10 +175,8 @@ const deleteFieldRate = async (req, res) => {
             return res.status(404).json({ message: "Không tìm thấy sân" });
         }
 
-        // Remove the specified time slot from the field's price array
-        const updatedPriceArray = field.price.filter(slot =>
-            !(slot.startHour === startHour && slot.endHour === endHour && slot.is_weekend === is_weekend)
-        );
+        // Remove the specified time slot from the field's price array using price_id
+        const updatedPriceArray = field.price.filter(slot => slot._id.toString() !== price_id);
 
         if (updatedPriceArray.length === field.price.length) {
             return res.status(404).json({ message: "Không tìm thấy nhóm giờ để xoá" });
@@ -189,12 +185,10 @@ const deleteFieldRate = async (req, res) => {
         field.price = updatedPriceArray;
         await field.save();
 
-        // Delete all matching FieldAvailability records
+        // Delete all matching FieldAvailability records with the price_id
         await FieldAvailability.deleteMany({
             field_id,
-            start_time: `${startHour}:00`,
-            end_time: `${endHour}:00`,
-            is_weekend
+            price_id
         });
 
         res.status(200).json({ message: "Xoá nhóm giờ thành công" });
@@ -203,6 +197,7 @@ const deleteFieldRate = async (req, res) => {
         res.status(500).json({ error: "Lỗi khi xoá nhóm giờ" });
     }
 };
+
 
 
 
