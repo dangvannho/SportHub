@@ -1,5 +1,12 @@
 const mongoose = require('mongoose');
 
+const priceSchema = new mongoose.Schema({
+  startHour: { type: Number, required: true },
+  endHour: { type: Number, required: true },
+  price: { type: Number, required: true },
+  is_weekend: { type: Boolean, required: true }
+});
+
 const FieldSchema = new mongoose.Schema(
   {
     owner_id: {
@@ -13,6 +20,7 @@ const FieldSchema = new mongoose.Schema(
     description: { type: String },
     availability_status: { type: Boolean, default: true },
     images: { type: [String] },
+    price: [priceSchema]
   },
   { timestamps: true }
 );

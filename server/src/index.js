@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const app = express();
 const morgan = require("morgan");
+const cron = require('node-cron');
 const connectDB = require("./config/configDatabase");
 
 const fieldRoutes = require("./routes/FieldRoutes")
@@ -17,8 +18,6 @@ const ownerRoutes = require('./routes/OwnerRoutes')
 const imageRoutes = require('./routes/ImgRoutes')
 
 const authRoutes = require('./routes/AuthRoutes');
-
-const fieldAvailabilityRoutes = require('./routes/FieldAvailabilityRoutes');
 
 
 // config env
@@ -44,8 +43,6 @@ app.use('/api/img', imageRoutes);
 app.use('/api/admin', adminRoutes)
 
 app.use('/api/tournaments', tournamentRoutes)
-
-app.use('/api/fieldAvailability', fieldAvailabilityRoutes);
 
 app.use('/api/owner', ownerRoutes);
 
