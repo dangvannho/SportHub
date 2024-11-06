@@ -29,13 +29,42 @@ const getFieldsByOwnerId = async (req, res) => {
     }
 };
 
+const getFieldPriceSlots = async (req, res) => {
+    const { field_id } = req.body; // Assuming field_id is passed as a URL parameter
+
+    try {
+        // Find the field by ID
+        const field = await Field.findById(field_id);
+
+        // If the field does not exist, return a 404 error
+        if (!field) {
+            return res.status(404).json({
+                EC: 1,
+                EM: "Không tìm thấy sân" });
+        }
+
+        // Return the price array containing all price slots
+        res.status(200).json({
+            EC: 1,
+            EM: "Danh sách các priceSlot thành công",
+            priceSlots: field.price
+        });
+    } catch (error) {
+        console.error("Error in getFieldPriceSlots:", error);
+        res.status(500).json({ error: "Lỗi khi lấy danh sách priceSlot" });
+    }
+};
+
+
 const addPriceSlot = async (req, res) => {
     const { field_id, startHour, endHour, price, is_weekend } = req.body;
 
     try {
         const field = await Field.findById(field_id);
         if (!field) {
-            return res.status(404).json({ message: "Không tìm thấy sân" });
+            return res.status(404).json({ 
+                EC: 1,
+                EM: "Không tìm thấy sân" });
         }
 
         if (!Array.isArray(field.price)) {
@@ -50,17 +79,23 @@ const addPriceSlot = async (req, res) => {
         ));
 
         if (isConflict) {
-            return res.status(400).json({ message: "Khung giờ đã nhập bị trùng với khung giờ đã có." });
+            return res.status(400).json({
+                EC: 0,
+                EM: "Khung giờ đã nhập bị trùng với khung giờ đã có." });
         }
 
         const newPriceSlot = { startHour, endHour, price, is_weekend };
         field.price.push(newPriceSlot);
         await field.save();
 
-        res.status(200).json({ message: 'Thêm nhóm giờ thành công.', priceSlot: newPriceSlot });
+        res.status(200).json({
+            EC : 1,
+            EM: 'Thêm nhóm giờ thành công.', priceSlot: newPriceSlot });
     } catch (error) {
         console.error("Error in addPriceSlot:", error);
-        res.status(500).json({ error: 'Lỗi khi thêm khung giờ.' });
+        res.status(500).json({ 
+            EC: 0,
+            EM : 'Lỗi khi thêm khung giờ.' });
     }
 };
 
@@ -70,7 +105,9 @@ const generateAvailabilityRecords = async (req, res) => {
     try {
         const field = await Field.findById(field_id);
         if (!field) {
-            return res.status(404).json({ message: "Không tìm thấy sân" });
+            return res.status(404).json({ 
+                EC: 0,
+                EM: "Không tìm thấy sân" });
         }
 
         const fieldAvailabilityRecords = [];
@@ -124,10 +161,14 @@ const generateAvailabilityRecords = async (req, res) => {
             await FieldAvailability.insertMany(fieldAvailabilityRecords);
         }
 
-        res.status(200).json({ message: 'Thêm các bản ghi khung giờ thành công.' });
+        res.status(200).json({ 
+            EC: 1,
+            EM: 'Thêm các bản ghi khung giờ thành công.' });
     } catch (error) {
         console.error("Error in generateAvailabilityRecords:", error);
-        res.status(500).json({ error: 'Lỗi khi tạo các bản ghi khung giờ.' });
+        res.status(500).json({ 
+            EC: 0,
+            EM: 'Lỗi khi tạo các bản ghi khung giờ.' });
     }
 };
 
@@ -141,14 +182,18 @@ const updateFieldRate = async (req, res) => {
         // Find the field by ID
         const field = await Field.findById(field_id);
         if (!field) {
-            return res.status(404).json({ message: "Không tìm thấy sân" });
+            return res.status(404).json({ 
+                EC: 0,
+                EM: "Không tìm thấy sân" });
         }
 
         // Locate the specific time slot to update in the field's price array using price_id
         const slotIndex = field.price.findIndex(slot => slot._id.toString() === price_id);
         
         if (slotIndex === -1) {
-            return res.status(404).json({ message: "Không tìm thấy nhóm giờ để cập nhật" });
+            return res.status(404).json({ 
+                EC: 0,
+                EM: "Không tìm thấy nhóm giờ để cập nhật" });
         }
 
         // Update the price of the found time slot
@@ -164,10 +209,14 @@ const updateFieldRate = async (req, res) => {
             { $set: { price: newPrice } }
         );
 
-        res.status(200).json({ message: "Cập nhật giá khung giờ thành công" });
+        res.status(200).json({ 
+            EC: 1,
+            EM: "Cập nhật giá khung giờ thành công" });
     } catch (error) {
         console.error("Error in updateFieldRate:", error);
-        res.status(500).json({ error: "Lỗi khi cập nhật giá khung giờ" });
+        res.status(500).json({ 
+            EC: 0,
+            EM: "Lỗi khi cập nhật giá khung giờ" });
     }
 };
 
@@ -180,7 +229,9 @@ const deleteFieldRate = async (req, res) => {
         // Find the field by ID
         const field = await Field.findById(field_id);
         if (!field) {
-            return res.status(404).json({ message: "Không tìm thấy sân" });
+            return res.status(404).json({ 
+                EC: 0,
+                EM: "Không tìm thấy sân" });
         }
 
         // Remove the specified time slot from the field's price array using price_id
@@ -199,10 +250,14 @@ const deleteFieldRate = async (req, res) => {
             price_id
         });
 
-        res.status(200).json({ message: "Xoá nhóm giờ thành công" });
+        res.status(200).json({ 
+            EC: 1,
+            EM: "Xoá nhóm giờ thành công" });
     } catch (error) {
         console.error("Error in deleteFieldRate:", error);
-        res.status(500).json({ error: "Lỗi khi xoá nhóm giờ" });
+        res.status(500).json({ 
+            EC: 0,
+            EM: "Lỗi khi xoá nhóm giờ" });
     }
 };
 
@@ -210,4 +265,4 @@ const deleteFieldRate = async (req, res) => {
 
 
 
-module.exports = { getFieldsByOwnerId, generateAvailabilityRecords, addPriceSlot, updateFieldRate, deleteFieldRate};
+module.exports = { getFieldsByOwnerId, generateAvailabilityRecords, addPriceSlot, updateFieldRate, deleteFieldRate, getFieldPriceSlots};
