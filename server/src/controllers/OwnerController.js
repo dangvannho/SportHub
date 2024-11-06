@@ -30,7 +30,7 @@ const getFieldsByOwnerId = async (req, res) => {
 };
 
 const getFieldPriceSlots = async (req, res) => {
-    const { field_id } = req.body; // Assuming field_id is passed as a URL parameter
+    const { field_id } = req.query; // Get field_id from query parameters
 
     try {
         // Find the field by ID
@@ -39,8 +39,9 @@ const getFieldPriceSlots = async (req, res) => {
         // If the field does not exist, return a 404 error
         if (!field) {
             return res.status(404).json({
-                EC: 1,
-                EM: "Không tìm thấy sân" });
+                EC: 0,
+                EM: "Không tìm thấy sân"
+            });
         }
 
         // Return the price array containing all price slots
@@ -51,9 +52,13 @@ const getFieldPriceSlots = async (req, res) => {
         });
     } catch (error) {
         console.error("Error in getFieldPriceSlots:", error);
-        res.status(500).json({ error: "Lỗi khi lấy danh sách priceSlot" });
+        res.status(500).json({ 
+            EC: 0, 
+            EM: "Lỗi khi lấy danh sách priceSlot" 
+        });
     }
 };
+
 
 
 const addPriceSlot = async (req, res) => {

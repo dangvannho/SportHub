@@ -7,6 +7,6 @@ router.post('/add', addPriceSlot);
 router.post('/generate', generateAvailabilityRecords);
 router.put('/update', updateFieldRate);
 router.delete('/delete', deleteFieldRate);
-router.get('/pricesSlots', getFieldPriceSlots);
+router.get('/priceSlots', getFieldPriceSlots);
 
 module.exports = router;
