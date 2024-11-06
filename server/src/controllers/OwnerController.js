@@ -29,51 +29,51 @@ const getFieldsByOwnerId = async (req, res) => {
     }
 };
 
-const addFieldRates = async (req, res) => {
+const addPriceSlot = async (req, res) => {
     const { field_id, startHour, endHour, price, is_weekend } = req.body;
 
     try {
-        // Tìm sân theo ID
         const field = await Field.findById(field_id);
-
         if (!field) {
             return res.status(404).json({ message: "Không tìm thấy sân" });
         }
 
-        // Đảm bảo mảng field.price được khởi tạo nếu chưa có
         if (!Array.isArray(field.price)) {
             field.price = [];
         }
 
-        // Kiểm tra xung đột với các khung giờ đã có (so sánh chuỗi)
-        const isConflict = field.price.some(existingSlot => {
-            return (
-                existingSlot.is_weekend === is_weekend &&
-                (
-                    (startHour >= existingSlot.startHour && startHour < existingSlot.endHour) || 
-                    (endHour > existingSlot.startHour && endHour <= existingSlot.endHour) ||    
-                    (existingSlot.startHour >= startHour && existingSlot.endHour <= endHour)
-                )
-            );
-        });
+        const isConflict = field.price.some(existingSlot => (
+            existingSlot.is_weekend === is_weekend &&
+            ((startHour >= existingSlot.startHour && startHour < existingSlot.endHour) || 
+             (endHour > existingSlot.startHour && endHour <= existingSlot.endHour) ||    
+             (existingSlot.startHour >= startHour && existingSlot.endHour <= endHour))
+        ));
 
         if (isConflict) {
             return res.status(400).json({ message: "Khung giờ đã nhập bị trùng với khung giờ đã có." });
         }
 
-        // Thêm khung giờ mới vào mảng price
         const newPriceSlot = { startHour, endHour, price, is_weekend };
         field.price.push(newPriceSlot);
-
-        // Lưu tài liệu Field đã cập nhật và lấy ID của khung giờ mới thêm
         await field.save();
-        const addedPriceSlot = field.price[field.price.length - 1];
-        const priceId = addedPriceSlot._id;
 
-        const startDate = new Date();
-        const endDate = new Date();
-        endDate.setMonth(startDate.getMonth() + 1);
+        res.status(200).json({ message: 'Thêm nhóm giờ thành công.', priceSlot: newPriceSlot });
+    } catch (error) {
+        console.error("Error in addPriceSlot:", error);
+        res.status(500).json({ error: 'Lỗi khi thêm khung giờ.' });
+    }
+};
 
+const generateAvailabilityRecords = async (req, res) => {
+    const { field_id, startDate, endDate } = req.body;
+
+    try {
+        const field = await Field.findById(field_id);
+        if (!field) {
+            return res.status(404).json({ message: "Không tìm thấy sân" });
+        }
+
+        const fieldAvailabilityRecords = [];
         const timeSlots = [
             "05:00", "05:30", "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
             "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30",
@@ -82,47 +82,55 @@ const addFieldRates = async (req, res) => {
             "21:00", "21:30", "22:00"
         ];
 
-        const fieldAvailabilityRecords = [];
+        const start = new Date(startDate);
+        const end = new Date(endDate);
 
-        // Tạo các bản ghi khung giờ cho từng ngày trong tháng tới
-        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
             const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-            // kiểm tra ngày hiện tại có phải cuối tuần k
-            if (isWeekend !== is_weekend) {
-                continue;
-            }
 
-            for (let index = 0; index < timeSlots.length; index++) {
-                const startTime = timeSlots[index];
-                if (startTime >= startHour && startTime < endHour) {
-                    fieldAvailabilityRecords.push({
-                        field_id,
-                        availability_date: new Date(d),
-                        start_time: startTime,
-                        end_time: timeSlots[index + 2] || "23:00",
-                        is_available: true,
-                        price,
-                        price_id: priceId
-                    });
-                    index+=1;
+            for (const priceSlot of field.price) {
+                if (priceSlot.is_weekend !== isWeekend) continue;
+
+                for (let index = 0; index < timeSlots.length; index++) {
+                    const startTime = timeSlots[index];
+                    if (startTime >= priceSlot.startHour && startTime < priceSlot.endHour) {
+                        // Check if a record already exists for this date, time, and field
+                        const existingRecord = await FieldAvailability.findOne({
+                            field_id,
+                            availability_date: d,
+                            start_time: startTime,
+                            end_time: timeSlots[index + 2] || "23:00"
+                        });
+
+                        if (!existingRecord) {
+                            fieldAvailabilityRecords.push({
+                                field_id,
+                                availability_date: new Date(d),
+                                start_time: startTime,
+                                end_time: timeSlots[index + 2] || "23:00",
+                                is_available: true,
+                                price: priceSlot.price,
+                                price_id: priceSlot._id,
+                            });
+                        }
+
+                        index += 1;
+                    }
                 }
-                
-            };
+            }
         }
 
         if (fieldAvailabilityRecords.length > 0) {
             await FieldAvailability.insertMany(fieldAvailabilityRecords);
         }
 
-        res.status(200).json({
-            message: 'Thêm nhóm giờ và thiết lập giá cho các khung giờ thành công trong tháng tiếp theo.',
-            field_id,
-        });
+        res.status(200).json({ message: 'Thêm các bản ghi khung giờ thành công.' });
     } catch (error) {
-        console.error("Error in addFieldRates:", error);
-        res.status(500).json({ error: 'Lỗi khi áp dụng giá cho các khung giờ.' });
+        console.error("Error in generateAvailabilityRecords:", error);
+        res.status(500).json({ error: 'Lỗi khi tạo các bản ghi khung giờ.' });
     }
 };
+
 
 
 
@@ -202,4 +210,4 @@ const deleteFieldRate = async (req, res) => {
 
 
 
-module.exports = { getFieldsByOwnerId, addFieldRates, updateFieldRate, deleteFieldRate};
+module.exports = { getFieldsByOwnerId, generateAvailabilityRecords, addPriceSlot, updateFieldRate, deleteFieldRate};
