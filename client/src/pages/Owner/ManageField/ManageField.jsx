@@ -5,6 +5,7 @@ import Table from "~/components/Table/Table";
 import ModalCreateField from "./components/ModalCreateField/ModalCreateField";
 import ModalUpdateField from "./components/ModalUpdateField/ModalUpdateField";
 import ModalDeleteField from "./components/ModalDeleteField/ModalDeleteField";
+import ModalAddTimePrice from "./components/ModalAddTimePrice/ModalAddTimePrice";
 import getAllFieldOwner from "~/services/Field/getAllFieldOwner";
 import "./ManageField.scss";
 
@@ -17,6 +18,7 @@ function ManageField() {
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [showModalUpdate, setShowModalUpdate] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
+  const [showModalAddTimePrice, setModalAddTimePrice] = useState(false);
 
   const itemsPerPage = 3;
 
@@ -51,6 +53,12 @@ function ManageField() {
     setShowModalDelete(true);
   };
 
+  // handle click add time price in table
+  const handleClickBtnAddTimePrice = (dataUser) => {
+    setPersonalData(dataUser);
+    setModalAddTimePrice(true);
+  };
+
   return (
     <div className="manage-field-container">
       <button
@@ -60,6 +68,7 @@ function ManageField() {
         <FcPlus />
         Thêm sân
       </button>
+
       <Table
         header={header}
         data={listFieldOwner}
@@ -68,13 +77,16 @@ function ManageField() {
         totalPage={totalPage}
         handleClickBtnUpdate={handleClickBtnUpdate}
         handleClickBtnDelete={handleClickBtnDelete}
+        handleClickBtnAddTimePrice={handleClickBtnAddTimePrice}
       />
+
       {/* Modal add */}
       <ModalCreateField
         showModalAdd={showModalAdd}
         setShowModalAdd={setShowModalAdd}
         fetchAllFieldOwner={fetchAllFieldOwner}
       />
+
       {/* Modal update*/}
       <ModalUpdateField
         showModalUpdate={showModalUpdate}
@@ -82,6 +94,7 @@ function ManageField() {
         personalData={personalData}
         fetchAllFieldOwner={fetchAllFieldOwner}
       />
+
       {/* Modal delete */}
       <ModalDeleteField
         showModalDelete={showModalDelete}
@@ -91,6 +104,13 @@ function ManageField() {
         setCurrentPage={setCurrentPage}
         fetchAllFieldOwner={fetchAllFieldOwner}
         itemsPerPage={itemsPerPage}
+      />
+
+      {/* Modal add time price */}
+      <ModalAddTimePrice
+        showModalAddTimePrice={showModalAddTimePrice}
+        setShowModalAddTimePrice={setModalAddTimePrice}
+        personalData={personalData}
       />
     </div>
   );

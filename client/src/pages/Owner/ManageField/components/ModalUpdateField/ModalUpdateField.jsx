@@ -63,8 +63,6 @@ function ModalUpdateField({
     e.target.value = null;
   };
 
-  console.log(images);
-
   // Chức năng xóa ảnh
   const handleRemoveImage = (id) => {
     const previewToRemove = previewImages.find((img) => img.id === id);
