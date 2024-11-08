@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const cron = require('node-cron');
 const connectDB = require("./config/configDatabase");
 
+
 const fieldRoutes = require("./routes/FieldRoutes")
 
 const tournamentRoutes = require('./routes/TournamentRoutes')
@@ -18,6 +19,9 @@ const ownerRoutes = require('./routes/OwnerRoutes')
 const imageRoutes = require('./routes/ImgRoutes')
 
 const authRoutes = require('./routes/AuthRoutes');
+
+const paymentRoutes = require('./routes/PaymentRoutes');
+
 
 
 // config env
@@ -45,6 +49,8 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/tournaments', tournamentRoutes)
 
 app.use('/api/owner', ownerRoutes);
+
+app.use('/api/payment', paymentRoutes);
 
 
 app.get("/", (req, res) => {
