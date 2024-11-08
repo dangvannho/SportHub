@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const priceSchema = new mongoose.Schema({
-  startHour: { type: Number, required: true },
-  endHour: { type: Number, required: true },
+  startHour: { type: String, required: true },
+  endHour: { type: String, required: true },
   price: { type: Number, required: true },
   is_weekend: { type: Boolean, required: true }
 });

@@ -10,6 +10,7 @@ function Table({
   totalPage,
   handleClickBtnUpdate,
   handleClickBtnDelete,
+  handleClickBtnAddTimePrice,
 }) {
   const handlePageClick = (event) => {
     setCurrentPage(+event.selected + 1);
@@ -42,8 +43,13 @@ function Table({
                 })}
                 <td className="group-btn">
                   {addPriceBtn ?? (
-                    <button className="btn btn-secondary">
-                      Thêm giờ và giá
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => {
+                        handleClickBtnAddTimePrice(row);
+                      }}
+                    >
+                      Quản lí giờ và giá
                     </button>
                   )}
                   <button
