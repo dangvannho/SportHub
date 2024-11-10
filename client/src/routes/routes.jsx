@@ -15,6 +15,7 @@ import EditProfile from "~/pages/EditProfile/EditProfile";
 // Owner
 import ManageField from "~/pages/Owner/ManageField/ManageField";
 import EditProfileOwner from "~/pages/Owner/EditProfileOwner/EditProfileOwner";
+import ManageCalendar from "~/pages/Owner/ManageCalendar/ManageCalendar";
 
 // admin
 // import LoginAdmin from "~/pages/Admin/LoginAdmin/LoginAdmin";
@@ -23,16 +24,21 @@ import ManageOwner from "~/pages/Admin/ManageOwner/ManageOwner";
 import ManagePayment from "~/pages/Admin/ManagePayment/ManagePayment";
 import NotFound from "~/pages/NotFound/NotFound";
 
-import Calendar from "~/pages/Calendar/Calendar";
-
-import { AdminRoute, OwnerRoute } from "./ProtectRoute";
+import { AdminRoute, OwnerRoute, UserRoute } from "./ProtectRoute";
 
 const publicRoutes = [
   // Main layout
   { path: routeConfig.home, component: <Home /> },
   { path: routeConfig.sportFields, component: <SportFields /> },
   { path: routeConfig.fieldDetail, component: <FieldDetail /> },
-  { path: routeConfig.editProfile, component: <EditProfile /> },
+  {
+    path: routeConfig.editProfile,
+    component: (
+      <UserRoute>
+        <EditProfile />
+      </UserRoute>
+    ),
+  },
 
   // None layout
   { path: routeConfig.login, component: <Login />, layout: null },
@@ -49,8 +55,6 @@ const publicRoutes = [
     component: <RegisterOwner />,
     layout: null,
   },
-
-  { path: routeConfig.calendar, component: <Calendar />, layout: null },
 
   { path: routeConfig.notFound, component: <NotFound />, layout: null },
 
@@ -98,6 +102,15 @@ const publicRoutes = [
     component: (
       <OwnerRoute>
         <EditProfileOwner />
+      </OwnerRoute>
+    ),
+    layout: OwnerLayout,
+  },
+  {
+    path: routeConfig.manageCalendar,
+    component: (
+      <OwnerRoute>
+        <ManageCalendar />
       </OwnerRoute>
     ),
     layout: OwnerLayout,

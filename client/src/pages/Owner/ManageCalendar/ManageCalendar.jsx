@@ -6,13 +6,11 @@ import interactionPlugin from "@fullcalendar/interaction";
 import viLocale from "@fullcalendar/core/locales/vi";
 // import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import "./Booking.css";
-// import Booking from "~/components/Booking/Booking";
+import "./ManageCalendar.css";
 
 function ManageCalendar() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [filteredEvents, setFilteredEvents] = useState([]);
-  // const [showDatLich, setShowDatLich] = useState(false);
 
   const filterPastEvents = (events) => {
     const currentTime = new Date();
@@ -21,7 +19,7 @@ function ManageCalendar() {
 
   const events = [
     {
-      title: "Sân số 1",
+      // title: "Sân số 1",
       start: "2024-11-10T22:30:00",
       end: "2024-11-10T23:30:00",
       extendedProps: {
@@ -159,31 +157,22 @@ function ManageCalendar() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleBookClick = (event) => {
-    // Chỉ cho phép đặt lịch nếu sân chưa được đặt
+  const handleEventClick = (event) => {
     if (event.extendedProps.status === "available") {
       setSelectedSlot(event);
     }
   };
 
-  // const handleCloseDatLich = () => {
-  //   setShowDatLich(false);
-  //   setSelectedSlot(null);
-  // };
-
-  // const handleBookingBtn = () => {
-  //   setShowDatLich(true);
-  // };
-
   const eventContent = (eventInfo) => {
     const isBooked = eventInfo.event.extendedProps.status === "booked";
     return (
-      <div className={`event-content ${eventInfo.event.extendedProps.status}`}>
+      <div
+        className={`event-container ${eventInfo.event.extendedProps.status}`}
+      >
         {isBooked && <div className="event-status">Đã đặt</div>}
-        <div className="event-price">
-          {eventInfo.event.title}
-          <br />
-          {eventInfo.event.extendedProps.price}
+        <div className="event-content">
+          <p> {eventInfo.timeText}</p>
+          <p> {eventInfo.event.extendedProps.price}</p>
         </div>
       </div>
     );
@@ -208,7 +197,7 @@ function ManageCalendar() {
         slotMaxTime="24:00:00"
         allDaySlot={false}
         eventContent={eventContent}
-        eventClick={(info) => handleBookClick(info.event)}
+        eventClick={(info) => handleEventClick(info.event)}
       />
       {selectedSlot && (
         <div className="booking-summary">
@@ -219,13 +208,35 @@ function ManageCalendar() {
             ×
           </button>
           <h3>Thông tin đặt sân</h3>
-          <p>Sân: {selectedSlot.title}</p>
           <p>
-            Thời gian: {new Date(selectedSlot.start).toLocaleString()} -{" "}
+            <strong>Sân</strong>: {selectedSlot.title}
+          </p>
+          <p>
+            <strong> Thời gian: </strong>
+            {new Date(selectedSlot.start).toLocaleString()} -
             {new Date(selectedSlot.end).toLocaleString()}
           </p>
-          <p>Giá: {selectedSlot.extendedProps.price}</p>
-          <button className="btn-book">Đặt lịch</button>
+          <p>
+            <strong>Giá: </strong> {selectedSlot.extendedProps.price}
+          </p>
+          <p>
+            <strong>Trạng thái: </strong>
+            {selectedSlot.extendedProps.status === "booked" ? (
+              <span className="booked-status"> Đã đặt</span>
+            ) : (
+              <span className="available-status"> Chưa đặt</span>
+            )}
+          </p>
+          <div className="action-btn">
+            <button className="btn btn-warning">Sửa</button>
+            <button className="btn btn-danger">Xoá</button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setSelectedSlot(null)}
+            >
+              Đóng
+            </button>
+          </div>
         </div>
       )}
     </div>

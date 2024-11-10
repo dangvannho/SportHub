@@ -1,9 +1,12 @@
 import ReactPaginate from "react-paginate";
+import { useNavigate } from "react-router-dom";
+import routeConfig from "~/config/routeConfig";
 import "./Table.scss";
 
 function Table({
   header,
   addPriceBtn,
+  manageCalendarBtn,
   data,
   currentPage,
   setCurrentPage,
@@ -12,6 +15,8 @@ function Table({
   handleClickBtnDelete,
   handleClickBtnAddTimePrice,
 }) {
+  const navigate = useNavigate();
+
   const handlePageClick = (event) => {
     setCurrentPage(+event.selected + 1);
     console.log(`User requested page number ${event.selected}`);
@@ -50,6 +55,18 @@ function Table({
                       }}
                     >
                       Quản lí giờ và giá
+                    </button>
+                  )}
+                  {manageCalendarBtn ?? (
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => {
+                        navigate(
+                          routeConfig.manageCalendar.replace(":id", row._id)
+                        );
+                      }}
+                    >
+                      Quản lí lịch
                     </button>
                   )}
                   <button
