@@ -18,14 +18,16 @@ function ManageCustomer() {
   const [showModalUpdate, setShowModalUpdate] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const itemsPerPage = 6;
+  const [loading, setLoading] = useState(false);
+
+  const itemsPerPage = 10;
 
   // config titles in table
   const header = [
     { title: "Họ và tên", key: "name" },
     { title: "Email", key: "email" },
     { title: "Số điện thoại", key: "phone_number" },
-    { title: "" },
+    { title: "Hành động" },
   ];
 
   useEffect(() => {
@@ -33,9 +35,11 @@ function ManageCustomer() {
   }, [currentPage]);
 
   const fetchAllUser = async () => {
+    setLoading(true);
     const data = await getAllUser(currentPage, itemsPerPage);
     setListUser(data.results);
     setTotalPage(data.totalPages);
+    setLoading(false);
   };
 
   // handle click update in table
@@ -71,6 +75,7 @@ function ManageCustomer() {
         totalPage={totalPage}
         handleClickBtnUpdate={handleClickBtnUpdate}
         handleClickBtnDelete={handleClickBtnDelete}
+        loading={loading}
       />
 
       {/* Modal add */}

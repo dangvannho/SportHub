@@ -157,6 +157,7 @@ function ModalUpdateUser({
               </label>
               <input
                 type="file"
+                accept="image/jpeg"
                 id="label-upload"
                 hidden
                 onChange={(e) => handleUploadImage(e)}

@@ -3,12 +3,14 @@ import { toast } from "react-toastify";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 import ModalUpdateTimePrice from "./components/ModalUpdateTimePrice/ModalUpdateTimePrice";
 import ModalDeleteTimePrice from "./components/ModalDeleteTimePrice/ModalDeleteTimePrice";
 import addTimePrice from "~/services/Field/addTimePrice";
 import getAllTimePrice from "~/services/Field/getAllTimePrice";
 import generateTime from "~/services/Field/generateTime";
+import "./ModalAddTimePrice.scss";
 
 function ModalAddTimePrice({
   showModalAddTimePrice,
@@ -30,6 +32,8 @@ function ModalAddTimePrice({
 
   const [showModalUpdate, setShowModalUpdate] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const handleClose = () => {
     setShowModalAddTimePrice(false);
@@ -122,8 +126,11 @@ function ModalAddTimePrice({
       return;
     }
 
+    setLoading(true);
+
     const res = await generateTime(fieldId, startDate, endDate);
     if (res.EC === 1) {
+      setLoading(false);
       toast.success(res.EM);
     } else {
       toast.error(res.EM);
@@ -295,7 +302,7 @@ function ModalAddTimePrice({
             </div>
 
             <h4 className="col-md-12 m-0">Tạo khung giờ tự động</h4>
-            <div className="col-md-12 d-flex gap-4">
+            <div className="col-md-12 d-flex gap-4 ">
               {/* Ngày bắt đầu */}
               <div className="col-md-3 mt-1">
                 <label className="form-label">Ngày bắt đầu</label>
@@ -319,11 +326,19 @@ function ModalAddTimePrice({
               </div>
 
               {/* Nút tạo khung giờ */}
-              <div className="col-md-3 align-self-end">
+              <div className="col-md-2 align-self-end">
                 <Button variant="success" onClick={handleGenerateTime}>
                   Tạo khung giờ
                 </Button>
               </div>
+
+              {loading && (
+                <AiOutlineLoading3Quarters
+                  size={20}
+                  color="#0d6efd"
+                  className="icon-loading"
+                />
+              )}
             </div>
           </form>
         </Modal.Body>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
+import { MdArrowDropDown } from "react-icons/md";
 
 import routeConfig from "~/config/routeConfig";
 import "./Account.scss";
@@ -43,14 +44,19 @@ function Account({ userData, setUserData }) {
       onClick={() => setShow(!show)}
     >
       {userData.avatar ? (
-        <img src={`data:image/jpeg;base64,${userData.avatar}`} alt="" />
+        <div className="avatar-box">
+          <img src={`data:image/jpeg;base64,${userData.avatar}`} alt="" />
+        </div>
       ) : (
         <FaUser />
       )}
+      <p className="username">
+        {userData.name}
+        <MdArrowDropDown size={20} color="white" />
+      </p>
 
       <div className={`info-wrapper ${show ? "active" : ""}`}>
         <div className="info-personal">
-          <a>{userData.name}</a>
           <Link to={routeConfig.editProfile}>Thông tin cá nhân</Link>
         </div>
 

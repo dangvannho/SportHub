@@ -18,7 +18,7 @@ function ManageOwner() {
   const [showModalUpdate, setShowModalUpdate] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const itemsPerPage = 6;
+  const itemsPerPage = 10;
 
   // config titles in table
   const header = [
@@ -26,7 +26,7 @@ function ManageOwner() {
     { title: "Email", key: "email" },
     { title: "Số điện thoại", key: "phone_number" },
     { title: "Địa chỉ", key: "address" },
-    { title: "" },
+    { title: "Hành động" },
   ];
 
   useEffect(() => {

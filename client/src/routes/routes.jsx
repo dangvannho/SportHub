@@ -11,6 +11,7 @@ import Register from "~/pages/Register/Register";
 import RegisterUser from "~/pages/RegisterUser/RegisterUser";
 import RegisterOwner from "~/pages/ResgiterOwner/RegisterOwner";
 import EditProfile from "~/pages/EditProfile/EditProfile";
+import Booking from "~/pages/Booking/Booking";
 
 // Owner
 import ManageField from "~/pages/Owner/ManageField/ManageField";
@@ -53,6 +54,15 @@ const publicRoutes = [
   {
     path: routeConfig.registerOwner,
     component: <RegisterOwner />,
+    layout: null,
+  },
+  {
+    path: routeConfig.booking,
+    component: (
+      <UserRoute>
+        <Booking />
+      </UserRoute>
+    ),
     layout: null,
   },
 

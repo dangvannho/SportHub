@@ -47,7 +47,7 @@ function Table({
                   return null;
                 })}
                 <td className="group-btn">
-                  {addPriceBtn ?? (
+                  {addPriceBtn && (
                     <button
                       className="btn btn-secondary"
                       onClick={() => {
@@ -57,7 +57,7 @@ function Table({
                       Quản lí giờ và giá
                     </button>
                   )}
-                  {manageCalendarBtn ?? (
+                  {manageCalendarBtn && (
                     <button
                       className="btn btn-primary"
                       onClick={() => {
@@ -91,7 +91,6 @@ function Table({
           })}
         </tbody>
       </table>
-      {data.length === 0 && <p>Danh sách rỗng</p>}
 
       <ReactPaginate
         nextLabel="next >"

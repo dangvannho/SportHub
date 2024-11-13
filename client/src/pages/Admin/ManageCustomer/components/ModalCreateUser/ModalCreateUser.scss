@@ -27,9 +27,9 @@
     color: #ccc;
 
     img {
-      width: auto;
+      width: 220px;
       height: 100%;
-      margin-left: 5px;
+      object-fit: cover;
     }
   }
 }

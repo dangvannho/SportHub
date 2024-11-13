@@ -158,6 +158,7 @@ function ModalCreateField({
               </label>
               <input
                 type="file"
+                accept="image/jpeg"
                 id="label-upload"
                 hidden
                 multiple

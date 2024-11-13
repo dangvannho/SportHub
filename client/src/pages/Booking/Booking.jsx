@@ -9,7 +9,7 @@ import "tippy.js/dist/tippy.css";
 import "./Booking.css";
 // import Booking from "~/components/Booking/Booking";
 
-function ManageCalendar() {
+function Booking() {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [filteredEvents, setFilteredEvents] = useState([]);
   // const [showDatLich, setShowDatLich] = useState(false);
@@ -181,16 +181,15 @@ function ManageCalendar() {
       <div className={`event-content ${eventInfo.event.extendedProps.status}`}>
         {isBooked && <div className="event-status">Đã đặt</div>}
         <div className="event-price">
-          {eventInfo.event.title}
-          <br />
-          {eventInfo.event.extendedProps.price}
+          <p> {eventInfo.timeText}</p>
+          <p> {eventInfo.event.extendedProps.price}</p>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="calendar-container">
+    <div className="booking-container">
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
@@ -232,4 +231,4 @@ function ManageCalendar() {
   );
 }
 
-export default ManageCalendar;
+export default Booking;

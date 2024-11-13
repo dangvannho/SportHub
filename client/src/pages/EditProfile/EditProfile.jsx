@@ -166,6 +166,7 @@ function EditProfile() {
             </label>
             <input
               type="file"
+              accept="image/jpeg"
               hidden
               id="upload"
               onChange={(e) => handleUploadImage(e)}
