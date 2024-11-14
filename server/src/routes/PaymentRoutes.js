@@ -1,14 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { payment, callback, checkStatus } = require('../controllers/payment');
-
+const { payment, checkStatus } = require('../controllers/payment');
+router.use(express.json());
+const middlewareController = require("../controllers/middlewareControler");
 
 router.post('/', payment);
 
-
-router.post('/callback', callback);
-
-
-router.post('/check/:apptransid', checkStatus);
+ router.post('/check', checkStatus);
 
 module.exports = router;

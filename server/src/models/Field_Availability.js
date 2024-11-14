@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const FieldAvailabilitySchema = new mongoose.Schema({
+    //availability_id: { type: mongoose.Schema.Types.ObjectId, required: true },  // Foreign Key từ bảng Field
     field_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Field', required: true },  // Foreign Key từ bảng Field
     price_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Field.price', required: true },
     availability_date: { type: Date, required: true },
