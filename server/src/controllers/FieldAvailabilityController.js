@@ -87,9 +87,9 @@ const updateFieldAvailabilityStatus = async (req, res) => {
 };
 const deleteFieldAvailability = async (req, res) => {
     try {
-        const { field_id, availability_date, start_time, end_time } = req.body;
+        const { field_id, availability_date, start_time, end_time, is_available } = req.body;
 
-        if (!field_id || !availability_date || !start_time || !end_time) {
+        if (!field_id || !availability_date || !start_time || !end_time || !is_available) {
             return res.status(400).json({
                 EC: 0,
                 EM: "Thiếu field_id, availability_date, start_time hoặc end_time"
@@ -100,7 +100,8 @@ const deleteFieldAvailability = async (req, res) => {
             field_id: field_id,
             availability_date: availability_date,
             start_time: start_time,
-            end_time: end_time
+            end_time: end_time,
+            is_available: is_available,
         });
 
         if (!deletedAvailability) {
