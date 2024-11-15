@@ -38,28 +38,15 @@ const getFieldAvailability = async (req, res) => {
 };
 const updateFieldAvailabilityStatus = async (req, res) => {
     try {
-        const { field_id, availability_date, start_time, end_time, is_available } = req.body;
+        const { _id, is_available } = req.body;
 
-        if (typeof is_available !== 'boolean') {
-            return res.status(400).json({
-                EC: 0,
-                EM: "is_available phải là true hoặc false"
-            });
-        }
-
-        if (!field_id || !availability_date || !start_time || !end_time || is_available === undefined) {
-            return res.status(400).json({
-                EC: 0,
-                EM: "Thiếu field_id, availability_date, start_time, end_time hoặc is_available"
-            });
+        if (!_id || is_available === undefined) {
+            return res.status(400);
         }
 
         const availability = await FieldAvailability.findOneAndUpdate(
             {
-                field_id: field_id,
-                availability_date: availability_date,
-                start_time: start_time,
-                end_time: end_time
+                _id: _id,
             },
             { is_available: is_available },
             { new: true }
@@ -87,20 +74,14 @@ const updateFieldAvailabilityStatus = async (req, res) => {
 };
 const deleteFieldAvailability = async (req, res) => {
     try {
-        const { field_id, availability_date, start_time, end_time, is_available } = req.body;
+        const { _id, is_available } = req.body;
 
-        if (!field_id || !availability_date || !start_time || !end_time || !is_available) {
-            return res.status(400).json({
-                EC: 0,
-                EM: "Thiếu field_id, availability_date, start_time hoặc end_time"
-            });
+        if (!_id || !is_available) {
+            return res.status(400);
         }
 
         const deletedAvailability = await FieldAvailability.findOneAndDelete({
-            field_id: field_id,
-            availability_date: availability_date,
-            start_time: start_time,
-            end_time: end_time,
+            _id: _id,
             is_available: is_available,
         });
 
