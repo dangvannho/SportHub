@@ -74,15 +74,15 @@ const updateFieldAvailabilityStatus = async (req, res) => {
 };
 const deleteFieldAvailability = async (req, res) => {
     try {
-        const { _id, is_available } = req.body;
+        const { _id } = req.body;
 
-        if (!_id || !is_available) {
+        if (!_id) {
             return res.status(400);
         }
 
         const deletedAvailability = await FieldAvailability.findOneAndDelete({
             _id: _id,
-            is_available: is_available,
+
         });
 
         if (!deletedAvailability) {
@@ -94,7 +94,7 @@ const deleteFieldAvailability = async (req, res) => {
 
         res.status(200).json({
             EC: 1,
-            EM: "Xóa trạng thái thành công",
+            EM: "Xóa khung giờ thành công",
             DT: deletedAvailability
         });
     } catch (error) {
