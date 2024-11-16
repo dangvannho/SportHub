@@ -91,22 +91,31 @@ const searchFields = async (req, res) => {
       return res.status(400).json({ error: "Query must be a valid string" });
     }
 
-    const fields =  Field.find({
+    // Tìm kiếm sân theo tên hoặc địa chỉ
+    const fieldsQuery = Field.find({
       $or: [
-        { name: { $regex: query, $options: "i" } }, 
-        { location: { $regex: query, $options: "i" } }, 
+        { name: { $regex: query, $options: "i" } },
+        { location: { $regex: query, $options: "i" } },
       ],
-    });
+    }).populate({
+      path: "owner_id",
+      select: "business_name address phone_number email",
+    }); // Chỉ lấy các trường cần thiết từ Owner
 
     // Khởi tạo phân trang
-    const pagination = new Pagination(fields, page, limit);
+    const pagination = new Pagination(fieldsQuery, page, limit);
     const paginatedResults = await pagination.paginate();
 
-    res.status(200).json(paginatedResults);
+    res.status(200).json({
+      message: "Tìm kiếm thành công",
+      data: paginatedResults,
+    });
   } catch (error) {
+    console.error("Error in searchFields:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 
 //CRUD Fields
