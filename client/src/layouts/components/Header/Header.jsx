@@ -8,26 +8,14 @@ import routeConfig from "~/config/routeConfig";
 import "./Header.scss";
 
 function Header() {
-  // const [user, setUser] = useState();
   const { userData, setUserData } = useContext(AppContext);
-
-  console.log(userData);
-
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const storedUser = JSON.parse(localStorage.getItem("user"));
-
-  //   if (storedUser) {
-  //     setUser(storedUser);
-  //   }
-  // }, []);
 
   return (
     <div className="header">
       <div className="header-content">
         <Link to={routeConfig.home} className="logo">
-          LOGO
+          SportHub
         </Link>
 
         <nav className="header-nav">

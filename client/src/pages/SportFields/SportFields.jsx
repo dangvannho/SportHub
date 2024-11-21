@@ -54,8 +54,9 @@ function SportsField() {
   const fetchSearchField = async () => {
     setLoading(true);
     const data = await searchField(searchValue, currentPage, itemsPerPage);
-    setListField(data.results);
-    setTotalPage(data.totalPages);
+
+    setListField(data.data.results);
+    setTotalPage(data.data.totalPages);
     setLoading(false);
   };
 

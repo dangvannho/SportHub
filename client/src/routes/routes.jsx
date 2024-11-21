@@ -27,7 +27,7 @@ import NotFound from "~/pages/NotFound/NotFound";
 
 import { AdminRoute, OwnerRoute, UserRoute } from "./ProtectRoute";
 
-const publicRoutes = [
+const listRoute = [
   // Main layout
   { path: routeConfig.home, component: <Home /> },
   { path: routeConfig.sportFields, component: <SportFields /> },
@@ -43,7 +43,6 @@ const publicRoutes = [
 
   // None layout
   { path: routeConfig.login, component: <Login />, layout: null },
-  // { path: routeConfig.adminLogin, component: <LoginAdmin />, layout: null },
 
   {
     path: routeConfig.register,
@@ -127,4 +126,4 @@ const publicRoutes = [
   },
 ];
 
-export default publicRoutes;
+export default listRoute;

@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import publicRoutes from "./routes/routes";
+import listRoute from "./routes/routes";
 import MainLayout from "./layouts/MainLayout/MainLayout";
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          {publicRoutes.map((item, index) => {
+          {listRoute.map((item, index) => {
             const Page = item.component;
             let Layout = MainLayout;
             if (item.layout) {

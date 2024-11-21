@@ -20,7 +20,7 @@ function ManageField() {
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [showModalAddTimePrice, setModalAddTimePrice] = useState(false);
 
-  const itemsPerPage = 3;
+  const itemsPerPage = 7;
 
   // config titles in table
   const header = [
