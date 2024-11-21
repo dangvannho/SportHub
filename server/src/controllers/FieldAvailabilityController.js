@@ -37,15 +37,15 @@ const getFieldAvailability = async (req, res) => {
 };
 const updateFieldAvailabilityStatus = async (req, res) => {
   try {
-    const { _id, is_available } = req.body;
+    const { id, is_available } = req.body;
 
-    if (!_id || is_available === undefined) {
+    if (!id || is_available === undefined) {
       return res.status(400);
     }
 
     const availability = await FieldAvailability.findOneAndUpdate(
       {
-        _id: _id,
+        _id: id,
       },
       { is_available: is_available },
       { new: true }
@@ -73,13 +73,13 @@ const updateFieldAvailabilityStatus = async (req, res) => {
 };
 const deleteFieldAvailability = async (req, res) => {
   try {
-    const { _id } = req.params;
+    const { id } = req.params;
 
-    if (!_id) {
+    if (!id) {
       return res.status(400);
     }
 
-    const deletedAvailability = await FieldAvailability.findByIdAndDelete(_id);
+    const deletedAvailability = await FieldAvailability.findByIdAndDelete(id);
 
     if (!deletedAvailability) {
       return res.status(404).json({

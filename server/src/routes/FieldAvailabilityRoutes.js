@@ -14,7 +14,7 @@ router.put(
   updateFieldAvailabilityStatus
 );
 router.delete(
-  "/delete/:_id",
+  "/delete/:id",
   middlewareController.verifyToken,
   deleteFieldAvailability
 );
