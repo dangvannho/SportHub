@@ -15,7 +15,8 @@ function Header() {
     <div className="header">
       <div className="header-content">
         <Link to={routeConfig.home} className="logo">
-          SportHub
+          <span>Sport</span>
+          <span>Hub</span>
         </Link>
 
         <nav className="header-nav">

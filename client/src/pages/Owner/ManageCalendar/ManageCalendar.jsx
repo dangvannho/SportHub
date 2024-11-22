@@ -8,6 +8,7 @@ import viLocale from "@fullcalendar/core/locales/vi";
 import { toast } from "react-toastify";
 
 import getTimeField from "~/services/Field/getTimeField";
+import updateStatus from "~/services/Field/updateStatus";
 import deleteTime from "~/services/Field/deleteTime";
 import "tippy.js/dist/tippy.css";
 import "./ManageCalendar.css";
@@ -17,8 +18,11 @@ function ManageCalendar() {
 
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [filteredEvents, setFilteredEvents] = useState([]);
+  const [status, setStatus] = useState();
 
   const [timeId, setTimeId] = useState("");
+
+  console.log(status);
 
   const filterPastEvents = (events) => {
     const currentTime = new Date();
@@ -66,6 +70,7 @@ function ManageCalendar() {
   const handleClose = () => {
     setSelectedSlot(null);
   };
+
   const handleDeleteTime = async () => {
     if (window.confirm("Bạn có chắc chắn muốn xoá khung giờ này ?")) {
       const res = await deleteTime(timeId);
@@ -81,11 +86,26 @@ function ManageCalendar() {
 
   const handleEventClick = (event) => {
     setTimeId(event.extendedProps.timeId);
-
+    setStatus(event.extendedProps.status);
     //if (event.extendedProps.status === "true") {
     setSelectedSlot(event);
 
     //}
+  };
+
+  const handleStatusChange = (status) => {
+    setStatus(status);
+  };
+
+  const handleUpdateStatus = async () => {
+    const res = await updateStatus(timeId, status);
+    if (res.EC === 1) {
+      toast.success(res.EM);
+      fetchEvents();
+      handleClose();
+    } else {
+      toast.success(res.EM);
+    }
   };
 
   const eventContent = (eventInfo) => {
@@ -148,10 +168,8 @@ function ManageCalendar() {
                   type="radio"
                   name="status"
                   value={selectedSlot.extendedProps.status}
-                  checked={selectedSlot.extendedProps.status === false}
-                  onChange={() => {
-                    /* Xử lý thay đổi trạng thái */
-                  }}
+                  checked={status === false}
+                  onChange={() => handleStatusChange(false)}
                 />
 
                 <label>Đã đặt</label>
@@ -162,17 +180,17 @@ function ManageCalendar() {
                   type="radio"
                   name="status"
                   value={selectedSlot.extendedProps.status}
-                  checked={selectedSlot.extendedProps.status === true}
-                  onChange={() => {
-                    /* Xử lý thay đổi trạng thái */
-                  }}
+                  checked={status === true}
+                  onChange={() => handleStatusChange(true)}
                 />
 
                 <label>Chưa đặt</label>
               </div>
             </div>
             <div className="action-btn">
-              <button className="btn btn-warning">Sửa</button>
+              <button className="btn btn-warning" onClick={handleUpdateStatus}>
+                Sửa
+              </button>
               <button className="btn btn-danger" onClick={handleDeleteTime}>
                 Xoá
               </button>
