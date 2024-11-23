@@ -48,7 +48,7 @@ function Account({ userData, setUserData }) {
           <img src={`data:image/jpeg;base64,${userData.avatar}`} alt="" />
         </div>
       ) : (
-        <FaUser />
+        <FaUser color="white" />
       )}
       <p className="username">
         {userData.name}

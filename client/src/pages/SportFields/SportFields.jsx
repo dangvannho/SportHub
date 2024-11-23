@@ -16,6 +16,7 @@ function SportsField() {
   const [currentPage, setCurrentPage] = useState(1);
   const [listTypeField, setListTypeField] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
   const itemsPerPage = 9;
@@ -23,12 +24,12 @@ function SportsField() {
   useEffect(() => {
     if (typeField === "Tất cả") {
       fetchAllField();
-    } else if (typeField === "Tìm kiếm") {
+    } else if (typeField === "Tìm kiếm" && searchQuery) {
       fetchSearchField();
     } else {
       fetchTypeField();
     }
-  }, [currentPage, typeField]);
+  }, [currentPage, typeField, searchQuery]);
 
   // Api lấy tất cả các sân
   const fetchAllField = async () => {
@@ -69,6 +70,7 @@ function SportsField() {
     if (!searchValue.trim()) {
       return;
     }
+    setSearchQuery(searchValue.trim());
     setCurrentPage(1);
     setTypeField("Tìm kiếm");
   };

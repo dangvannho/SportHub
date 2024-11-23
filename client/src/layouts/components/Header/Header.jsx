@@ -28,9 +28,9 @@ function Header() {
             Danh sách sân bãi
           </NavLink>
 
-          <NavLink to="/a" className="navlink">
+          <a href="#footer" className="navlink">
             Giới thiệu
-          </NavLink>
+          </a>
           <NavLink to="/b" className="navlink">
             Chính sách
           </NavLink>
@@ -40,9 +40,9 @@ function Header() {
           <NavLink to="/d" className="navlink">
             Dành cho chủ sân
           </NavLink>
-          <NavLink to="/e" className="navlink">
+          <a href="#footer" className="navlink">
             Liên hệ
-          </NavLink>
+          </a>
         </nav>
         {userData ? (
           <Account userData={userData} setUserData={setUserData} />
