@@ -6,6 +6,11 @@ const app = express();
 const morgan = require("morgan");
 const cron = require("node-cron");
 const connectDB = require("./config/configDatabase");
+const { createServer } = require("http");
+
+const { Server } = require("socket.io");
+const Comment = require('./models/Comment');
+const socketIO = require('./socket');
 const bodyParser = require('body-parser');
 
 const CryptoJS = require('crypto-js');
@@ -28,6 +33,8 @@ const imageRoutes = require("./routes/ImgRoutes");
 const authRoutes = require('./routes/AuthRoutes');
 
 const paymentRoutes = require('./routes/PaymentRoutes');
+
+const commentRoutes = require('./routes/CommentRoutes');
 
 const fieldAvailabilityRoutes = require("./routes/FieldAvailabilityRoutes");
 
