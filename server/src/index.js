@@ -6,6 +6,10 @@ const app = express();
 const morgan = require("morgan");
 const cron = require("node-cron");
 const connectDB = require("./config/configDatabase");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const Comment = require('./models/Comment');
+const socketIO = require('./socket');
 
 const fieldRoutes = require("./routes/FieldRoutes");
 
@@ -18,6 +22,8 @@ const ownerRoutes = require("./routes/OwnerRoutes");
 const imageRoutes = require("./routes/ImgRoutes");
 
 const authRoutes = require("./routes/AuthRoutes");
+
+const commentRoutes = require('./routes/CommentRoutes');
 
 const fieldAvailabilityRoutes = require("./routes/FieldAvailabilityRoutes");
 
@@ -49,13 +55,17 @@ app.use("/api/owner", ownerRoutes);
 
 app.use("/api/field_availability", fieldAvailabilityRoutes);
 
+app.use("/api/comments", commentRoutes);
+
 app.get("/", (req, res) => {
   res.send("Project");
 });
 
 app.use("/api/auth", authRoutes);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+const httpServer = createServer(app);
+const io = socketIO.init(httpServer);
+
+httpServer.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
-//json web token
