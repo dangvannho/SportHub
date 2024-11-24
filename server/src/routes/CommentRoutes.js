@@ -11,7 +11,7 @@ router.get('/', getAllComments);
 
 // Thêm comment mới (yêu cầu đăng nhập)
 router.post("/", middlewareController.verifyToken, addComment);
-
+// Cập nhật comment (yêu cầu đăng nhập)
 router.put("/:id", middlewareController.verifyToken, updateComment);
 // Xóa comment (yêu cầu đăng nhập)
 router.delete("/:id", middlewareController.verifyToken, deleteComment);

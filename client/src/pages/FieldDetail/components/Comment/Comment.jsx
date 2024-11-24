@@ -4,8 +4,8 @@ import "./Comment.scss";
 import httpRequest from "~/utils/httpRequest";
 import { toast } from "react-toastify";
 
-const socket = io('http://localhost:8081', {
-  withCredentials: true
+const socket = io("http://localhost:8081", {
+  withCredentials: true,
 });
 
 const timeAgo = (date) => {
@@ -71,11 +71,13 @@ function Comment({ fieldId }) {
 
       socket.on("receiveComment", (comment) => {
         console.log("Received comment:", comment);
-        setComments(prev => [comment, ...prev]);
+        setComments((prev) => [comment, ...prev]);
       });
 
       socket.on("deleteComment", (commentId) => {
-        setComments(prev => prev.filter(comment => comment._id !== commentId));
+        setComments((prev) =>
+          prev.filter((comment) => comment._id !== commentId)
+        );
       });
 
       socket.on("commentError", (error) => {
@@ -83,9 +85,11 @@ function Comment({ fieldId }) {
       });
 
       socket.on("updateComment", (updatedComment) => {
-        setComments(prev => prev.map(comment =>
-          comment._id === updatedComment._id ? updatedComment : comment
-        ));
+        setComments((prev) =>
+          prev.map((comment) =>
+            comment._id === updatedComment._id ? updatedComment : comment
+          )
+        );
       });
 
       return () => {
@@ -99,7 +103,6 @@ function Comment({ fieldId }) {
 
   const handleAddComment = () => {
     if (!newComment.trim()) return;
-
     const userStr = localStorage.getItem("user");
     if (!userStr) {
       toast.error("Vui lòng đăng nhập để bình luận");
@@ -112,7 +115,7 @@ function Comment({ fieldId }) {
     socket.emit("newComment", {
       field_id: fieldId,
       comment_text: newComment,
-      user_id: userId
+      user_id: userId,
     });
 
     setNewComment("");
@@ -129,8 +132,8 @@ function Comment({ fieldId }) {
 
       const response = await httpRequest.delete(`/api/comments/${_id}`, {
         headers: {
-          Authorization: `Bearer ${user.accessToken}`
-        }
+          Authorization: `Bearer ${user.accessToken}`,
+        },
       });
 
       if (response.EC === 1) {
@@ -147,7 +150,7 @@ function Comment({ fieldId }) {
   const handleEditComment = async (_id) => {
     try {
       const response = await httpRequest.put(`/api/comments/${_id}`, {
-        comment_text: editCommentText
+        comment_text: editCommentText,
       });
 
       if (response.EC === 1) {

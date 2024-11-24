@@ -67,15 +67,9 @@ app.use("/api/comments", commentRoutes);
 
 // app.use('/api/payment', paymentRoutes);
 require("./utils/setPaymentStatus");
+app.use("/api/comments", commentRoutes);
 
 app.use(bodyParser.json());
-
-/**
- * methed: POST
- * Sandbox	POST	https://sb-openapi.zalopay.vn/v2/create
- * Real	POST	https://openapi.zalopay.vn/v2/create
- * description: tạo đơn hàng, thanh toán
- */
 
 app.use("/api/field_availability", fieldAvailabilityRoutes);
 
@@ -89,7 +83,7 @@ const httpServer = createServer(app);
 const io = socketIO.init(httpServer);
 
 httpServer.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
 //json web token
 
@@ -100,7 +94,7 @@ const Field = require("../../server/src/models/Field");
 const Order = require("../../server/src/models/Order");
 const middlewareController = require("../../server/src/controllers/middlewareControler");
 const mongoose = require("mongoose");
-const config = require("../../server/configzlp.json");
+
 app.post("/payment", middlewareController.verifyToken, async (req, res) => {
   const embed_data = {
     redirecturl: "https://mydtu.duytan.edu.vn/Signin.aspx",
