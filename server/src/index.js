@@ -13,7 +13,7 @@ const Comment = require('./models/Comment');
 const socketIO = require('./socket');
 const bodyParser = require('body-parser');
 
-const config = require("../configzlp.json")
+const config = require("../configzlp.json");
 const CryptoJS = require('crypto-js');
 
 const fieldRoutes = require("./routes/FieldRoutes");

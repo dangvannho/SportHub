@@ -31,10 +31,7 @@
     "nodemon": "3.1.7",
     "server": "file:",
     "sharp": "^0.33.5",
-<<<<<<< HEAD
-    "socket.io": "^4.8.1"
-=======
-    "uuid": "^11.0.2"
->>>>>>> ffda37a2290805f99316a9ccc649b23e24bd05bf
+    "socket.io": "^4.8.1",
+    "uuid": "^11.0.3"
   }
 }
