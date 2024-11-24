@@ -71,7 +71,7 @@ function Booking() {
   const handlePayment = async () => {
     setSelectedSlot(null);
     const res = await payment(timeId);
-    const link = res.orderurl;
+    const link = res.order_url;
     window.open(link, "_blank");
   };
 
