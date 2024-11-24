@@ -7,6 +7,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import viLocale from "@fullcalendar/core/locales/vi";
 
 import getTimeField from "~/services/Field/getTimeField";
+import payment from "~/services/Payment/Payment";
 import "tippy.js/dist/tippy.css";
 import "./Booking.css";
 
@@ -15,6 +16,10 @@ function Booking() {
 
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [filteredEvents, setFilteredEvents] = useState([]);
+
+  const [timeId, setTimeId] = useState("");
+
+  console.log(timeId);
 
   const filterPastEvents = (events) => {
     const currentTime = new Date();
@@ -45,6 +50,7 @@ function Booking() {
               currency: "VND",
             }),
             status: item.is_available,
+            timeId: item._id,
           },
         }));
         setFilteredEvents(filterPastEvents(events));
@@ -57,8 +63,16 @@ function Booking() {
   const handleBookClick = (event) => {
     // Chỉ cho phép đặt lịch nếu sân chưa được đặt
     if (event.extendedProps.status === true) {
+      setTimeId(event.extendedProps.timeId);
       setSelectedSlot(event);
     }
+  };
+
+  const handlePayment = async () => {
+    setSelectedSlot(null);
+    const res = await payment(timeId);
+    const link = res.orderurl;
+    window.open(link, "_blank");
   };
 
   const eventContent = (eventInfo) => {
@@ -109,7 +123,9 @@ function Booking() {
             {new Date(selectedSlot.end).toLocaleString()}
           </p>
           <p>Giá: {selectedSlot.extendedProps.price}</p>
-          <button className="btn-book">Đặt lịch</button>
+          <button className="btn-book" onClick={handlePayment}>
+            Đặt lịch
+          </button>
         </div>
       )}
     </div>
