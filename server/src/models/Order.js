@@ -7,6 +7,9 @@ const orderSchema = new Schema({
     required: true,
     unique: true
   },
+  user_id: { 
+    type : String ,
+  },
   user_name: {
     type: String, 
   },

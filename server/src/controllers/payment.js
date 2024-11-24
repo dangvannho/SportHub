@@ -6,6 +6,7 @@ const qs = require('qs');
 
 
 const FieldAvailability = require('../models/Field_Availability');
+const Field = require('../models/Field');
 const Order = require('../models/Order');
 const config = require('../../configzlp.json');
 // APP INFO
@@ -55,19 +56,46 @@ const payment = async (req, res) => {
     });
   }
 
-  const existingOrder = await Order.findOne({
+  // const existingOrder = await Order.findOne({
    
-    user_email: req.user.email,
-    status: 'pending',
-    description: `Thanh toán tiền cho sân: ${availability.field_id}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${moment(availability.availability_date).format('DD-MM-YYYY')}`
-  });
+  //   user_email: req.user.email,
+  //   status: 'pending',
+  //   description: `Thanh toán tiền cho sân: ${availability.field_id}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${moment(availability.availability_date).format('DD-MM-YYYY')}`
+  // });
 
-  if (existingOrder) {
-    return res.status(400).json({
-      EC: 0,
-      EM: "Đơn hàng đã được tạo"
-    });
+  // if (existingOrder) {
+  //   return res.status(400).json({
+  //     EC: 0,
+  //     EM: "Đơn hàng đã được tạo"
+  //   });
+  // }
+
+
+  async function getFieldName() {
+    try {
+      const fieldInfo = await FieldAvailability.findById(availability._id)
+        .populate({
+          path: 'field_id',
+          select: 'name'
+        });
+  
+      // Truy cập name từ field_id
+      if (fieldInfo && fieldInfo.field_id) {
+        console.log('Field Name:', fieldInfo.field_id.name);
+        return fieldInfo.field_id.name;
+      } else {
+        console.log('Field not found or not populated.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
+  
+  let Field_name  = await getFieldName();  
+  
+  
+
+
 
   // format
   const availability_date = moment(availability.availability_date).format('DD-MM-YYYY');
@@ -81,17 +109,22 @@ const payment = async (req, res) => {
     embeddata: JSON.stringify(embeddata),
     amount: availability.price,
     callback_url: " https://f221-171-225-184-192.ngrok-free.app/callback", // Thêm cái link tạo ở ngrok ở đây
-    description: `Thanh toán tiền cho sân: ${availability.field_id}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`, // Updated description
+    description: `Thanh toán tiền cho sân: ${Field_name}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`, // Updated description
     bankcode: "",
   };
   console.log("Apptransid: ", order.apptransid);
-
+  console.log("FieldAvailability: ", availability._id);
+  console.log("test", Field_name);
   let name = req.user.name;
   let email = req.user.email;
+  let id = req.user.id;
   console.log("user_name & user_email ", req.user.name , req.user.email);
+ 
+  
   const orderData = {
     user_name: name ,
     user_email: email, 
+    user_id: id,
     apptransid: order.apptransid,
     description: order.description,
     amount: availability.price,
