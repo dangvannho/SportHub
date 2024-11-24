@@ -105,7 +105,7 @@ function FieldDetail() {
         <div className="row-1">
           <button
             className="booking-btn"
-            onClick={() => navigate(routeConfig.calendar)}
+            onClick={() => navigate(routeConfig.booking.replace(":id", id))}
           >
             <IoMdCalendar size={19} />
             <span>Đặt sân ngay</span>

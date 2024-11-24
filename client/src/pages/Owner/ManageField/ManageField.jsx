@@ -20,7 +20,7 @@ function ManageField() {
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [showModalAddTimePrice, setModalAddTimePrice] = useState(false);
 
-  const itemsPerPage = 3;
+  const itemsPerPage = 7;
 
   // config titles in table
   const header = [
@@ -28,7 +28,7 @@ function ManageField() {
     { title: "Địa chỉ", key: "location" },
     { title: "Loại sân", key: "type" },
     { title: "Mô tả", key: "description" },
-    { title: "" },
+    { title: "Hành động" },
   ];
 
   useEffect(() => {
@@ -71,6 +71,8 @@ function ManageField() {
 
       <Table
         header={header}
+        addPriceBtn={true}
+        manageCalendarBtn={true}
         data={listFieldOwner}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}

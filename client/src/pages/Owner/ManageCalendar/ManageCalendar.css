@@ -75,8 +75,15 @@
   background: rgba(0, 123, 255, 0.1);
 }
 
+.booking-summary-overlay {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.326);
+}
+
 .booking-summary {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -85,19 +92,7 @@
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   min-width: 300px;
-  z-index: 9999;
-}
-
-/* Add overlay background */
-.booking-summary::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(245, 241, 241, 0.5);
-  z-index: -1;
+  z-index: 2;
 }
 
 .booking-summary h3 {
@@ -209,4 +204,14 @@
 /* Đảm bảo text không bị overflow */
 .fc-event-title {
   white-space: normal !important;
+}
+
+.group-status {
+  display: flex;
+}
+
+.group-status .item-status {
+  margin-left: 10px;
+  display: flex;
+  gap: 0 5px;
 }

@@ -11,6 +11,7 @@ import Register from "~/pages/Register/Register";
 import RegisterUser from "~/pages/RegisterUser/RegisterUser";
 import RegisterOwner from "~/pages/ResgiterOwner/RegisterOwner";
 import EditProfile from "~/pages/EditProfile/EditProfile";
+import Booking from "~/pages/Booking/Booking";
 
 // Owner
 import ManageField from "~/pages/Owner/ManageField/ManageField";
@@ -26,7 +27,7 @@ import NotFound from "~/pages/NotFound/NotFound";
 
 import { AdminRoute, OwnerRoute, UserRoute } from "./ProtectRoute";
 
-const publicRoutes = [
+const listRoute = [
   // Main layout
   { path: routeConfig.home, component: <Home /> },
   { path: routeConfig.sportFields, component: <SportFields /> },
@@ -42,7 +43,6 @@ const publicRoutes = [
 
   // None layout
   { path: routeConfig.login, component: <Login />, layout: null },
-  // { path: routeConfig.adminLogin, component: <LoginAdmin />, layout: null },
 
   {
     path: routeConfig.register,
@@ -53,6 +53,15 @@ const publicRoutes = [
   {
     path: routeConfig.registerOwner,
     component: <RegisterOwner />,
+    layout: null,
+  },
+  {
+    path: routeConfig.booking,
+    component: (
+      <UserRoute>
+        <Booking />
+      </UserRoute>
+    ),
     layout: null,
   },
 
@@ -117,4 +126,4 @@ const publicRoutes = [
   },
 ];
 
-export default publicRoutes;
+export default listRoute;

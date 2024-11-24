@@ -3,7 +3,7 @@ import "./Footer.scss";
 function Footer() {
   return (
     <>
-      <div className="footer">
+      <div className="footer" id="footer">
         <div className="footer-content">
           <div className="row">
             <div className="col">
@@ -76,9 +76,7 @@ function Footer() {
         <div className="footer-content-2">
           <div className="row align-items-center ">
             <div className="col">
-              <strong>
-                &copy; SportHub 2024 . Toàn bộ bản quyền thuộc SportHub.
-              </strong>
+              <strong>&copy; SportHub 2024</strong>
             </div>
             <div className="col">
               <ul>

@@ -128,6 +128,7 @@ function ModalCreateField({
                 <option value="Bóng chuyền">Bóng chuyền</option>
                 <option value="Bóng bàn">Bóng bàn</option>
                 <option value="Tenis">Tenis</option>
+                <option value="Cầu lông">Cầu lông</option>
               </select>
             </div>
 
@@ -158,6 +159,7 @@ function ModalCreateField({
               </label>
               <input
                 type="file"
+                accept="image/jpeg"
                 id="label-upload"
                 hidden
                 multiple

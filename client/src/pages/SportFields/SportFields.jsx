@@ -16,40 +16,49 @@ function SportsField() {
   const [currentPage, setCurrentPage] = useState(1);
   const [listTypeField, setListTypeField] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const itemsPerPage = 9;
 
   useEffect(() => {
     if (typeField === "Tất cả") {
       fetchAllField();
-    } else if (typeField === "Tìm kiếm") {
+    } else if (typeField === "Tìm kiếm" && searchQuery) {
       fetchSearchField();
     } else {
       fetchTypeField();
     }
-  }, [currentPage, typeField]);
+  }, [currentPage, typeField, searchQuery]);
 
   // Api lấy tất cả các sân
   const fetchAllField = async () => {
+    setLoading(true);
     const data = await getAllField(currentPage, itemsPerPage);
     setListField(data.paginatedFields.results);
     setQuantityFieldAll(data.paginatedFields.totalResults);
     setTotalPage(data.paginatedFields.totalPages);
     setListTypeField(data.totalFieldsByType);
+    setLoading(false);
   };
 
   // Api lấy theo loại sân
   const fetchTypeField = async () => {
+    setLoading(true);
     const data = await getAllField(currentPage, itemsPerPage, typeField);
     setListField(data.paginatedFields.results);
     setTotalPage(data.paginatedFields.totalPages);
+    setLoading(false);
   };
 
   // api tìm kiếm
   const fetchSearchField = async () => {
+    setLoading(true);
     const data = await searchField(searchValue, currentPage, itemsPerPage);
-    setListField(data.results);
-    setTotalPage(data.totalPages);
+
+    setListField(data.data.results);
+    setTotalPage(data.data.totalPages);
+    setLoading(false);
   };
 
   const handlePageClick = (event) => {
@@ -61,6 +70,7 @@ function SportsField() {
     if (!searchValue.trim()) {
       return;
     }
+    setSearchQuery(searchValue.trim());
     setCurrentPage(1);
     setTypeField("Tìm kiếm");
   };
@@ -119,13 +129,16 @@ function SportsField() {
             <IoIosSearch size={20} color="white" />
           </button>
         </div>
-
-        <div className="field-group">
-          {listField.map((item, index) => {
-            return <FieldItem data={item} key={index} />;
-          })}
-          {listField.length === 0 && <p>{"Danh sách sân rỗng"}</p>}
-        </div>
+        {loading ? (
+          <p>Đang tải...</p>
+        ) : (
+          <div className="field-group">
+            {listField.map((item, index) => {
+              return <FieldItem data={item} key={index} />;
+            })}
+            {listField.length === 0 && <p>{"Danh sách sân rỗng"}</p>}
+          </div>
+        )}
 
         {/* Phân trang */}
         <ReactPaginate

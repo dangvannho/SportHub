@@ -1,5 +1,5 @@
-.calendar-container {
-  height: 100%;
+.booking-container {
+  height: 100vh;
 }
 .fc {
   width: 90%;
@@ -37,9 +37,9 @@
   display: none;
 }
 
-.fc-timegrid-event .fc-event-main {
+/* .fc-timegrid-event .fc-event-main {
   overflow: hidden;
-}
+} */
 
 .fc-timegrid-slot {
   height: 50px !important;
