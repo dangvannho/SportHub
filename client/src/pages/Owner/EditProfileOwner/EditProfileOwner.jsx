@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { FcPlus } from "react-icons/fc";
 import { toast } from "react-toastify";
 import { useContext } from "react";
 
 import { AppContext } from "~/context/AppContext";
+import routeConfig from "~/config/routeConfig";
 import getOwnerById from "~/services/Owner/getOwnerById";
 import updateOwner from "~/services/Owner/updateOwner";
 import "./EditProfileOwner.scss";
@@ -20,8 +22,14 @@ function EditProfileOwner() {
 
   const { setOwnerData } = useContext(AppContext);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const owner = JSON.parse(localStorage.getItem("owner"));
+    if (!owner) {
+      navigate(routeConfig.login);
+      return;
+    }
     setId(owner.id);
   }, []);
 

@@ -4,29 +4,27 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const app = express();
 const morgan = require("morgan");
-const cron = require('node-cron');
+const cron = require("node-cron");
 const connectDB = require("./config/configDatabase");
 const bodyParser = require('body-parser');
 const config = require("../configzlp.json")
 const CryptoJS = require('crypto-js');
 
-const fieldRoutes = require("./routes/FieldRoutes")
+const fieldRoutes = require("./routes/FieldRoutes");
 
-const tournamentRoutes = require('./routes/TournamentRoutes')
+const tournamentRoutes = require("./routes/TournamentRoutes");
 
-const adminRoutes = require('./routes/AdminRoutes')
+const adminRoutes = require("./routes/AdminRoutes");
 
-const ownerRoutes = require('./routes/OwnerRoutes')
+const ownerRoutes = require("./routes/OwnerRoutes");
 
-const imageRoutes = require('./routes/ImgRoutes')
+const imageRoutes = require("./routes/ImgRoutes");
 
 const authRoutes = require('./routes/AuthRoutes');
 
 const paymentRoutes = require('./routes/PaymentRoutes');
 
-
-
-
+const fieldAvailabilityRoutes = require("./routes/FieldAvailabilityRoutes");
 
 // config env
 dotenv.config();
@@ -46,15 +44,17 @@ connectDB();
 
 app.use("/api/fields", fieldRoutes);
 
-app.use('/api/img', imageRoutes);
+app.use("/api/img", imageRoutes);
 
-app.use('/api/admin', adminRoutes)
+app.use("/api/admin", adminRoutes);
 
-app.use('/api/tournaments', tournamentRoutes)
+app.use("/api/tournaments", tournamentRoutes);
 
 app.use('/api/owner', ownerRoutes);
 
 app.use('/api/payment', paymentRoutes);
+require("./utils/setPaymentStatus")
+
 
 app.use(bodyParser.json());
 
@@ -94,6 +94,7 @@ app.post('/callback', (req, res) => {
   res.json(result);
 });
 
+app.use("/api/field_availability", fieldAvailabilityRoutes);
 
 app.get("/", (req, res) => {
   res.send("Project");

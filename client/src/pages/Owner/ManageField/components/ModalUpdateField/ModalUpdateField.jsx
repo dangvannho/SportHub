@@ -145,7 +145,7 @@ function ModalUpdateField({
         size="xl"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Thêm sân</Modal.Title>
+          <Modal.Title>Cập nhật sân</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>

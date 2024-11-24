@@ -7,21 +7,29 @@ const orderSchema = new Schema({
     required: true,
     unique: true
   },
-//   User_id: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: 'User', 
-//     required: true,
-//   },
+  user_name: {
+    type: String, 
+  },
+  user_email: {
+    type: String, 
+  },
   description: {
-    type: String
+    type: String,
   },
   amount: {
-    type: Number
+    type: Number,
   },
   apptime: {
-    type: Number
+    type: Number,
   },
-  
+  order_time: {
+    type: Date,
+    default: Date.now,
+  },
+  status: {
+    type: String,
+    default: 'pending',
+  },
 });
 
 const Order = mongoose.model('Order', orderSchema);

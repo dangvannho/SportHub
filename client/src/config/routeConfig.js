@@ -8,12 +8,13 @@ const routeConfig = {
   registerOwner: "/registerOwner",
   // adminLogin: "/admin/adminLogin",
   manageCustomer: "/admin/manageCustomer",
+  booking: "/booking/:id",
   manageOwner: "/admin/manageOwner",
   managePayment: "/admin/managePayment",
   editProfile: "/editProfile",
   manageField: "/owner/manageField",
+  manageCalendar: "/owner/manageCalendar/:id",
   editProfileOwner: "/owner/editProfile",
-  calendar: "/calendar",
   notFound: "*",
 };
 

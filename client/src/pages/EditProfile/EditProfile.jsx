@@ -24,9 +24,8 @@ function EditProfile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
     const user = JSON.parse(localStorage.getItem("user"));
-    if (!token || !user) {
+    if (!user) {
       navigate(routeConfig.login);
       return;
     }

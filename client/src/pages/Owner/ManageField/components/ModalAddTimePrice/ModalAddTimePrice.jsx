@@ -8,6 +8,7 @@ import ModalUpdateTimePrice from "./components/ModalUpdateTimePrice/ModalUpdateT
 import ModalDeleteTimePrice from "./components/ModalDeleteTimePrice/ModalDeleteTimePrice";
 import addTimePrice from "~/services/Field/addTimePrice";
 import getAllTimePrice from "~/services/Field/getAllTimePrice";
+import generateTime from "~/services/Field/generateTime";
 
 function ModalAddTimePrice({
   showModalAddTimePrice,
@@ -22,6 +23,8 @@ function ModalAddTimePrice({
   const [endMinute, setEndMinute] = useState("00"); // Phút kết thúc (00 hoặc 30)
   const [price, setPrice] = useState("");
   const [dayType, setDayType] = useState(false);
+  const [startDate, setStartDate] = useState(""); // Ngày bắt đầu
+  const [endDate, setEndDate] = useState(""); // Ngày kết thúc
 
   const [listPrice, setListPrice] = useState([]);
 
@@ -61,8 +64,11 @@ function ModalAddTimePrice({
     setEndHour("06");
     setEndMinute("00");
     setPrice("");
+    setStartDate("");
+    setEndDate("");
   };
 
+  // Thêm giờ và giá
   const handleAddTimePrice = async () => {
     const trimPrice = price.trim();
 
@@ -99,6 +105,30 @@ function ModalAddTimePrice({
     fetchListTimePrice();
   };
 
+  // Tạo giờ tự động
+  const handleGenerateTime = async () => {
+    if (!startDate) {
+      toast.error("Ngày bắt đầu không được để trống!");
+      return;
+    }
+
+    if (!endDate) {
+      toast.error("Ngày kết thúc không được để trống!");
+      return;
+    }
+
+    if (new Date(startDate) > new Date(endDate)) {
+      toast.error("Ngày bắt đầu không được lớn hơn ngày kết thúc!");
+      return;
+    }
+
+    const res = await generateTime(fieldId, startDate, endDate);
+    if (res.EC === 1) {
+      toast.success(res.EM);
+    } else {
+      toast.error(res.EM);
+    }
+  };
   return (
     <>
       <Modal
@@ -262,6 +292,38 @@ function ModalAddTimePrice({
                   ))}
                 </tbody>
               </Table>
+            </div>
+
+            <h4 className="col-md-12 m-0">Tạo khung giờ tự động</h4>
+            <div className="col-md-12 d-flex gap-4">
+              {/* Ngày bắt đầu */}
+              <div className="col-md-3 mt-1">
+                <label className="form-label">Ngày bắt đầu</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+
+              {/* Ngày kết thúc */}
+              <div className="col-md-3 mt-1">
+                <label className="form-label">Ngày kết thúc</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+
+              {/* Nút tạo khung giờ */}
+              <div className="col-md-3 align-self-end">
+                <Button variant="success" onClick={handleGenerateTime}>
+                  Tạo khung giờ
+                </Button>
+              </div>
             </div>
           </form>
         </Modal.Body>
