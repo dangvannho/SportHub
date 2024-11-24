@@ -62,7 +62,7 @@ app.use('/api/owner', ownerRoutes);
 
 app.use('/api/payment', paymentRoutes);
 require("./utils/setPaymentStatus")
-
+app.use("/api/comments", commentRoutes);
 
 app.use(bodyParser.json());
 
@@ -104,7 +104,7 @@ app.post('/callback', (req, res) => {
 
 app.use("/api/field_availability", fieldAvailabilityRoutes);
 
-app.use("/api/comments", commentRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Project");
