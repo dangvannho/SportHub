@@ -115,23 +115,9 @@ function FieldDetail() {
         </div>
 
         <div className="row-2">
-          <h4>Đánh giá</h4>
+          <h4>Bình luận</h4>
           <div className="review-content">
-            <div className="list-comment">
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
-            </div>
-
-            <div className="write-comment">
-              <input
-                type="text"
-                placeholder="Viết đánh giá của bạn..."
-                className="comment-text"
-              />
-              <button className="btn btn-primary btn-send">Gửi</button>
-            </div>
+            <Comment fieldId={id} />
           </div>
         </div>
       </div>
