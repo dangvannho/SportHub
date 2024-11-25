@@ -13,6 +13,7 @@ const Comment = require("./models/Comment");
 const socketIO = require("./socket");
 const bodyParser = require("body-parser");
 
+const config = require("../configzlp.json");
 const CryptoJS = require("crypto-js");
 
 const axios = require("axios").default;
@@ -63,8 +64,6 @@ app.use("/api/tournaments", tournamentRoutes);
 
 app.use("/api/owner", ownerRoutes);
 
-app.use("/api/comments", commentRoutes);
-
 // app.use('/api/payment', paymentRoutes);
 require("./utils/setPaymentStatus");
 app.use("/api/comments", commentRoutes);
@@ -97,7 +96,7 @@ const mongoose = require("mongoose");
 
 app.post("/payment", middlewareController.verifyToken, async (req, res) => {
   const embed_data = {
-    redirecturl: "https://mydtu.duytan.edu.vn/Signin.aspx",
+    redirecturl: "http://localhost:5173/",
   };
   const items = [];
   const transID = Math.floor(Math.random() * 1000000);
@@ -173,7 +172,8 @@ app.post("/payment", middlewareController.verifyToken, async (req, res) => {
     amount: availability.price,
     //khi thanh toán xong, zalopay server sẽ POST đến url này để thông báo cho server của mình
     //Chú ý: cần dùng ngrok để public url thì Zalopay Server mới call đến được
-    callback_url: "https://41da-171-225-184-200.ngrok-free.app/callback",
+    callback_url:
+      "https://4531-2001-ee0-4b78-f00-8145-e4c-55c3-939e.ngrok-free.app/callback",
     description: `Thanh toán tiền cho sân: ${Field_name}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`,
     bank_code: "",
   };
