@@ -103,6 +103,7 @@ function Comment({ fieldId }) {
 
   const handleAddComment = () => {
     if (!newComment.trim()) return;
+
     const userStr = localStorage.getItem("user");
     if (!userStr) {
       toast.error("Vui lòng đăng nhập để bình luận");
