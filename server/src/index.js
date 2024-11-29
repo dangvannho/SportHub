@@ -144,21 +144,20 @@ app.post("/payment", middlewareController.verifyToken, async (req, res) => {
     item: JSON.stringify(items),
     embed_data: JSON.stringify(embed_data), // Gửi embed_data chứa _id
     amount: availability.price,
-    callback_url:
-      "https://4531-2001-ee0-4b78-f00-8145-e4c-55c3-939e.ngrok-free.app/callback",
+    callback_url: "https://c5f5-171-225-184-192.ngrok-free.app/callback",
     description: `Thanh toán tiền cho sân: ${Field_name}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`,
     bank_code: "",
   };
 
-  const existingOrder = await Order.findOne({
-    user_email: req.user.email,
-    status: "pending",
-    description: order.description,
-  });
+  // const existingOrder = await Order.findOne({
+  //   user_email: req.user.email,
+  //   status: "pending",
+  //   description: order.description,
+  // });
 
-  if (existingOrder) {
-    return res.status(400).json({ EC: 0, EM: "Đơn hàng đã được tạo" });
-  }
+  // if (existingOrder) {
+  //   return res.status(400).json({ EC: 0, EM: "Đơn hàng đã được tạo" });
+  // }
 
   try {
     const saveOrder = new Order({
