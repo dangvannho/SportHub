@@ -95,11 +95,6 @@ const middlewareController = require("../../server/src/controllers/middlewareCon
 const mongoose = require("mongoose");
 
 app.post("/payment", middlewareController.verifyToken, async (req, res) => {
-  const embed_data = {
-    redirecturl: `http://localhost:5173`,
-    field_id: req.body._id, // Thêm _id vào embed_data
-  };
-
   const items = [];
   const transID = Math.floor(Math.random() * 1000000);
   const { _id } = req.body;
@@ -122,6 +117,14 @@ app.post("/payment", middlewareController.verifyToken, async (req, res) => {
     console.error("Error fetching field availability:", error);
     return res.status(500).json({ EC: 0, EM: "Lỗi server" });
   }
+
+  id = availability.field_id;
+  console.log("Field ID:", id);
+
+  const embed_data = {
+    redirecturl: `http://localhost:5173/booking/${id}`,
+    field_id: req.body._id, // Thêm _id vào embed_data
+  };
 
   const availability_date = moment(availability.availability_date).format(
     "DD-MM-YYYY"

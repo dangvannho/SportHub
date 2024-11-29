@@ -27,7 +27,7 @@ function ManageCustomer() {
     { title: "Họ và tên", key: "name" },
     { title: "Email", key: "email" },
     { title: "Số điện thoại", key: "phone_number" },
-    { title: "Hành động" },
+    { title: "Thao tác" },
   ];
 
   useEffect(() => {

@@ -12,11 +12,13 @@ import RegisterUser from "~/pages/RegisterUser/RegisterUser";
 import RegisterOwner from "~/pages/ResgiterOwner/RegisterOwner";
 import EditProfile from "~/pages/EditProfile/EditProfile";
 import Booking from "~/pages/Booking/Booking";
+import HistoryBooking from "~/pages/HistoryBooking/HistoryBooking";
 
 // Owner
 import ManageField from "~/pages/Owner/ManageField/ManageField";
 import EditProfileOwner from "~/pages/Owner/EditProfileOwner/EditProfileOwner";
 import ManageCalendar from "~/pages/Owner/ManageCalendar/ManageCalendar";
+import ManageBooking from "~/pages/Owner/ManageBooking/ManageBooking";
 
 // admin
 // import LoginAdmin from "~/pages/Admin/LoginAdmin/LoginAdmin";
@@ -37,6 +39,14 @@ const listRoute = [
     component: (
       <UserRoute>
         <EditProfile />
+      </UserRoute>
+    ),
+  },
+  {
+    path: routeConfig.historyBooking,
+    component: (
+      <UserRoute>
+        <HistoryBooking />
       </UserRoute>
     ),
   },
@@ -67,7 +77,7 @@ const listRoute = [
 
   { path: routeConfig.notFound, component: <NotFound />, layout: null },
 
-  // Dashboard layout
+  // Admin layout
   {
     path: routeConfig.manageCustomer,
     component: (
@@ -106,6 +116,7 @@ const listRoute = [
     ),
     layout: OwnerLayout,
   },
+
   {
     path: routeConfig.editProfileOwner,
     component: (
@@ -120,6 +131,15 @@ const listRoute = [
     component: (
       <OwnerRoute>
         <ManageCalendar />
+      </OwnerRoute>
+    ),
+    layout: OwnerLayout,
+  },
+  {
+    path: routeConfig.manageBooking,
+    component: (
+      <OwnerRoute>
+        <ManageBooking />
       </OwnerRoute>
     ),
     layout: OwnerLayout,
