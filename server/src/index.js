@@ -90,9 +90,9 @@ httpServer.listen(port, () => {
 
 const FieldAvailability = require("../../server/src/models/Field_Availability");
 const Field = require("../../server/src/models/Field");
-const Order = require("../../server/src/models/Order");
 const middlewareController = require("../../server/src/controllers/middlewareControler");
 const mongoose = require("mongoose");
+const Bill = require("./models/Bill");
 
 app.post("/payment", middlewareController.verifyToken, async (req, res) => {
   const items = [];
@@ -144,14 +144,14 @@ app.post("/payment", middlewareController.verifyToken, async (req, res) => {
     item: JSON.stringify(items),
     embed_data: JSON.stringify(embed_data), // Gửi embed_data chứa _id
     amount: availability.price,
-    callback_url: "https://c5f5-171-225-184-192.ngrok-free.app/callback",
+    callback_url: "https://29bb-171-225-184-170.ngrok-free.app/callback",
     description: `Thanh toán tiền cho sân: ${Field_name}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`,
     bank_code: "",
   };
 
-  // const existingOrder = await Order.findOne({
+  // const existingOrder = await Bill.findOne({
   //   user_email: req.user.email,
-  //   status: "pending",
+  //   status: 'pending',
   //   description: order.description,
   // });
 
@@ -160,7 +160,7 @@ app.post("/payment", middlewareController.verifyToken, async (req, res) => {
   // }
 
   try {
-    const saveOrder = new Order({
+    const saveOrder = new Bill({
       user_name: req.user.name,
       user_email: req.user.email,
       user_id: req.user.id,
@@ -169,6 +169,7 @@ app.post("/payment", middlewareController.verifyToken, async (req, res) => {
       amount: availability.price,
       apptime: order.app_time,
       order_time: Date.now(),
+      field_id: availability.field_id,
       status: "pending",
     });
     await saveOrder.save();
@@ -192,6 +193,8 @@ app.post("/payment", middlewareController.verifyToken, async (req, res) => {
 });
 
 app.post("/callback", async (req, res) => {
+  console.log("Callback received");
+
   let result = {};
   try {
     const dataStr = req.body.data;
@@ -201,18 +204,21 @@ app.post("/callback", async (req, res) => {
     if (reqMac !== mac) {
       result = { return_code: -1, return_message: "mac not equal" };
     } else {
-      const dataJson = JSON.parse(dataStr);
+      const dataJson = JSON.parse(dataStr, config.key2);
       const { app_trans_id, embed_data } = dataJson;
 
       // Trích xuất field_id từ embed_data
       const { field_id } = JSON.parse(embed_data);
       console.log("Field ID from embed_data:", field_id);
-
+      console.log(
+        "update order's status = success where app_trans_id =",
+        dataJson["app_trans_id"]
+      );
       const session = await mongoose.startSession();
       session.startTransaction();
 
       try {
-        const order = await Order.findOne({ apptransid: app_trans_id }).session(
+        const order = await Bill.findOne({ apptransid: app_trans_id }).session(
           session
         );
         if (!order) throw new Error("Order not found");

@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const orderSchema = new Schema({
+const billSchema = new Schema({
   apptransid: {
     type: String,
     required: true,
     unique: true
   },
+  field_id: {
+    type: String,
+    required: true
+  },  
   user_id: { 
     type : String ,
   },
@@ -35,5 +39,5 @@ const orderSchema = new Schema({
   },
 });
 
-const Order = mongoose.model('Order', orderSchema);
-module.exports = Order;
+const Bill = mongoose.model('bill', billSchema);
+module.exports = Bill;
