@@ -9,17 +9,16 @@ const connectDB = require("./config/configDatabase");
 const { createServer } = require("http");
 
 const { Server } = require("socket.io");
-const Comment = require('./models/Comment');
-const socketIO = require('./socket');
-const bodyParser = require('body-parser');
+const Comment = require("./models/Comment");
+const socketIO = require("./socket");
+const bodyParser = require("body-parser");
 
 const config = require("../configzlp.json");
-const CryptoJS = require('crypto-js');
+const CryptoJS = require("crypto-js");
 
-const axios = require('axios').default;
-const moment = require('moment'); // npm install moment
-const qs = require('qs');
-
+const axios = require("axios").default;
+const moment = require("moment"); // npm install moment
+const qs = require("qs");
 
 const fieldRoutes = require("./routes/FieldRoutes");
 
@@ -31,11 +30,11 @@ const ownerRoutes = require("./routes/OwnerRoutes");
 
 const imageRoutes = require("./routes/ImgRoutes");
 
-const authRoutes = require('./routes/AuthRoutes');
+const authRoutes = require("./routes/AuthRoutes");
 
-const paymentRoutes = require('./routes/PaymentRoutes');
+const paymentRoutes = require("./routes/PaymentRoutes");
 
-const commentRoutes = require('./routes/CommentRoutes');
+const commentRoutes = require("./routes/CommentRoutes");
 
 const fieldAvailabilityRoutes = require("./routes/FieldAvailabilityRoutes");
 
@@ -63,19 +62,15 @@ app.use("/api/admin", adminRoutes);
 
 app.use("/api/tournaments", tournamentRoutes);
 
-app.use('/api/owner', ownerRoutes);
+app.use("/api/owner", ownerRoutes);
 
 // app.use('/api/payment', paymentRoutes);
-require("./utils/setPaymentStatus")
+require("./utils/setPaymentStatus");
 app.use("/api/comments", commentRoutes);
 
 app.use(bodyParser.json());
 
-
-
 app.use("/api/field_availability", fieldAvailabilityRoutes);
-
-
 
 app.get("/", (req, res) => {
   res.send("Project");
@@ -91,18 +86,15 @@ httpServer.listen(port, () => {
 });
 //json web token
 
-
 //////////////////////PAYMENT////////////////////////////////////////////////////////////////////////////
 
-const FieldAvailability = require('../../server/src/models/Field_Availability');
-const Field = require('../../server/src/models/Field');
-const Order = require('../../server/src/models/Order');
+const FieldAvailability = require("../../server/src/models/Field_Availability");
+const Field = require("../../server/src/models/Field");
+const Order = require("../../server/src/models/Order");
 const middlewareController = require("../../server/src/controllers/middlewareControler");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-app.post('/payment', middlewareController.verifyToken, async (req, res) => {
-  
-
+app.post("/payment", middlewareController.verifyToken, async (req, res) => {
   const items = [];
   const transID = Math.floor(Math.random() * 1000000);
   const { _id } = req.body;
@@ -127,34 +119,39 @@ app.post('/payment', middlewareController.verifyToken, async (req, res) => {
   }
 
   id = availability.field_id;
-  console.log("Field ID:", id); 
-  
+  console.log("Field ID:", id);
+
   const embed_data = {
     redirecturl: `http://localhost:5173/booking/${id}`,
     field_id: req.body._id, // Thêm _id vào embed_data
   };
 
-  const availability_date = moment(availability.availability_date).format('DD-MM-YYYY');
-  const Field_name = (await FieldAvailability.findById(_id)
-    .populate({ path: 'field_id', select: 'name' })
-    .lean())?.field_id?.name || 'Không xác định';
+  const availability_date = moment(availability.availability_date).format(
+    "DD-MM-YYYY"
+  );
+  const Field_name =
+    (
+      await FieldAvailability.findById(_id)
+        .populate({ path: "field_id", select: "name" })
+        .lean()
+    )?.field_id?.name || "Không xác định";
 
   const order = {
     app_id: config.app_id,
-    app_trans_id: `${moment().format('YYMMDD')}_${transID}`,
+    app_trans_id: `${moment().format("YYMMDD")}_${transID}`,
     app_user: req.user.name,
     app_time: Date.now(),
     item: JSON.stringify(items),
     embed_data: JSON.stringify(embed_data), // Gửi embed_data chứa _id
     amount: availability.price,
-    callback_url: 'https://1706-171-225-184-200.ngrok-free.app/callback',
+    callback_url: "https://eaf1-117-2-254-194.ngrok-free.app/callback",
     description: `Thanh toán tiền cho sân: ${Field_name}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`,
-    bank_code: '',
+    bank_code: "",
   };
 
   const existingOrder = await Order.findOne({
     user_email: req.user.email,
-    status: 'pending',
+    status: "pending",
     description: order.description,
   });
 
@@ -172,17 +169,16 @@ app.post('/payment', middlewareController.verifyToken, async (req, res) => {
       amount: availability.price,
       apptime: order.app_time,
       order_time: Date.now(),
-      status: 'pending',
+      status: "pending",
     });
     await saveOrder.save();
-    console.log('Order saved');
+    console.log("Order saved");
   } catch (error) {
-    console.error('Error saving order:', error);
-    return res.status(500).json({ message: 'Error saving order' });
+    console.error("Error saving order:", error);
+    return res.status(500).json({ message: "Error saving order" });
   }
 
-  const data =
-    `${config.app_id}|${order.app_trans_id}|${order.app_user}|${order.amount}|${order.app_time}|${order.embed_data}|${order.item}`;
+  const data = `${config.app_id}|${order.app_trans_id}|${order.app_user}|${order.amount}|${order.app_time}|${order.embed_data}|${order.item}`;
   order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
   try {
@@ -190,13 +186,12 @@ app.post('/payment', middlewareController.verifyToken, async (req, res) => {
     console.log(result.data);
     return res.status(200).json(result.data);
   } catch (error) {
-    console.error('Error sending payment request:', error.message);
+    console.error("Error sending payment request:", error.message);
     return res.status(400).json({ message: error.message });
   }
 });
 
-
-app.post('/callback', async (req, res) => {
+app.post("/callback", async (req, res) => {
   let result = {};
   try {
     const dataStr = req.body.data;
@@ -204,7 +199,7 @@ app.post('/callback', async (req, res) => {
 
     const mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString();
     if (reqMac !== mac) {
-      result = { return_code: -1, return_message: 'mac not equal' };
+      result = { return_code: -1, return_message: "mac not equal" };
     } else {
       const dataJson = JSON.parse(dataStr);
       const { app_trans_id, embed_data } = dataJson;
@@ -217,40 +212,41 @@ app.post('/callback', async (req, res) => {
       session.startTransaction();
 
       try {
-        const order = await Order.findOne({ apptransid: app_trans_id }).session(session);
-        if (!order) throw new Error('Order not found');
+        const order = await Order.findOne({ apptransid: app_trans_id }).session(
+          session
+        );
+        if (!order) throw new Error("Order not found");
 
-        order.status = 'complete';
+        order.status = "complete";
         await order.save({ session });
 
-        const fieldAvailability = await FieldAvailability.findById(field_id).session(session);
-        if (!fieldAvailability) throw new Error('FieldAvailability not found');
+        const fieldAvailability = await FieldAvailability.findById(
+          field_id
+        ).session(session);
+        if (!fieldAvailability) throw new Error("FieldAvailability not found");
 
         fieldAvailability.is_available = false;
         await fieldAvailability.save({ session });
 
         await session.commitTransaction();
-        result = { return_code: 1, return_message: 'success' };
+        result = { return_code: 1, return_message: "success" };
       } catch (error) {
         await session.abortTransaction();
-        console.error('Transaction failed:', error.message);
+        console.error("Transaction failed:", error.message);
         result = { return_code: 0, return_message: error.message };
       } finally {
         session.endSession();
       }
     }
   } catch (error) {
-    console.error('Callback processing error:', error.message);
+    console.error("Callback processing error:", error.message);
     result = { return_code: 0, return_message: error.message };
   }
 
   res.json(result);
 });
 
-
-
-app.post('/check', async (req, res) => {
-
+app.post("/check", async (req, res) => {
   const { apptransid, _id } = req.body;
 
   let postData = {
@@ -262,12 +258,12 @@ app.post('/check', async (req, res) => {
   postData.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
   let postConfig = {
-    method: 'post',
+    method: "post",
     url: config.check,
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
-    data: qs.stringify(postData)
+    data: qs.stringify(postData),
   };
 
   try {
@@ -275,11 +271,8 @@ app.post('/check', async (req, res) => {
     console.log(result.data);
     return res.status(200).json(result.data);
   } catch (error) {
-    console.log('lỗi');
+    console.log("lỗi");
     console.log(error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
-
-
