@@ -1,6 +1,6 @@
 import routeConfig from "~/config/routeConfig";
 
-import DashboardLayout from "~/layouts/DashboardLayout/DashboardLayout";
+import AdminLayout from "~/layouts/AdminLayout/AdminLayout";
 import OwnerLayout from "~/layouts/OwnerLayout/OwnerLayout";
 
 import Home from "~/pages/Home/Home";
@@ -15,13 +15,13 @@ import Booking from "~/pages/Booking/Booking";
 import HistoryBooking from "~/pages/HistoryBooking/HistoryBooking";
 
 // Owner
+import Dashboard from "~/pages/Owner/Dashboard/Dashboard";
 import ManageField from "~/pages/Owner/ManageField/ManageField";
 import EditProfileOwner from "~/pages/Owner/EditProfileOwner/EditProfileOwner";
 import ManageCalendar from "~/pages/Owner/ManageCalendar/ManageCalendar";
 import ManageBooking from "~/pages/Owner/ManageBooking/ManageBooking";
 
-// admin
-// import LoginAdmin from "~/pages/Admin/LoginAdmin/LoginAdmin";
+// Admin
 import ManageCustomer from "~/pages/Admin/ManageCustomer/ManageCustomer";
 import ManageOwner from "~/pages/Admin/ManageOwner/ManageOwner";
 import ManagePayment from "~/pages/Admin/ManagePayment/ManagePayment";
@@ -85,7 +85,7 @@ const listRoute = [
         <ManageCustomer />
       </AdminRoute>
     ),
-    layout: DashboardLayout,
+    layout: AdminLayout,
   },
   {
     path: routeConfig.manageOwner,
@@ -94,7 +94,7 @@ const listRoute = [
         <ManageOwner />
       </AdminRoute>
     ),
-    layout: DashboardLayout,
+    layout: AdminLayout,
   },
   {
     path: routeConfig.managePayment,
@@ -103,10 +103,19 @@ const listRoute = [
         <ManagePayment />
       </AdminRoute>
     ),
-    layout: DashboardLayout,
+    layout: AdminLayout,
   },
 
   // Owner Layout
+  {
+    path: routeConfig.dashboard,
+    component: (
+      <OwnerRoute>
+        <Dashboard />
+      </OwnerRoute>
+    ),
+    layout: OwnerLayout,
+  },
   {
     path: routeConfig.manageField,
     component: (

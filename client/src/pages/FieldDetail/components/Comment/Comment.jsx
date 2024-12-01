@@ -4,7 +4,7 @@ import "./Comment.scss";
 import httpRequest from "~/utils/httpRequest";
 import { toast } from "react-toastify";
 
-const socket = io("http://localhost:8081", {
+const socket = io(import.meta.env.VITE_API_BASE_URL, {
   withCredentials: true,
 });
 

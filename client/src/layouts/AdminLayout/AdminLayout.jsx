@@ -1,10 +1,10 @@
 import { FaUser, FaUserTie } from "react-icons/fa";
 import { AiOutlineTransaction } from "react-icons/ai";
 import SideBar from "../components/Sidebar/Sidebar";
-import "./DashboardLayout.scss";
+import "./AdminLayout.scss";
 import routeConfig from "~/config/routeConfig";
 
-function DashboardLayout({ children }) {
+function AdminLayout({ children }) {
   const heading = "ADMIN";
   const menuItems = [
     {
@@ -31,4 +31,4 @@ function DashboardLayout({ children }) {
   );
 }
 
-export default DashboardLayout;
+export default AdminLayout;
