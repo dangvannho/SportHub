@@ -1,25 +1,14 @@
-// const express = require('express');
-// const router = express.Router();
-// const cookieParser = require('cookie-parser');  
-// const cors = require('cors');
+const express = require('express');
+const router = express.Router();
 
-// const bodyParser = require('body-parser');
-// const { payment, checkStatus , callback  } = require('../controllers/payment');
-// router.use(express.json());
-// router.use(express.urlencoded({ extended: true }));
-// router.use(cookieParser());
-// router.use(cors());
 
-// router.use(bodyParser.json());
+const paymentcontroller = require('../controllers/payment');
 
-// const middlewareController = require("../controllers/middlewareControler");
+const middlewareController = require("../controllers/middlewareControler");
 
-// router.post('/',middlewareController.verifyToken  ,payment);
 
-// router.post('/callback', callback); 
+router.post('/', middlewareController.verifyToken,paymentcontroller.payment);
 
-//  router.post('/check', checkStatus);
+router.post('/callback', paymentcontroller.callback); 
 
- 
-
-// module.exports = router;
+module.exports = router;
