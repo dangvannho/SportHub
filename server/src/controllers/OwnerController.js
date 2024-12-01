@@ -1,4 +1,5 @@
 const Field = require("../models/Field");
+const Bill = require("../models/Bill");
 const FieldAvailability = require("../models/Field_Availability");
 const Pagination = require("../utils/Pagination");
 const { authenticateUser } = require("../utils/checkOwner");
@@ -317,6 +318,51 @@ const deleteFieldRate = async (req, res) => {
   }
 };
 
+const getRevenueByDateOrMonth = async (req, res) => {
+  try {
+    const { startDate, endDate, groupBy } = req.query;  // Lấy startDate, endDate và groupBy từ query string
+
+    if (!startDate || !endDate || !groupBy) {
+      return res.status(400).json({ message: 'startDate, endDate, and groupBy are required in query parameters.' });
+    }
+
+    // Đảm bảo startDate và endDate là dạng Date
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);  // Đảm bảo endDate bao gồm cả cuối ngày
+
+    // Tạo pipeline để tính doanh thu theo ngày/tháng
+    const groupStage = groupBy === 'day' ? {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$order_time" } }, // Nhóm theo ngày
+        totalRevenue: { $sum: "$amount" }
+      }
+    } : {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m", date: "$order_time" } }, // Nhóm theo tháng
+        totalRevenue: { $sum: "$amount" }
+      }
+    };
+
+    // Pipeline để lấy dữ liệu trong khoảng thời gian
+    const revenueData = await Bill.aggregate([
+      {
+        $match: {
+          order_time: { $gte: start, $lte: end }
+        }
+      },
+      groupStage,
+      { $sort: { _id: 1 } }  // Sắp xếp theo ngày/tháng tăng dần
+    ]);
+
+    // Trả về dữ liệu doanh thu theo ngày hoặc tháng
+    res.status(200).json(revenueData);
+  } catch (error) {
+    console.error('Error in getRevenueByDateOrMonth:', error);
+    res.status(500).json({ message: 'Server Error', error });
+  }
+};
+
 module.exports = {
   getFieldsByOwnerId,
   generateAvailabilityRecords,
@@ -324,4 +370,5 @@ module.exports = {
   updateFieldRate,
   deleteFieldRate,
   getFieldPriceSlots,
+  getRevenueByDateOrMonth ,
 };
