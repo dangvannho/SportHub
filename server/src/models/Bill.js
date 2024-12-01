@@ -4,15 +4,15 @@ const { Schema } = mongoose;
 const billSchema = new Schema({
   apptransid: {
     type: String,
-    required: true,
-    unique: true
+    unique: true,
   },
-  field_id: {
-    type: String,
-    required: true
-  },  
+  field_availability_id: { 
+    type: Schema.Types.ObjectId, // Tham chiếu đến Field_Availability
+    ref: 'Field_Availability',
+  },
   user_id: { 
-    type : String ,
+    type: Schema.Types.ObjectId, // Tham chiếu đến User
+    ref: 'User',
   },
   user_name: {
     type: String, 
@@ -39,5 +39,5 @@ const billSchema = new Schema({
   },
 });
 
-const Bill = mongoose.model('bill', billSchema);
+const Bill = mongoose.model('Bill', billSchema);
 module.exports = Bill;
