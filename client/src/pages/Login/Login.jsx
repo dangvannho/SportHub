@@ -71,7 +71,7 @@ function Login() {
       } else if (decodedToken.user_role === "owner") {
         localStorage.setItem("owner", JSON.stringify(owner));
         setOwnerData(owner);
-        navigate(routeConfig.manageField);
+        navigate(routeConfig.dashboard);
       } else if (decodedToken.user_role === "admin") {
         navigate(routeConfig.manageCustomer);
       } else {

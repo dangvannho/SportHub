@@ -9,7 +9,7 @@ import viLocale from "@fullcalendar/core/locales/vi";
 import getTimeField from "~/services/Field/getTimeField";
 import payment from "~/services/Payment/Payment";
 import "tippy.js/dist/tippy.css";
-import "./Booking.css";
+// import "./Booking.css";
 
 function Booking() {
   const { id } = useParams();
@@ -76,7 +76,7 @@ function Booking() {
   const eventContent = (eventInfo) => {
     const isBooked = eventInfo.event.extendedProps.status === false;
     return (
-      <div className={`event-content ${eventInfo.event.extendedProps.status}`}>
+      <div className="event-container">
         {isBooked && <div className="event-status">Đã đặt</div>}
         <div className="event-price">
           <p> {eventInfo.timeText}</p>
@@ -108,22 +108,24 @@ function Booking() {
         eventClick={(info) => handleBookClick(info.event)}
       />
       {selectedSlot && (
-        <div className="booking-summary">
-          <button
-            className="close-button"
-            onClick={() => setSelectedSlot(null)}
-          >
-            ×
-          </button>
-          <h3>Thông tin đặt sân</h3>
-          <p>
-            Thời gian: {new Date(selectedSlot.start).toLocaleString()} -{" "}
-            {new Date(selectedSlot.end).toLocaleString()}
-          </p>
-          <p>Giá: {selectedSlot.extendedProps.price}</p>
-          <button className="btn-book" onClick={handlePayment}>
-            Đặt lịch
-          </button>
+        <div className="booking-summary-overlay">
+          <div className="booking-summary">
+            <button
+              className="close-button"
+              onClick={() => setSelectedSlot(null)}
+            >
+              ×
+            </button>
+            <h3>Thông tin đặt sân</h3>
+            <p>
+              Thời gian: {new Date(selectedSlot.start).toLocaleString()} -{" "}
+              {new Date(selectedSlot.end).toLocaleString()}
+            </p>
+            <p>Giá: {selectedSlot.extendedProps.price}</p>
+            <button className="btn-book" onClick={handlePayment}>
+              Đặt lịch
+            </button>
+          </div>
         </div>
       )}
     </div>
