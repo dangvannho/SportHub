@@ -23,7 +23,7 @@ function Table({
   };
 
   return (
-    <div className="wapper-table">
+    <>
       <table className="table table-bordered table-striped table-hover ">
         <thead>
           <tr>
@@ -75,7 +75,7 @@ function Table({
                       handleClickBtnUpdate(row);
                     }}
                   >
-                    Sửa
+                    Chỉnh sửa
                   </button>
                   <button
                     className="btn btn-danger"
@@ -113,7 +113,7 @@ function Table({
         renderOnZeroPageCount={null}
         forcePage={currentPage - 1}
       />
-    </div>
+    </>
   );
 }
 

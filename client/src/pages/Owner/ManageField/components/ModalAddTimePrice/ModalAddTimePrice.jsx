@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import Table from "react-bootstrap/Table";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 import ModalUpdateTimePrice from "./components/ModalUpdateTimePrice/ModalUpdateTimePrice";
@@ -252,7 +251,7 @@ function ModalAddTimePrice({
             {/* Bảng giá tiền */}
 
             <div style={{ maxHeight: "327px", overflowY: "auto" }}>
-              <Table striped bordered hover>
+              <table className="table table-bordered table-striped table-hover table-custom">
                 <thead>
                   <tr>
                     <th>Giờ bắt đầu</th>
@@ -282,7 +281,7 @@ function ModalAddTimePrice({
                             setTimePrice(item);
                           }}
                         >
-                          Sửa
+                          Chỉnh sửa
                         </Button>
                         <Button
                           variant="danger"
@@ -298,7 +297,7 @@ function ModalAddTimePrice({
                     </tr>
                   ))}
                 </tbody>
-              </Table>
+              </table>
             </div>
 
             <h4 className="col-md-12 m-0">Tạo khung giờ tự động</h4>

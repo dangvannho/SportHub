@@ -58,6 +58,7 @@ function Account({ userData, setUserData }) {
       <div className={`info-wrapper ${show ? "active" : ""}`}>
         <div className="info-personal">
           <Link to={routeConfig.editProfile}>Thông tin cá nhân</Link>
+          <Link to={routeConfig.historyBooking}>Lịch sử đặt sân</Link>
         </div>
 
         <button className="btn-logout" onClick={handleLogOut}>

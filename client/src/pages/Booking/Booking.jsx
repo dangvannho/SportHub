@@ -19,8 +19,6 @@ function Booking() {
 
   const [timeId, setTimeId] = useState("");
 
-  console.log(timeId);
-
   const filterPastEvents = (events) => {
     const currentTime = new Date();
     return events.filter((event) => new Date(event.start) > currentTime);

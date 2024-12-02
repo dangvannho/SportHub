@@ -26,7 +26,7 @@ function ManageOwner() {
     { title: "Email", key: "email" },
     { title: "Số điện thoại", key: "phone_number" },
     { title: "Địa chỉ", key: "address" },
-    { title: "Hành động" },
+    { title: "Thao tác" },
   ];
 
   useEffect(() => {
