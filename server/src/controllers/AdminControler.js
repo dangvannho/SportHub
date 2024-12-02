@@ -81,7 +81,7 @@ const addOwner = async (req, res) => {
 
     res.status(200).json({
       EC: 1,
-      EM: "Owner Created",
+      EM: "Thêm chủ sân thanh công",
       newOwner,
     });
   } catch (error) {
@@ -107,7 +107,7 @@ const updateOwner = async (req, res) => {
     // Lấy thông tin chủ sở hữu hiện tại
     const owner = await Owner.findById(id);
     if (!owner) {
-      return res.status(404).json({ message: "Owner not found" });
+      return res.status(404).json({ message: "Không tìm thấy chủ sân" });
     }
 
     // Sử dụng hàm getProfilePicture để xử lý ảnh hồ sơ
@@ -135,7 +135,7 @@ const updateOwner = async (req, res) => {
 
     res.status(200).json({
       EC: 1,
-      EM: "Owner Updated",
+      EM: "Cập nhật thông tin chủ sân thành công",  
       data: updatedOwner,
     });
   } catch (error) {
@@ -155,7 +155,7 @@ const deleteOwner = async (req, res) => {
       if (!owner) {
           return res.status(404).json({ 
               "EC": 0,
-              "EM": "Owner not found",
+              "EM": "Không tìm thấy owner",
           });
       }
 
@@ -164,7 +164,7 @@ const deleteOwner = async (req, res) => {
 
       res.status(200).json({ 
           "EC": 1,
-          "EM": "Owner and their fields deleted successfully",
+          "EM": "Chủ sân và sân của họ đã dược xoá",
       });
   } catch (error) {
       res.status(500).json({ 
@@ -199,7 +199,7 @@ const getUser = async (req, res) => {
 
         const user = await User.findById(id);
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "Không tìm thấy người dùng" });
         }    
         let profilePicture = null;
         if (user.profile_picture) {
@@ -207,7 +207,7 @@ const getUser = async (req, res) => {
         }   
         res.status(200).json({
             "EC": 1,
-            "EM": "Users Found",
+            "EM": "Đã tìm thấy người dùng",
             user,
             profilePicture
         });
@@ -242,7 +242,7 @@ const addUser = async (req, res) => {
     await newUser.save();
     res.status(200).json({
       EC: 1,
-      EM: "User Created",
+      EM: "Thêm người dùng thành công",
       newUser,
     });
   } catch (error) {
@@ -261,7 +261,7 @@ const updateUser = async (req, res) => {
         // Lấy thông tin người dùng hiện tại
         const user = await User.findById(id);
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "Không tìm thấy người dùng" });
         }
 
         // Sử dụng hàm getProfilePicture để xử lý ảnh hồ sơ
@@ -292,7 +292,7 @@ const updateUser = async (req, res) => {
 
         res.status(200).json({
             "EC": 1,
-            "EM": "User Updated",
+            "EM": "Cập nhật thông tin người dùng thành công",
             updatedUser
         });
     } catch (error) {
@@ -310,12 +310,12 @@ const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         EC: 0,
-        EM: "User not found",
+        EM: "Không tìm thấy người dùng",
       });
     }
     res.status(200).json({
       EC: 1,
-      EM: "User Deleted",
+      EM: "Xoá người dùng thành công",
     });
   } catch (error) {
     res.status(500).json({
