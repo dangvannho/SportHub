@@ -1,4 +1,5 @@
 const Field = require("../models/Field");
+const Bill = require("../models/Bill");
 const FieldAvailability = require("../models/Field_Availability");
 const Pagination = require("../utils/Pagination");
 const { authenticateUser } = require("../utils/checkOwner");
@@ -317,11 +318,350 @@ const deleteFieldRate = async (req, res) => {
   }
 };
 
+const getOwnerRevenue = async (req, res) => {
+  try {
+    const { owner_id, type, month, year } = req.query;
+
+    // Kiểm tra input bắt buộc
+    if (!owner_id || !type) {
+      return res.status(400).json({ message: 'ownerId and type are required in query parameters.' });
+    }
+
+    // Lấy thời gian mặc định nếu không có input
+    const now = new Date();
+    const defaultMonth = now.getMonth() + 1; // Tháng hiện tại (1-12)
+    const defaultYear = now.getFullYear(); // Năm hiện tại
+
+    // Xử lý logic thời gian
+    let startDate, endDate;
+
+    if (type === 'month') {
+      // Nếu type là "month", cần cả month và year
+      const inputMonth = parseInt(month || defaultMonth, 10); // Nếu không có month, dùng tháng hiện tại
+      const inputYear = parseInt(year || defaultYear, 10); // Nếu không có year, dùng năm hiện tại
+
+      startDate = new Date(inputYear, inputMonth - 1, 1); // Ngày đầu tiên của tháng
+      endDate = new Date(inputYear, inputMonth, 0); // Ngày cuối cùng của tháng
+      endDate.setHours(23, 59, 59, 999); // Thời gian cuối ngày
+    } else if (type === 'year') {
+      // Nếu type là "year", chỉ cần year
+      const inputYear = parseInt(year || defaultYear, 10); // Nếu không có year, dùng năm hiện tại
+
+      startDate = new Date(inputYear, 0, 1); // Ngày đầu tiên của năm
+      endDate = new Date(inputYear, 11, 31); // Ngày cuối cùng của năm
+      endDate.setHours(23, 59, 59, 999); // Thời gian cuối ngày
+    } else {
+      return res.status(400).json({ message: 'type must be either "month" or "year".' });
+    }
+
+    // Lấy tất cả các Field thuộc ownerId
+    const fields = await Field.find({ owner_id: owner_id }).select('_id');
+    const fieldIds = fields.map(field => field._id);
+
+    // Lấy tất cả các FieldAvailability liên kết với các Field trên
+    const fieldAvailabilities = await FieldAvailability.find({ field_id: { $in: fieldIds } }).select('_id');
+    const fieldAvailabilityIds = fieldAvailabilities.map(fa => fa._id);
+
+    // Điều kiện lọc Bill theo khoảng thời gian
+    const matchCondition = {
+      field_availability_id: { $in: fieldAvailabilityIds },
+      order_time: { $gte: startDate, $lte: endDate },
+    };
+
+    // Pipeline để tính doanh thu
+    const revenueData = await Bill.aggregate([
+      { $match: matchCondition },
+      {
+        $project: {
+          amount: 1,
+          order_time: 1,
+          groupKey: type === 'month'
+            ? { $dayOfMonth: "$order_time" } // Nhóm theo ngày trong tháng
+            : { $month: "$order_time" }     // Nhóm theo tháng trong năm
+        }
+      },
+      {
+        $group: {
+          _id: "$groupKey",          // Nhóm theo ngày hoặc tháng
+          totalRevenue: { $sum: "$amount" } // Tính tổng doanh thu
+        }
+      },
+      { $sort: { _id: 1 } } // Sắp xếp theo ngày hoặc tháng tăng dần
+    ]);
+
+    // Chuẩn hóa kết quả trả về
+    const result = revenueData.map(item => ({
+      key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
+      revenue: item.totalRevenue
+    }));
+    console.log(result);
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in getOwnerRevenue:', error);
+    res.status(500).json({ message: 'Server Error', error });
+  }
+};
+
+const getOwnerBookings = async (req, res) => {
+  try {
+    const { owner_id, type, month, year } = req.query;
+
+    // Kiểm tra input bắt buộc
+    if (!owner_id || !type) {
+      return res.status(400).json({ message: 'ownerId and type are required in query parameters.' });
+    }
+
+    // Lấy thời gian mặc định nếu không có input
+    const now = new Date();
+    const defaultMonth = now.getMonth() + 1; // Tháng hiện tại (1-12)
+    const defaultYear = now.getFullYear(); // Năm hiện tại
+
+    // Xử lý logic thời gian
+    let startDate, endDate;
+
+    if (type === 'month') {
+      // Nếu type là "month", cần cả month và year
+      const inputMonth = parseInt(month || defaultMonth, 10); // Nếu không có month, dùng tháng hiện tại
+      const inputYear = parseInt(year || defaultYear, 10); // Nếu không có year, dùng năm hiện tại
+
+      startDate = new Date(inputYear, inputMonth - 1, 1); // Ngày đầu tiên của tháng
+      endDate = new Date(inputYear, inputMonth, 0); // Ngày cuối cùng của tháng
+      endDate.setHours(23, 59, 59, 999); // Thời gian cuối ngày
+    } else if (type === 'year') {
+      // Nếu type là "year", chỉ cần year
+      const inputYear = parseInt(year || defaultYear, 10); // Nếu không có year, dùng năm hiện tại
+
+      startDate = new Date(inputYear, 0, 1); // Ngày đầu tiên của năm
+      endDate = new Date(inputYear, 11, 31); // Ngày cuối cùng của năm
+      endDate.setHours(23, 59, 59, 999); // Thời gian cuối ngày
+    } else {
+      return res.status(400).json({ message: 'type must be either "month" or "year".' });
+    }
+
+    // Lấy tất cả các Field thuộc ownerId
+    const fields = await Field.find({ owner_id: owner_id }).select('_id');
+    const fieldIds = fields.map(field => field._id);
+
+    // Lấy tất cả các FieldAvailability liên kết với các Field trên
+    const fieldAvailabilities = await FieldAvailability.find({ field_id: { $in: fieldIds } }).select('_id');
+    const fieldAvailabilityIds = fieldAvailabilities.map(fa => fa._id);
+
+    // Điều kiện lọc Bill theo khoảng thời gian
+    const matchCondition = {
+      field_availability_id: { $in: fieldAvailabilityIds },
+      order_time: { $gte: startDate, $lte: endDate },
+      status: 'complete', // Lọc các bill có trạng thái "complete"
+    };
+
+    // Pipeline để đếm số lượt đặt sân (bill có trạng thái "complete")
+    const bookingData = await Bill.aggregate([
+      { $match: matchCondition },
+      {
+        $project: {
+          order_time: 1,
+          groupKey: type === 'month'
+            ? { $dayOfMonth: "$order_time" } // Nhóm theo ngày trong tháng
+            : { $month: "$order_time" }     // Nhóm theo tháng trong năm
+        }
+      },
+      {
+        $group: {
+          _id: "$groupKey",          // Nhóm theo ngày hoặc tháng
+          totalBookings: { $sum: 1 } // Đếm số bill (lượt đặt sân)
+        }
+      },
+      { $sort: { _id: 1 } } // Sắp xếp theo ngày hoặc tháng tăng dần
+    ]);
+
+    // Chuẩn hóa kết quả trả về
+    const result = bookingData.map(item => ({
+      key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
+      bookings: item.totalBookings
+    }));
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in getOwnerBookings:', error);
+    res.status(500).json({ message: 'Server Error', error });
+  }
+};
+
+const getFieldRevenue = async (req, res) => {
+  try {
+    const { field_id, type, month, year } = req.query;
+
+    // Kiểm tra input bắt buộc
+    if (!field_id || !type) {
+      return res.status(400).json({ message: 'field_id and type are required in query parameters.' });
+    }
+    if (type === 'month' && (!month || !year)) {
+      return res.status(400).json({ message: 'month and year are required for type=month.' });
+    }
+    if (type === 'year' && !year) {
+      return res.status(400).json({ message: 'year is required for type=year.' });
+    }
+
+    // Tính toán thời gian
+    let startDate, endDate;
+    if (type === 'month') {
+      const inputMonth = parseInt(month, 10);
+      const inputYear = parseInt(year, 10);
+
+      startDate = new Date(inputYear, inputMonth - 1, 1); // Ngày đầu tiên của tháng
+      endDate = new Date(inputYear, inputMonth, 0); // Ngày cuối cùng của tháng
+      endDate.setHours(23, 59, 59, 999); // Thời gian cuối ngày
+    } else if (type === 'year') {
+      const inputYear = parseInt(year, 10);
+
+      startDate = new Date(inputYear, 0, 1); // Ngày đầu tiên của năm
+      endDate = new Date(inputYear, 11, 31); // Ngày cuối cùng của năm
+      endDate.setHours(23, 59, 59, 999); // Thời gian cuối ngày
+    }
+
+    // Lấy tất cả các FieldAvailability liên kết với field_id
+    const fieldAvailabilities = await FieldAvailability.find({ field_id }).select('_id');
+    const fieldAvailabilityIds = fieldAvailabilities.map(fa => fa._id);
+
+    // Kiểm tra nếu không có FieldAvailability
+    if (!fieldAvailabilityIds.length) {
+      return res.status(404).json({ message: 'No availabilities found for the given field.' });
+    }
+
+    // Điều kiện lọc Bill
+    const matchCondition = {
+      field_availability_id: { $in: fieldAvailabilityIds },
+      order_time: { $gte: startDate, $lte: endDate },
+    };
+
+    // Pipeline để tính doanh thu
+    const revenueData = await Bill.aggregate([
+      { $match: matchCondition },
+      {
+        $project: {
+          amount: 1,
+          order_time: 1,
+          groupKey: type === 'month'
+            ? { $dayOfMonth: "$order_time" } // Nhóm theo ngày trong tháng
+            : { $month: "$order_time" }     // Nhóm theo tháng trong năm
+        }
+      },
+      {
+        $group: {
+          _id: "$groupKey",          // Nhóm theo ngày hoặc tháng
+          totalRevenue: { $sum: "$amount" } // Tính tổng doanh thu
+        }
+      },
+      { $sort: { _id: 1 } } // Sắp xếp theo ngày hoặc tháng tăng dần
+    ]);
+
+    // Chuẩn hóa kết quả trả về
+    const result = revenueData.map(item => ({
+      key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
+      revenue: item.totalRevenue
+    }));
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in getFieldRevenue:', error);
+    res.status(500).json({ message: 'Server Error', error });
+  }
+};
+
+const getFieldBookings = async (req, res) => {
+  try {
+    const { field_id, type, month, year } = req.query;
+
+    // Kiểm tra input bắt buộc
+    if (!field_id || !type) {
+      return res.status(400).json({ message: 'field_id and type are required in query parameters.' });
+    }
+
+    // Lấy thời gian mặc định nếu không có input
+    const now = new Date();
+    const defaultMonth = now.getMonth() + 1; // Tháng hiện tại (1-12)
+    const defaultYear = now.getFullYear(); // Năm hiện tại
+
+    // Xử lý logic thời gian
+    let startDate, endDate;
+
+    if (type === 'month') {
+      // Nếu type là "month", cần cả month và year
+      const inputMonth = parseInt(month || defaultMonth, 10); // Nếu không có month, dùng tháng hiện tại
+      const inputYear = parseInt(year || defaultYear, 10); // Nếu không có year, dùng năm hiện tại
+
+      startDate = new Date(inputYear, inputMonth - 1, 1); // Ngày đầu tiên của tháng
+      endDate = new Date(inputYear, inputMonth, 0); // Ngày cuối cùng của tháng
+      endDate.setHours(23, 59, 59, 999); // Thời gian cuối ngày
+    } else if (type === 'year') {
+      // Nếu type là "year", chỉ cần year
+      const inputYear = parseInt(year || defaultYear, 10); // Nếu không có year, dùng năm hiện tại
+
+      startDate = new Date(inputYear, 0, 1); // Ngày đầu tiên của năm
+      endDate = new Date(inputYear, 11, 31); // Ngày cuối cùng của năm
+      endDate.setHours(23, 59, 59, 999); // Thời gian cuối ngày
+    } else {
+      return res.status(400).json({ message: 'type must be either "month" or "year".' });
+    }
+
+    // Lấy tất cả các FieldAvailability liên kết với field_id
+    const fieldAvailabilities = await FieldAvailability.find({ field_id }).select('_id');
+    const fieldAvailabilityIds = fieldAvailabilities.map(fa => fa._id);
+
+    // Kiểm tra nếu không có FieldAvailability
+    if (!fieldAvailabilityIds.length) {
+      return res.status(404).json({ message: 'No availabilities found for the given field.' });
+    }
+
+    // Điều kiện lọc Bill theo khoảng thời gian
+    const matchCondition = {
+      field_availability_id: { $in: fieldAvailabilityIds },
+      order_time: { $gte: startDate, $lte: endDate },
+      status: 'complete', // Chỉ lấy các bill có trạng thái "complete"
+    };
+
+    // Pipeline để đếm số lượt đặt sân (bill có trạng thái "complete")
+    const bookingData = await Bill.aggregate([
+      { $match: matchCondition },
+      {
+        $project: {
+          order_time: 1,
+          groupKey: type === 'month'
+            ? { $dayOfMonth: "$order_time" } // Nhóm theo ngày trong tháng
+            : { $month: "$order_time" }     // Nhóm theo tháng trong năm
+        }
+      },
+      {
+        $group: {
+          _id: "$groupKey",          // Nhóm theo ngày hoặc tháng
+          totalBookings: { $sum: 1 } // Đếm số bill (lượt đặt sân)
+        }
+      },
+      { $sort: { _id: 1 } } // Sắp xếp theo ngày hoặc tháng tăng dần
+    ]);
+
+    // Chuẩn hóa kết quả trả về
+    const result = bookingData.map(item => ({
+      key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
+      bookings: item.totalBookings
+    }));
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error in getFieldBookings:', error);
+    res.status(500).json({ message: 'Server Error', error });
+  }
+};
+
 module.exports = {
+  getOwnerBookings,
   getFieldsByOwnerId,
   generateAvailabilityRecords,
   addPriceSlot,
   updateFieldRate,
   deleteFieldRate,
   getFieldPriceSlots,
+  getOwnerRevenue ,
+  getFieldRevenue,
+  getFieldBookings,
 };
