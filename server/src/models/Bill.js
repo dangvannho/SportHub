@@ -4,18 +4,15 @@ const { Schema } = mongoose;
 const billSchema = new Schema({
   apptransid: {
     type: String,
-    required: true,
     unique: true,
   },
   field_availability_id: { 
     type: Schema.Types.ObjectId, // Tham chiếu đến Field_Availability
     ref: 'Field_Availability',
-    required: true,
   },
   user_id: { 
     type: Schema.Types.ObjectId, // Tham chiếu đến User
     ref: 'User',
-    required: true,
   },
   user_name: {
     type: String, 
