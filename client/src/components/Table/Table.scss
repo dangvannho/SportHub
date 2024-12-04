@@ -1,6 +1,4 @@
-.wapper-table {
-  width: 98%;
-  height: 500px;
+.table {
   margin-top: 30px;
 
   thead {
@@ -8,7 +6,8 @@
     top: 0;
 
     th {
-      background-color: #04aa6d;
+      // background-color: #04aa6d;
+      background-color: #8d5f3d;
       color: white;
     }
   }
@@ -17,8 +16,8 @@
     display: flex;
     gap: 0 10px;
   }
+}
 
-  .pagination {
-    justify-content: center;
-  }
+.pagination {
+  justify-content: center;
 }

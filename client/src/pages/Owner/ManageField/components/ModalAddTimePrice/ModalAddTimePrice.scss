@@ -13,3 +13,12 @@
     transform: rotate(360deg);
   }
 }
+
+.table-custom {
+  thead {
+    th {
+      background-color: #fff;
+      color: black;
+    }
+  }
+}

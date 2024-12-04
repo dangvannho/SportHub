@@ -9,17 +9,16 @@ const connectDB = require("./config/configDatabase");
 const { createServer } = require("http");
 
 const { Server } = require("socket.io");
-const Comment = require('./models/Comment');
-const socketIO = require('./socket');
-const bodyParser = require('body-parser');
+const Comment = require("./models/Comment");
+const socketIO = require("./socket");
+const bodyParser = require("body-parser");
 
 const config = require("../configzlp.json");
-const CryptoJS = require('crypto-js');
+const CryptoJS = require("crypto-js");
 
-const axios = require('axios').default;
-const moment = require('moment'); // npm install moment
-const qs = require('qs');
-
+const axios = require("axios").default;
+const moment = require("moment"); // npm install moment
+const qs = require("qs");
 
 const fieldRoutes = require("./routes/FieldRoutes");
 
@@ -31,11 +30,11 @@ const ownerRoutes = require("./routes/OwnerRoutes");
 
 const imageRoutes = require("./routes/ImgRoutes");
 
-const authRoutes = require('./routes/AuthRoutes');
+const authRoutes = require("./routes/AuthRoutes");
 
-const paymentRoutes = require('./routes/PaymentRoutes');
+const paymentRoutes = require("./routes/PaymentRoutes");
 
-const commentRoutes = require('./routes/CommentRoutes');
+const commentRoutes = require("./routes/CommentRoutes");
 
 const fieldAvailabilityRoutes = require("./routes/FieldAvailabilityRoutes");
 
@@ -63,19 +62,15 @@ app.use("/api/admin", adminRoutes);
 
 app.use("/api/tournaments", tournamentRoutes);
 
-app.use('/api/owner', ownerRoutes);
+app.use("/api/owner", ownerRoutes);
 
-app.use('/api/payment', paymentRoutes);
-require("./utils/setPaymentStatus")
+app.use("/api/payment", paymentRoutes);
+require("./utils/setPaymentStatus");
 app.use("/api/comments", commentRoutes);
 
 app.use(bodyParser.json());
 
-
-
 app.use("/api/field_availability", fieldAvailabilityRoutes);
-
-
 
 app.get("/", (req, res) => {
   res.send("Project");
@@ -90,7 +85,6 @@ httpServer.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 //json web token
-
 
 //////////////////////PAYMENT////////////////////////////////////////////////////////////////////////////
 
@@ -199,8 +193,6 @@ httpServer.listen(port, () => {
 //   }
 // });
 
-
-
 // cron.schedule('*/1 * * * *', async () => {
 //   const now = new Date();
 //   const unlockTime = new Date(now.getTime() - 2 * 60 * 1000); // 2 phút trước, bạn có thể sửa lại thời gian
@@ -241,10 +233,9 @@ httpServer.listen(port, () => {
 
 // console.log('Cron job scheduled to unlock fields every minute.');
 
-
 // app.post('/callback', async (req, res) => {
 //   console.log("Callback received");
-  
+
 //   let result = {};
 //   try {
 //     const dataStr = req.body.data;
@@ -296,10 +287,6 @@ httpServer.listen(port, () => {
 //   res.json(result);
 // });
 
-
-
-
-
 // app.post('/check', async (req, res) => {
 
 //   const { apptransid, _id } = req.body;
@@ -331,6 +318,3 @@ httpServer.listen(port, () => {
 //     return res.status(500).json({ message: 'Internal Server Error' });
 //   }
 // });
-
-
-

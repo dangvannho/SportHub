@@ -1,0 +1,69 @@
+.dashboard {
+  display: grid;
+  height: 100%;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  grid-gap: 20px;
+  padding: 20px;
+  background-color: #f4f5f7;
+
+  .grid-item {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    min-height: 150px;
+  }
+
+  .sales-summary {
+    grid-column: 1 / 8;
+    grid-row: 1 / 3;
+  }
+
+  .visitor-insights {
+    grid-column: 8 / 13;
+    grid-row: 1 / 4;
+  }
+
+  .total-revenue {
+    grid-column: 1 / 8;
+    grid-row: 3 / 7;
+  }
+
+  .customer-satisfaction {
+    grid-column: 8 / 13;
+    grid-row: 4 / 7;
+  }
+}
+
+.sales-summary {
+  .total-group {
+    margin-top: 20px;
+    display: flex;
+    height: 180px;
+    gap: 0 10px;
+
+    .total-item {
+      flex: 1;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      strong {
+        font-size: 32px;
+      }
+    }
+  }
+}
+
+// Thêm responsive behavior
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    .grid-item {
+      grid-column: 1 / -1; // Chiếm full-width trên màn hình nhỏ
+      min-height: 200px; // Chiều cao tối thiểu trên màn hình nhỏ
+    }
+  }
+}

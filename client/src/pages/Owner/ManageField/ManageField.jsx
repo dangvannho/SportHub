@@ -28,7 +28,7 @@ function ManageField() {
     { title: "Địa chỉ", key: "location" },
     { title: "Loại sân", key: "type" },
     { title: "Mô tả", key: "description" },
-    { title: "Hành động" },
+    { title: "Thao tác" },
   ];
 
   useEffect(() => {
