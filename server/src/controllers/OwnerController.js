@@ -389,12 +389,17 @@ const getOwnerRevenue = async (req, res) => {
       { $sort: { _id: 1 } } // Sắp xếp theo ngày hoặc tháng tăng dần
     ]);
 
+    // Tính tổng doanh thu toàn bộ khoảng thời gian
+    const totalRevenue = revenueData.reduce((sum, item) => sum + item.totalRevenue, 0);
+
     // Chuẩn hóa kết quả trả về
-    const result = revenueData.map(item => ({
-      key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
-      revenue: item.totalRevenue
-    }));
-    console.log(result);
+    const result = {
+      totalRevenue, // Tổng doanh thu của toàn bộ tháng hoặc năm
+      breakdown: revenueData.map(item => ({
+        key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
+        revenue: item.totalRevenue
+      }))
+    };
 
     res.status(200).json(result);
   } catch (error) {
@@ -402,6 +407,7 @@ const getOwnerRevenue = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error });
   }
 };
+
 
 const getOwnerBookings = async (req, res) => {
   try {
@@ -474,11 +480,17 @@ const getOwnerBookings = async (req, res) => {
       { $sort: { _id: 1 } } // Sắp xếp theo ngày hoặc tháng tăng dần
     ]);
 
+    // Tính tổng lượt đặt sân toàn bộ khoảng thời gian
+    const totalBookings = bookingData.reduce((sum, item) => sum + item.totalBookings, 0);
+
     // Chuẩn hóa kết quả trả về
-    const result = bookingData.map(item => ({
-      key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
-      bookings: item.totalBookings
-    }));
+    const result = {
+      totalBookings, // Tổng lượt đặt sân
+      breakdown: bookingData.map(item => ({
+        key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
+        bookings: item.totalBookings
+      }))
+    };
 
     res.status(200).json(result);
   } catch (error) {
@@ -486,6 +498,7 @@ const getOwnerBookings = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error });
   }
 };
+
 
 const getFieldRevenue = async (req, res) => {
   try {
@@ -555,11 +568,17 @@ const getFieldRevenue = async (req, res) => {
       { $sort: { _id: 1 } } // Sắp xếp theo ngày hoặc tháng tăng dần
     ]);
 
+    // Tính tổng doanh thu toàn bộ khoảng thời gian
+    const totalRevenue = revenueData.reduce((sum, item) => sum + item.totalRevenue, 0);
+
     // Chuẩn hóa kết quả trả về
-    const result = revenueData.map(item => ({
-      key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
-      revenue: item.totalRevenue
-    }));
+    const result = {
+      totalRevenue, // Tổng doanh thu
+      breakdown: revenueData.map(item => ({
+        key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
+        revenue: item.totalRevenue
+      }))
+    };
 
     res.status(200).json(result);
   } catch (error) {
@@ -567,6 +586,7 @@ const getFieldRevenue = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error });
   }
 };
+
 
 const getFieldBookings = async (req, res) => {
   try {
@@ -640,11 +660,17 @@ const getFieldBookings = async (req, res) => {
       { $sort: { _id: 1 } } // Sắp xếp theo ngày hoặc tháng tăng dần
     ]);
 
+    // Tính tổng lượt đặt sân toàn bộ khoảng thời gian
+    const totalBookings = bookingData.reduce((sum, item) => sum + item.totalBookings, 0);
+
     // Chuẩn hóa kết quả trả về
-    const result = bookingData.map(item => ({
-      key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
-      bookings: item.totalBookings
-    }));
+    const result = {
+      totalBookings, // Tổng số lượt đặt sân
+      breakdown: bookingData.map(item => ({
+        key: type === 'month' ? `Day ${item._id}` : `Month ${item._id}`,
+        bookings: item.totalBookings
+      }))
+    };
 
     res.status(200).json(result);
   } catch (error) {
@@ -652,6 +678,7 @@ const getFieldBookings = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error });
   }
 };
+
 
 module.exports = {
   getOwnerBookings,
@@ -662,6 +689,7 @@ module.exports = {
   deleteFieldRate,
   getFieldPriceSlots,
   getOwnerRevenue ,
+  getOwnerBookings,
   getFieldRevenue,
   getFieldBookings,
 };
