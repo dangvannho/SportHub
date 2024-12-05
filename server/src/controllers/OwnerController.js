@@ -402,11 +402,11 @@ const getOwnerRevenue = async (req, res) => {
           // Định dạng chỉ lấy ngày và tháng
           key = specificDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
         } else {
-          key = `Month ${item._id}`;
+          key = `Tháng ${item._id}`;
         }
         return {
           key,
-          revenue: item.totalRevenue
+          "Doanh thu": item.totalRevenue
         };
       })
     };
@@ -492,11 +492,11 @@ const getOwnerBookings = async (req, res) => {
           specificDate.setDate(item._id); // Tăng ngày dựa trên `_id`
           key = specificDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
         } else {
-          key = `Month ${item._id}`;
+          key = `Tháng ${item._id}`;
         }
         return {
           key,
-          bookings: item.totalBookings
+          "Số lượt đặt": item.totalBookings
         };
       })
     };
@@ -582,11 +582,11 @@ const getFieldRevenue = async (req, res) => {
           specificDate.setDate(item._id); // Tăng ngày dựa trên `_id`
           key = specificDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
         } else {
-          key = `Month ${item._id}`;
+          key = `Tháng ${item._id}`;
         }
         return {
           key,
-          revenue: item.totalRevenue
+          "Doanh thu": item.totalRevenue
         };
       })
     };
@@ -671,14 +671,14 @@ const getFieldBookings = async (req, res) => {
         let key;
         if (type === 'month') {
           const specificDate = new Date(startDate);
-          specificDate.setDate(item._id); // Tăng ngày dựa trên `_id`
-          key = specificDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
+          specificDate.setDate(item._id);
+          key = `${specificDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}`;
         } else {
-          key = `Month ${item._id}`;
+          key = `Tháng ${item._id}`;
         }
         return {
           key,
-          bookings: item.totalBookings
+          "Số lượt đặt": item.totalBookings
         };
       })
     };
@@ -689,6 +689,7 @@ const getFieldBookings = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error });
   }
 };
+
 
 
 module.exports = {
