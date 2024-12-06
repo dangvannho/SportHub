@@ -1,6 +1,8 @@
 const cron = require("node-cron");
-const Order = require("../models/Order"); 
+const Order = require("../models/Bill"); 
 const moment = require("moment");
+const FieldAvailability = require('../models/Field_Availability');
+
 
 cron.schedule('* * * * *', async () => {
     try {
@@ -22,3 +24,6 @@ cron.schedule('* * * * *', async () => {
       console.error('Lỗi khi cập nhật trạng thái đơn hàng:', error);
     }
   });
+//unlock field
+
+

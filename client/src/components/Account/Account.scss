@@ -34,7 +34,7 @@
     transition: all 0.3s;
 
     &.active {
-      height: 90px;
+      height: 123px;
     }
   }
 }
@@ -53,12 +53,12 @@
   .info-personal {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid #ccc;
 
     a {
-      padding: 10px 0;
+      padding: 8px 0;
       text-decoration: none;
       color: black;
+      border-bottom: 1px solid #ccc;
     }
   }
 
