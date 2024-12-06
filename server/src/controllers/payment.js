@@ -56,13 +56,14 @@ const payment = async (req, res) => {
       item: JSON.stringify(items),
       embed_data: JSON.stringify(embed_data), // Gửi embed_data chứa _id
       amount: availability.price,
-      callback_url: 'https://420b-171-225-185-3.ngrok-free.app/api/payment/callback',
+      callback_url: 'https://041a-116-103-249-33.ngrok-free.app/api/payment/callback',
       description: `Thanh toán tiền cho sân: ${Field_name}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`,
       bank_code: '',
     };
 
     // Lưu thông tin hóa đơn
     const saveOrder = new Bill({
+      field_availability_id: _id,
       user_name: req.user.name,
       user_email: req.user.email,
       user_id: req.user.id,

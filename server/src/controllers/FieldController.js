@@ -159,7 +159,7 @@ const addField = async (req, res) => {
     // Trả về phản hồi với category_name
     res.status(200).json({
       EC: 1,
-      EM: "Field Created",
+      EM: "Sân đã được tạo",
       newField,
     });
   } catch (error) {
@@ -234,7 +234,7 @@ const updateField = async (req, res) => {
 
     res.status(200).json({
       EC: 1,
-      EM: "Field Updated",
+      EM: "Sân đã được cập nhật",
       updatedField,
     });
   } catch (error) {
@@ -272,7 +272,7 @@ const deleteField = async (req, res) => {
 
     res.status(200).json({
       EC: 1,
-      EM: "Field Deleted",
+      EM: "Sân đã được xóa",
     });
   } catch (error) {
     res.status(500).json({
