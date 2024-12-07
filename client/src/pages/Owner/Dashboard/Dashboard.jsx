@@ -1,254 +1,159 @@
-import {
-  BarChart,
-  Bar,
-  Rectangle,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  Scatter,
-  ComposedChart,
-  Line,
-  Area,
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-} from "recharts";
+import { useState, useEffect } from "react";
+import { useContext } from "react";
+
+import { AppContext } from "~/context/AppContext";
+import bookingChart from "~/services/Owner/bookingChart";
+import revenueChart from "~/services/Owner/revenueChart";
+import Chart from "./components/Chart/Chart";
 
 import "./Dashboard.scss";
 
 function Dashboard() {
-  const data = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-  ];
+  const currentMonth = new Date().getMonth() + 1; // Tháng hiện tại
+  const currentYear = new Date().getFullYear(); // Năm hiện tại
 
-  const data2 = [
-    {
-      name: "Page A",
-      uv: 590,
-      pv: 800,
-      amt: 1400,
-      cnt: 490,
-    },
-    {
-      name: "Page B",
-      uv: 868,
-      pv: 967,
-      amt: 1506,
-      cnt: 590,
-    },
-    {
-      name: "Page C",
-      uv: 1397,
-      pv: 1098,
-      amt: 989,
-      cnt: 350,
-    },
-    {
-      name: "Page D",
-      uv: 1480,
-      pv: 1200,
-      amt: 1228,
-      cnt: 480,
-    },
-    {
-      name: "Page E",
-      uv: 1520,
-      pv: 1108,
-      amt: 1100,
-      cnt: 460,
-    },
-    {
-      name: "Page F",
-      uv: 1400,
-      pv: 680,
-      amt: 1700,
-      cnt: 380,
-    },
-  ];
+  const { ownerData } = useContext(AppContext);
 
-  const data3 = [
-    { name: "Group A", value: 400 },
-    { name: "Group B", value: 300 },
-    { name: "Group C", value: 300 },
-    { name: "Group D", value: 200 },
-  ];
+  const [typeTime, setTypeTime] = useState("month");
+  const [month, setMonth] = useState(currentMonth);
+  const [year, setYear] = useState(currentYear);
 
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+  // State cho biểu đồ số lượng đặt sân
+  const [chart1Data, setChart1Data] = useState([]);
+  const [totalBooking, setTotalBooking] = useState(0);
 
-  const RADIAN = Math.PI / 180;
-  const renderCustomizedLabel = ({
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    percent,
-  }) => {
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  // State cho biểu đồ doanh thu
+  const [chart2Data, setChart2Data] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
 
-    return (
-      <text
-        x={x}
-        y={y}
-        fill="white"
-        textAnchor={x > cx ? "start" : "end"}
-        dominantBaseline="central"
-      >
-        {`${(percent * 100).toFixed(0)}%`}
-      </text>
-    );
+  console.log(totalRevenue);
+
+  useEffect(() => {
+    fetchChart();
+  }, [typeTime, month, year]);
+
+  const fetchChart = async () => {
+    const res = await (typeTime === "month"
+      ? bookingChart(ownerData.id, "month", month, year)
+      : bookingChart(ownerData.id, "year", null, year));
+    setChart1Data(res.breakdown);
+    setTotalBooking(res.totalBookings);
+
+    const res2 = await (typeTime === "month"
+      ? revenueChart(ownerData.id, "month", month, year)
+      : revenueChart(ownerData.id, "year", null, year));
+    setChart2Data(res2.breakdown);
+    setTotalRevenue(res2.totalRevenue);
   };
+
+  const generateYears = () => {
+    const years = [];
+    for (let year = currentYear - 5; year <= currentYear; year++) {
+      years.push(year);
+    }
+    return years;
+  };
+
   return (
     <div className="dashboard">
       <div className="grid-item sales-summary">
-        <strong>{"Today's Sales"}</strong>
         <div className="total-group">
-          <div className="total-item" style={{ background: "#FFE2E5" }}>
-            <strong> A</strong>
+          <div className="total-item">
+            <div className="header">
+              <p>Tổng số lượng đặt sân</p>
+            </div>
+            <div className="amount">
+              <strong>{totalBooking} lượt đặt</strong>
+            </div>
+            <div className="change positive">
+              <p>▲ +26% </p> <span>so với tháng trước</span>
+            </div>
           </div>
-          <div className="total-item" style={{ background: "#FFF4DE" }}>
-            <strong>B</strong>
+
+          <div className="total-item">
+            <div className="header">
+              <p>Tổng doanh thu</p>
+            </div>
+            <div className="amount">
+              <strong>{totalRevenue.toLocaleString("vi-VN")} VND</strong>
+            </div>
+            <div className="change positive">
+              <p>▲ +26% </p> <span>so với tháng trước</span>
+            </div>
           </div>
-          <div className="total-item" style={{ background: "#DCFCE7" }}>
-            <strong> C</strong>
-          </div>
-          <div className="total-item" style={{ background: "#F3E8FF" }}>
-            <strong>D</strong>
+
+          <div className="total-item">
+            <div className="header">
+              <p>Tổng số sân</p>
+            </div>
+            <div className="amount">
+              <strong>5 sân</strong>
+            </div>
+            <div className="change positive">
+              <p>▲ +26% </p> <span>so với tháng trước</span>
+            </div>
           </div>
         </div>
       </div>
-      <div className="grid-item visitor-insights">
-        <strong>Visitor Insights</strong>
-        <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart
-            width={500}
-            height={400}
-            data={data2}
-            margin={{
-              top: 20,
-              right: 20,
-              bottom: 20,
-              left: 20,
-            }}
-          >
-            <CartesianGrid stroke="#f5f5f5" />
-            <XAxis dataKey="name" scale="band" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Area
-              type="monotone"
-              dataKey="amt"
-              fill="#8884d8"
-              stroke="#8884d8"
-            />
-            <Bar dataKey="pv" barSize={20} fill="#413ea0" />
-            <Line type="monotone" dataKey="uv" stroke="#ff7300" />
-            <Scatter dataKey="cnt" fill="red" />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
-      <div className="grid-item total-revenue">
-        <strong> Total Revenue</strong>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            width={500}
-            height={300}
-            data={data}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar
-              dataKey="pv"
-              fill="#8884d8"
-              activeBar={<Rectangle fill="pink" stroke="blue" />}
-            />
-            <Bar
-              dataKey="uv"
-              fill="#82ca9d"
-              activeBar={<Rectangle fill="gold" stroke="purple" />}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      <div className="grid-item customer-satisfaction">
-        <strong> Customer Satisfaction</strong>
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart width={600} height={600}>
-            <Pie
-              data={data3}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={renderCustomizedLabel}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
+
+      <div className="grid-item filter-container">
+        <div className="group-filter">
+          <div className="filter">
+            <label htmlFor="chart-type-select">Chọn loại thời gian:</label>
+            <select
+              id="chart1-type-select"
+              value={typeTime}
+              onChange={(e) => setTypeTime(e.target.value)}
             >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
+              <option value="month">Tháng</option>
+              <option value="year">Năm</option>
+            </select>
+          </div>
+
+          {typeTime === "month" && (
+            <div className="filter">
+              <label htmlFor="chart-month-select">Chọn tháng:</label>
+              <select
+                id="chart1-month-select"
+                value={month}
+                onChange={(e) => setMonth(parseInt(e.target.value))}
+              >
+                {[...Array(12).keys()].map((month) => (
+                  <option key={month + 1} value={month + 1}>
+                    {month + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="filter">
+            <label htmlFor="chart-year-select">Chọn năm:</label>
+            <select
+              value={year}
+              onChange={(e) => setYear(parseInt(e.target.value))}
+            >
+              {generateYears().map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
               ))}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
+            </select>
+          </div>
+        </div>
+      </div>
+      {/* Biểu đồ số lượng đặt sân */}
+      <div className="grid-item total-revenue">
+        <strong>Thống kê số lượng đặt sân</strong>
+
+        <Chart data={chart1Data} name="Số lượt đặt" color="#8884d8" />
+      </div>
+
+      {/* Biểu đồ doanh thu */}
+      <div className="grid-item customer-satisfaction">
+        <strong>Thống kê doanh thu</strong>
+
+        <Chart data={chart2Data} name="Doanh thu" color="orange" />
       </div>
     </div>
   );
