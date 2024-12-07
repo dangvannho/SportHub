@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { getFieldComments, addComment, deleteComment, getAllComments, updateComment } = require("../controllers/CommentController");
+const { getFieldComments, addComment, deleteComment, getAllComments, updateComment, getFieldRatingAverage, getFieldRatingStats, } = require("../controllers/CommentController");
 const middlewareController = require("../controllers/middlewareControler");
 
 // Lấy tất cả comments của một sân
@@ -15,5 +15,10 @@ router.post("/", middlewareController.verifyToken, addComment);
 router.put("/:id", middlewareController.verifyToken, updateComment);
 // Xóa comment (yêu cầu đăng nhập)
 router.delete("/:id", middlewareController.verifyToken, deleteComment);
+
+router.get('/stats/:field_id', getFieldRatingStats);
+
+router.get('/average/:field_id', getFieldRatingAverage);
+
 
 module.exports = router;

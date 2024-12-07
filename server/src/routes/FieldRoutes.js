@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllFields, getFieldById, searchFields ,addField,updateField,deleteField } = require('../controllers/FieldController');
+const { getAllFields, getFieldById, searchFields, addField, updateField, deleteField } = require('../controllers/FieldController');
 const middlewareController = require("../controllers/middlewareControler");
 const upload_multi = require("../middlewares/uploadMulti");
 
@@ -15,7 +15,7 @@ router.get('/search', searchFields);
 router.get('/:id', getFieldById);
 
 // Route tìm kiếm sân theo tên với tính năng autocomplete
-router.get('/fields/search/:name', ); // khong co trong field controller
+router.get('/fields/search/:name',); // khong co trong field controller
 
 router.post('/', middlewareController.verifyToken, upload_multi, addField);
 
