@@ -9,7 +9,7 @@ import viLocale from "@fullcalendar/core/locales/vi";
 import getTimeField from "~/services/Field/getTimeField";
 import payment from "~/services/Payment/Payment";
 import "tippy.js/dist/tippy.css";
-// import "./Booking.css";
+import "./Booking.css";
 
 function Booking() {
   const { id } = useParams();
@@ -74,11 +74,11 @@ function Booking() {
   };
 
   const eventContent = (eventInfo) => {
-    const isBooked = eventInfo.event.extendedProps.status === false;
+    const isBooked = eventInfo.event.extendedProps.status;
     return (
-      <div className="event-container">
-        {isBooked && <div className="event-status">Đã đặt</div>}
-        <div className="event-price">
+      <div className={`event-container ${!isBooked ? "booked" : ""}`}>
+        {!isBooked && <div className="event-status">Đã đặt</div>}
+        <div className="event-content">
           <p> {eventInfo.timeText}</p>
           <p> {eventInfo.event.extendedProps.price}</p>
         </div>

@@ -80,7 +80,6 @@ function Footer() {
             </div>
             <div className="col">
               <ul>
-                <li>Dành cho chủ sân</li>
                 <li>Điều khoản</li>
                 <li>Chính sách</li>
                 <li>Giới thiệu</li>

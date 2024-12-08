@@ -31,15 +31,11 @@ function Header() {
           <a href="#footer" className="navlink">
             Giới thiệu
           </a>
+
           <NavLink to="/b" className="navlink">
             Chính sách
           </NavLink>
-          <NavLink to="/c" className="navlink">
-            Điều khoản
-          </NavLink>
-          <NavLink to="/d" className="navlink">
-            Dành cho chủ sân
-          </NavLink>
+
           <a href="#footer" className="navlink">
             Liên hệ
           </a>

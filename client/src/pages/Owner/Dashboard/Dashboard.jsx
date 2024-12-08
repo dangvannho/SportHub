@@ -26,8 +26,6 @@ function Dashboard() {
   const [chart2Data, setChart2Data] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
 
-  console.log(totalRevenue);
-
   useEffect(() => {
     fetchChart();
   }, [typeTime, month, year]);
@@ -78,7 +76,7 @@ function Dashboard() {
               <strong>{totalRevenue.toLocaleString("vi-VN")} VND</strong>
             </div>
             <div className="change positive">
-              <p>▲ +26% </p> <span>so với tháng trước</span>
+              <p>&#9650; +26% </p> <span>so với tháng trước</span>
             </div>
           </div>
 
@@ -89,8 +87,8 @@ function Dashboard() {
             <div className="amount">
               <strong>5 sân</strong>
             </div>
-            <div className="change positive">
-              <p>▲ +26% </p> <span>so với tháng trước</span>
+            <div className="change negative">
+              <p>&#9660; +26% </p> <span>so với tháng trước</span>
             </div>
           </div>
         </div>

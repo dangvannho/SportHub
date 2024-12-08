@@ -160,12 +160,13 @@
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  background-color: #fff3cd;
+  background-color: #d4edda;
 }
 
 .event-container.booked {
-  background-color: #d4edda;
+  background-color: #f8d7da;
 }
+
 .event-container .event-status {
   font-weight: bold;
   color: #246b08;
@@ -181,17 +182,6 @@
 .event-content p {
   margin: 3px 0 0;
 }
-
-/* .booked-event {
-  background-color: rgba(233, 236, 239, 0.9) !important;
-  border: none !important;
-} */
-
-/* .available-event {
-  background-color: rgb(138, 168, 216) !important;
-  border: 1px solid #ddd !important;
-  color: #333 !important;
-} */
 
 /* Điều chỉnh chiều cao của event */
 .fc-timegrid-event {
