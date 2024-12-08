@@ -22,8 +22,6 @@ function ManageCalendar() {
 
   const [timeId, setTimeId] = useState("");
 
-  console.log(status);
-
   const filterPastEvents = (events) => {
     const currentTime = new Date();
     return events.filter((event) => new Date(event.start) > currentTime);
@@ -109,12 +107,10 @@ function ManageCalendar() {
   };
 
   const eventContent = (eventInfo) => {
-    const isBooked = eventInfo.event.extendedProps.status === false;
+    const isBooked = eventInfo.event.extendedProps.status;
     return (
-      <div
-        className={`event-container ${eventInfo.event.extendedProps.status}`}
-      >
-        {isBooked && <div className="event-status">Đã đặt</div>}
+      <div className={`event-container ${!isBooked ? "booked" : ""}`}>
+        {!isBooked && <div className="event-status">Đã đặt</div>}
         <div className="event-content">
           <p> {eventInfo.timeText}</p>
           <p> {eventInfo.event.extendedProps.price}</p>

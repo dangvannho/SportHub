@@ -1,4 +1,4 @@
-import { GiSoccerField } from "react-icons/gi";
+import { IoMdFootball } from "react-icons/io";
 import { FaUserEdit } from "react-icons/fa";
 import { TbBrandBooking } from "react-icons/tb";
 import { MdOutlineDashboard } from "react-icons/md";
@@ -22,7 +22,7 @@ function OwnerLayout({ children }) {
     {
       title: "Quản lý sân",
       path: routeConfig.manageField,
-      icon: <GiSoccerField size={25} />,
+      icon: <IoMdFootball size={25} />,
     },
 
     {

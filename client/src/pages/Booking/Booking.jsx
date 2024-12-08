@@ -74,11 +74,11 @@ function Booking() {
   };
 
   const eventContent = (eventInfo) => {
-    const isBooked = eventInfo.event.extendedProps.status === false;
+    const isBooked = eventInfo.event.extendedProps.status;
     return (
-      <div className={`event-content ${eventInfo.event.extendedProps.status}`}>
-        {isBooked && <div className="event-status">Đã đặt</div>}
-        <div className="event-price">
+      <div className={`event-container ${!isBooked ? "booked" : ""}`}>
+        {!isBooked && <div className="event-status">Đã đặt</div>}
+        <div className="event-content">
           <p> {eventInfo.timeText}</p>
           <p> {eventInfo.event.extendedProps.price}</p>
         </div>
@@ -108,22 +108,24 @@ function Booking() {
         eventClick={(info) => handleBookClick(info.event)}
       />
       {selectedSlot && (
-        <div className="booking-summary">
-          <button
-            className="close-button"
-            onClick={() => setSelectedSlot(null)}
-          >
-            ×
-          </button>
-          <h3>Thông tin đặt sân</h3>
-          <p>
-            Thời gian: {new Date(selectedSlot.start).toLocaleString()} -{" "}
-            {new Date(selectedSlot.end).toLocaleString()}
-          </p>
-          <p>Giá: {selectedSlot.extendedProps.price}</p>
-          <button className="btn-book" onClick={handlePayment}>
-            Đặt lịch
-          </button>
+        <div className="booking-summary-overlay">
+          <div className="booking-summary">
+            <button
+              className="close-button"
+              onClick={() => setSelectedSlot(null)}
+            >
+              ×
+            </button>
+            <h3>Thông tin đặt sân</h3>
+            <p>
+              Thời gian: {new Date(selectedSlot.start).toLocaleString()} -{" "}
+              {new Date(selectedSlot.end).toLocaleString()}
+            </p>
+            <p>Giá: {selectedSlot.extendedProps.price}</p>
+            <button className="btn-book" onClick={handlePayment}>
+              Đặt lịch
+            </button>
+          </div>
         </div>
       )}
     </div>
