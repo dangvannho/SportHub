@@ -8,6 +8,7 @@ const CommentSchema = new mongoose.Schema({
     comment_text: { type: String, required: true }
 }, { timestamps: true });
 
-//CommentSchema.index({ user_id: 1, field_id: 1 }, { unique: true });
+// Xóa tất cả các index hiện có
+//CommentSchema.index({ user_id: 1, field_id: 1 }, { unique: false });
 
 module.exports = mongoose.model('Comment', CommentSchema);

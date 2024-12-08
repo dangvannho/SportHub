@@ -125,12 +125,6 @@ const addComment = async (req, res) => {
 
     } catch (error) {
         console.error('Error in addComment:', error);
-        if (error.code === 11000) {
-            return res.status(400).json({
-                EC: 0,
-                EM: "Bạn đã bình luận cho sân này rồi"
-            });
-        }
         res.status(500).json({
             EC: 0,
             EM: error.message
