@@ -11,4 +11,6 @@ router.post('/', middlewareController.verifyToken,paymentcontroller.payment);
 
 router.post('/callback', paymentcontroller.callback); 
 
+router.post('/check', paymentcontroller.check);
+
 module.exports = router;
