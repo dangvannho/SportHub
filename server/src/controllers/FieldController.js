@@ -1,6 +1,6 @@
 const Field = require("../models/Field");
 const Pagination = require("../utils/Pagination");
-const {processFieldImage , getProfilePicture} = require('../utils/ProcessIMG')
+const { processFieldImage, getProfilePicture } = require('../utils/ProcessIMG')
 const { authenticateUser } = require("../utils/checkOwner");
 
 
@@ -133,13 +133,13 @@ const addField = async (req, res) => {
       availability_status,
     } = req.body;
 
-  
+
 
     // Xử lý ảnh nếu có
-     let images = [];
+    let images = [];
     if (req.files && req.files.length > 0) {
       for (const file of req.files) {
-        const processedImage = await processFieldImage (file.buffer);
+        const processedImage = await processFieldImage(file.buffer);
         images.push(processedImage);
       }
     }
@@ -195,14 +195,14 @@ const updateField = async (req, res) => {
     let images = [...field.images];
     const deletedImages = new Set(); // Sử dụng Set để lưu các ảnh đã xóa
 
-// Lọc các ảnh cần xóa khỏi mảng images
-images = images.filter((imageUrl) => {
-  if (imagesToDelete.includes(imageUrl) && !deletedImages.has(imageUrl)) {
-    deletedImages.add(imageUrl); // Đánh dấu ảnh đã xóa
-    return false; // Loại bỏ ảnh khỏi mảng
-  }
-  return true; // Giữ lại ảnh trong mảng
-});
+    // Lọc các ảnh cần xóa khỏi mảng images
+    images = images.filter((imageUrl) => {
+      if (imagesToDelete.includes(imageUrl) && !deletedImages.has(imageUrl)) {
+        deletedImages.add(imageUrl); // Đánh dấu ảnh đã xóa
+        return false; // Loại bỏ ảnh khỏi mảng
+      }
+      return true; // Giữ lại ảnh trong mảng
+    });
 
 
 
@@ -253,7 +253,7 @@ const deleteField = async (req, res) => {
     const { id } = req.params;
 
     // Lấy token từ header
-     const owner_id = authenticateUser(req, res);
+    const owner_id = authenticateUser(req, res);
     if (!owner_id) return;
 
     // Tìm field theo id
