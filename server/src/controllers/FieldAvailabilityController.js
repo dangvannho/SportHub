@@ -21,22 +21,21 @@ const getFieldAvailability = async (req, res) => {
       });
     }
 
-    const bookedAvailabilityIds = availabilities
-      .filter(a => !a.is_available)
-      .map(a => a._id);
-
     const bills = await Bill.find({
-      'field_availabilities.availability_id': { $in: bookedAvailabilityIds }
-    }).populate('user_id', 'name phone_number');
+      field_availability_id: { $in: availabilities.map(a => a._id) },
+      status: 'complete'
+    }).populate({
+      path: 'user_id',
+      select: 'name phone_number'
+    });
 
     const bookingMap = {};
     bills.forEach(bill => {
-      bill.field_availabilities.forEach(fa => {
-        bookingMap[fa.availability_id.toString()] = {
-          userName: bill.user_id.name,
-          phoneNumber: bill.user_id.phone_number
-        };
-      });
+      bookingMap[bill.field_availability_id.toString()] = {
+        userName: bill.user_id.name,
+        phoneNumber: bill.user_id.phone_number,
+        userId: bill.user_id._id
+      };
     });
 
     const result = availabilities.map(availability => {
@@ -45,12 +44,14 @@ const getFieldAvailability = async (req, res) => {
         const bookingInfo = bookingMap[availability._id.toString()];
         if (bookingInfo) {
           availabilityObj.bookedBy = {
+            userId: bookingInfo.userId,
             name: bookingInfo.userName,
             phoneNumber: bookingInfo.phoneNumber
           };
         }
       } else {
         availabilityObj.bookedBy = {
+          userId: null,
           name: "Không có",
           phoneNumber: null
         };

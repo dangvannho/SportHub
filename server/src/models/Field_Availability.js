@@ -7,8 +7,8 @@ const FieldAvailabilitySchema = new mongoose.Schema({
     start_time: { type: String, required: true },
     end_time: { type: String, required: true },
     is_available: { type: Boolean, default: true },
-    price: { type: Number, required: true } ,
-    lock_time: { type: Date , default: null },
+    price: { type: Number, required: true },
+    lock_time: { type: Date, default: null },
 });
 
 module.exports = mongoose.model('FieldAvailability', FieldAvailabilitySchema);
