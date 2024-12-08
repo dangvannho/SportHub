@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import { FaStar } from "react-icons/fa";
 import "./Comment.scss";
 import httpRequest from "~/utils/httpRequest";
 import { toast } from "react-toastify";
@@ -29,13 +30,24 @@ const timeAgo = (date) => {
   }
 };
 
-function Comment({ fieldId }) {
+function Comment({ fieldId, onRatingChange }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editCommentText, setEditCommentText] = useState("");
+  const [editRating, setEditRating] = useState(0);
+  const [editHover, setEditHover] = useState(0);
+  const [ratingStats, setRatingStats] = useState({
+    averageRating: 0,
+    totalRatings: 0,
+    ratingDetails: {
+      5: 0, 4: 0, 3: 0, 2: 0, 1: 0
+    }
+  });
 
   useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -101,8 +113,41 @@ function Comment({ fieldId }) {
     }
   }, [fieldId]);
 
-  const handleAddComment = () => {
-    if (!newComment.trim()) return;
+  useEffect(() => {
+    if (fieldId) {
+      fetchRatingStats();
+    }
+  }, [fieldId]);
+
+  const fetchRatingStats = async () => {
+    try {
+      const [averageRes, statsRes] = await Promise.all([
+        httpRequest.get(`/api/comments/average/${fieldId}`),
+        httpRequest.get(`/api/comments/stats/${fieldId}`)
+      ]);
+
+      if (averageRes.EC === 1 && statsRes.EC === 1) {
+        setRatingStats({
+          averageRating: averageRes.DT.averageRating,
+          totalRatings: averageRes.DT.totalRatings,
+          ratingDetails: statsRes.DT.ratingStats
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching rating stats:", error);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) {
+      toast.error("Vui lòng nhập nội dung bình luận");
+      return;
+    }
+
+    if (rating === 0) {
+      toast.error("Vui lòng đánh giá số sao");
+      return;
+    }
 
     const userStr = localStorage.getItem("user");
     if (!userStr) {
@@ -111,15 +156,34 @@ function Comment({ fieldId }) {
     }
 
     const user = JSON.parse(userStr);
-    const userId = user.id;
 
-    socket.emit("newComment", {
-      field_id: fieldId,
-      comment_text: newComment,
-      user_id: userId,
-    });
+    try {
+      const response = await httpRequest.post('/api/comments', {
+        field_id: fieldId,
+        comment_text: newComment,
+        rating: rating
+      }, {
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`
+        }
+      });
 
-    setNewComment("");
+      if (response.EC === 1) {
+        setNewComment("");
+        setRating(0);
+        toast.success(response.EM);
+        onRatingChange && onRatingChange();
+      } else {
+        toast.error(response.EM || "Không thể thêm bình luận");
+      }
+    } catch (error) {
+      console.error("Error adding comment:", error);
+      if (error.response?.data?.EM) {
+        toast.error(error.response.data.EM);
+      } else {
+        toast.error("Không thể thêm bình luận");
+      }
+    }
   };
 
   const handleDeleteComment = async (_id) => {
@@ -139,6 +203,7 @@ function Comment({ fieldId }) {
 
       if (response.EC === 1) {
         toast.success(response.EM);
+        onRatingChange && onRatingChange();
       } else {
         toast.error(response.EM || "Không thể xóa bình luận");
       }
@@ -148,30 +213,110 @@ function Comment({ fieldId }) {
     }
   };
 
-  const handleEditComment = async (_id) => {
+  const handleStartEdit = (comment) => {
+    setEditingCommentId(comment._id);
+    setEditCommentText(comment.comment_text);
+    setEditRating(comment.rating);
+  };
+
+  const handleEditComment = async (commentId) => {
     try {
-      const response = await httpRequest.put(`/api/comments/${_id}`, {
+      if (!editCommentText.trim()) {
+        toast.error("Nội dung bình luận không được để trống");
+        return;
+      }
+
+      const response = await httpRequest.put(`/api/comments/${commentId}`, {
         comment_text: editCommentText,
+        rating: editRating
       });
 
       if (response.EC === 1) {
-        toast.success(response.EM);
+        setComments(comments.map(comment =>
+          comment._id === commentId ? response.comment : comment
+        ));
         setEditingCommentId(null);
         setEditCommentText("");
+        setEditRating(0);
+        toast.success("Cập nhật bình luận thành công");
+        onRatingChange && onRatingChange();
       } else {
-        toast.error(response.EM || "Không thể sửa bình luận");
+        toast.error(response.EM);
       }
     } catch (error) {
-      console.error("Error editing comment:", error);
-      toast.error("Không thể sửa bình luận");
+      console.error("Error updating comment:", error);
+      toast.error("Lỗi khi cập nhật bình luận");
     }
   };
+
+  const RatingStats = () => (
+    <div className="rating-stats">
+      <div className="rating-summary">
+        <div className="average-rating">
+          <h3>{ratingStats.averageRating.toFixed(1)}</h3>
+          <div className="stars">
+            {[...Array(5)].map((_, index) => (
+              <FaStar
+                key={index}
+                className="star"
+                color={index < Math.round(ratingStats.averageRating) ? "#ffc107" : "#e4e5e9"}
+                size={20}
+              />
+            ))}
+          </div>
+          <p>{ratingStats.totalRatings} đánh giá</p>
+        </div>
+        <div className="rating-bars">
+          {[5, 4, 3, 2, 1].map((star) => (
+            <div key={star} className="rating-bar-row">
+              <span>{star} sao</span>
+              <div className="rating-bar">
+                <div
+                  className="rating-fill"
+                  style={{
+                    width: `${(ratingStats.ratingDetails[star] / ratingStats.totalRatings) * 100 || 0}%`
+                  }}
+                ></div>
+              </div>
+              <span>{ratingStats.ratingDetails[star]}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   if (loading) return <div>Đang tải bình luận...</div>;
 
   return (
     <div className="comments-section">
+      <RatingStats />
+
       <div className="write-comment">
+        <div className="star-rating">
+          {[...Array(5)].map((_, index) => {
+            const ratingValue = index + 1;
+            return (
+              <label key={index}>
+                <input
+                  type="radio"
+                  name="rating"
+                  value={ratingValue}
+                  onClick={() => setRating(ratingValue)}
+                  style={{ display: 'none' }}
+                />
+                <FaStar
+                  className="star"
+                  color={ratingValue <= (hover || rating) ? "#ffc107" : "#e4e5e9"}
+                  size={24}
+                  onMouseEnter={() => setHover(ratingValue)}
+                  onMouseLeave={() => setHover(0)}
+                />
+              </label>
+            );
+          })}
+        </div>
+
         <input
           type="text"
           value={newComment}
@@ -187,8 +332,8 @@ function Comment({ fieldId }) {
       <div className="list-comment">
         {comments.map((comment) => (
           <div key={comment._id} className="comment-container">
-            <div className="comment-header">
-              <div className="user-info">
+            <div className="comment-main">
+              <div className="comment-user">
                 {comment.user_id.profile_picture && (
                   <img
                     src={`data:image/jpeg;base64,${comment.user_id.profile_picture}`}
@@ -196,61 +341,95 @@ function Comment({ fieldId }) {
                     className="user-avatar"
                   />
                 )}
-                <h5 className="name-user">{comment.user_id.name}</h5>
-              </div>
-              {currentUserId && comment.user_id._id === currentUserId && (
-                <div className="comment-actions">
+                <div className="user-content">
+                  {comment.bill_id && (
+                    <div className="booking-time">
+                      Ngày đặt sân: {new Date(comment.bill_id.order_time).toLocaleString()}
+                    </div>
+                  )}
+                  <div className="user-header">
+                    <h5 className="name-user">{comment.user_id.name}</h5>
+                    {editingCommentId === comment._id ? (
+                      <div className="rating-edit">
+                        {[...Array(5)].map((_, index) => (
+                          <FaStar
+                            key={index}
+                            className="star"
+                            color={index < (editHover || editRating) ? "#ffc107" : "#e4e5e9"}
+                            size={16}
+                            onClick={() => setEditRating(index + 1)}
+                            onMouseEnter={() => setEditHover(index + 1)}
+                            onMouseLeave={() => setEditHover(0)}
+                            style={{ cursor: 'pointer' }}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="rating-display">
+                        {[...Array(5)].map((_, index) => (
+                          <FaStar
+                            key={index}
+                            className="star"
+                            color={index < comment.rating ? "#ffc107" : "#e4e5e9"}
+                            size={16}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   {editingCommentId === comment._id ? (
-                    <>
-                      <button
-                        onClick={() => handleEditComment(comment._id)}
-                        className="save-btn"
-                      >
-                        Lưu
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEditingCommentId(null);
-                          setEditCommentText("");
-                        }}
-                        className="cancel-btn"
-                      >
-                        Hủy
-                      </button>
-                    </>
+                    <div className="edit-form">
+                      <input
+                        type="text"
+                        value={editCommentText}
+                        onChange={(e) => setEditCommentText(e.target.value)}
+                        className="edit-comment-input"
+                      />
+                      <div className="edit-actions">
+                        <button
+                          onClick={() => handleEditComment(comment._id)}
+                          className="btn-save"
+                        >
+                          Lưu
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingCommentId(null);
+                            setEditCommentText("");
+                            setEditRating(0);
+                            setEditHover(0);
+                          }}
+                          className="btn-cancel"
+                        >
+                          Hủy
+                        </button>
+                      </div>
+                    </div>
                   ) : (
                     <>
-                      <button
-                        onClick={() => {
-                          setEditingCommentId(comment._id);
-                          setEditCommentText(comment.comment_text);
-                        }}
-                        className="edit-btn"
-                      >
-                        Sửa
-                      </button>
-                      <button
-                        onClick={() => handleDeleteComment(comment._id)}
-                        className="delete-btn"
-                      >
-                        Xóa
-                      </button>
+                      <p className="comment-desc">{comment.comment_text}</p>
+                      <span className="date">{timeAgo(comment.createdAt)}</span>
                     </>
                   )}
                 </div>
-              )}
+              </div>
             </div>
-            {editingCommentId === comment._id ? (
-              <input
-                type="text"
-                value={editCommentText}
-                onChange={(e) => setEditCommentText(e.target.value)}
-                className="edit-comment-input"
-              />
-            ) : (
-              <p className="comment-desc">{comment.comment_text}</p>
+            {currentUserId && comment.user_id._id === currentUserId && !editingCommentId && (
+              <div className="comment-actions">
+                <button
+                  onClick={() => handleStartEdit(comment)}
+                  className="edit-btn"
+                >
+                  Sửa
+                </button>
+                <button
+                  onClick={() => handleDeleteComment(comment._id)}
+                  className="delete-btn"
+                >
+                  Xóa
+                </button>
+              </div>
             )}
-            <span className="date">{timeAgo(comment.createdAt)}</span>
           </div>
         ))}
       </div>

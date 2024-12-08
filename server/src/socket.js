@@ -22,11 +22,12 @@ module.exports = {
 
       socket.on("newComment", async (data) => {
         try {
-          const { field_id, comment_text, user_id } = data;
+          const { field_id, comment_text, user_id, rating } = data;
           const newComment = new Comment({
             user_id,
             field_id,
             comment_text,
+            rating
           });
           await newComment.save();
           const populatedComment = await Comment.findById(

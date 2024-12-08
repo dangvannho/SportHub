@@ -332,24 +332,39 @@ const getOwnerRevenue = async (req, res) => {
     const defaultMonth = now.getMonth() + 1; // Tháng hiện tại (1-12)
     const defaultYear = now.getFullYear(); // Năm hiện tại
 
-    // Xử lý logic thời gian
-    let startDate, endDate;
+    // Xử lý logic thời gian hiện tại
+    let startDate, endDate, prevStartDate, prevEndDate;
 
     if (type === 'month') {
-      // Nếu type là "month", cần cả month và year
-      const inputMonth = parseInt(month || defaultMonth, 10); // Nếu không có month, dùng tháng hiện tại
-      const inputYear = parseInt(year || defaultYear, 10); // Nếu không có year, dùng năm hiện tại
+      const inputMonth = parseInt(month || defaultMonth, 10); // Tháng hiện tại
+      const inputYear = parseInt(year || defaultYear, 10); // Năm hiện tại
 
-      startDate = new Date(inputYear, inputMonth - 1, 1); // Ngày đầu tiên của tháng
-      endDate = new Date(inputYear, inputMonth, 0); // Ngày cuối cùng của tháng
-      endDate.setHours(23, 59, 59, 999); // Thời gian cuối ngày
+      // Khoảng thời gian của tháng hiện tại
+      startDate = new Date(inputYear, inputMonth - 1, 1);
+      endDate = new Date(inputYear, inputMonth, 0);
+      endDate.setHours(23, 59, 59, 999);
+
+      // Khoảng thời gian của tháng trước
+      if (inputMonth === 1) { // Nếu là tháng 1, chuyển về tháng 12 của năm trước
+        prevStartDate = new Date(inputYear - 1, 11, 1);
+        prevEndDate = new Date(inputYear - 1, 11, 31);
+      } else {
+        prevStartDate = new Date(inputYear, inputMonth - 2, 1);
+        prevEndDate = new Date(inputYear, inputMonth - 1, 0);
+      }
+      prevEndDate.setHours(23, 59, 59, 999);
     } else if (type === 'year') {
-      // Nếu type là "year", chỉ cần year
-      const inputYear = parseInt(year || defaultYear, 10); // Nếu không có year, dùng năm hiện tại
+      const inputYear = parseInt(year || defaultYear, 10);
 
-      startDate = new Date(inputYear, 0, 1); // Ngày đầu tiên của năm
-      endDate = new Date(inputYear, 11, 31); // Ngày cuối cùng của năm
-      endDate.setHours(23, 59, 59, 999); // Thời gian cuối ngày
+      // Khoảng thời gian của năm hiện tại
+      startDate = new Date(inputYear, 0, 1);
+      endDate = new Date(inputYear, 11, 31);
+      endDate.setHours(23, 59, 59, 999);
+
+      // Khoảng thời gian của năm trước
+      prevStartDate = new Date(inputYear - 1, 0, 1);
+      prevEndDate = new Date(inputYear - 1, 11, 31);
+      prevEndDate.setHours(23, 59, 59, 999);
     } else {
       return res.status(400).json({ message: 'type must be either "month" or "year".' });
     }
@@ -362,15 +377,25 @@ const getOwnerRevenue = async (req, res) => {
     const fieldAvailabilities = await FieldAvailability.find({ field_id: { $in: fieldIds } }).select('_id');
     const fieldAvailabilityIds = fieldAvailabilities.map(fa => fa._id);
 
-    // Điều kiện lọc Bill theo khoảng thời gian
-    const matchCondition = {
+    if (!fieldAvailabilityIds.length) {
+      return res.status(404).json({ message: 'No availabilities found for the given owner.' });
+    }
+
+    // Điều kiện lọc Bill theo khoảng thời gian hiện tại
+    const matchConditionCurrent = {
       field_availability_id: { $in: fieldAvailabilityIds },
       order_time: { $gte: startDate, $lte: endDate },
     };
 
-    // Pipeline để tính doanh thu
+    // Điều kiện lọc Bill theo khoảng thời gian trước đó
+    const matchConditionPrevious = {
+      field_availability_id: { $in: fieldAvailabilityIds },
+      order_time: { $gte: prevStartDate, $lte: prevEndDate },
+    };
+
+    // Pipeline để tính doanh thu hiện tại
     const revenueData = await Bill.aggregate([
-      { $match: matchCondition },
+      { $match: matchConditionCurrent },
       {
         $project: {
           amount: 1,
@@ -389,17 +414,33 @@ const getOwnerRevenue = async (req, res) => {
       { $sort: { _id: 1 } } // Sắp xếp theo ngày hoặc tháng tăng dần
     ]);
 
-    // Tính tổng doanh thu toàn bộ khoảng thời gian
+    // Tính tổng doanh thu toàn bộ khoảng thời gian hiện tại
     const totalRevenue = revenueData.reduce((sum, item) => sum + item.totalRevenue, 0);
 
+    // Pipeline để tính doanh thu tháng/năm trước
+    const previousRevenueData = await Bill.aggregate([
+      { $match: matchConditionPrevious },
+      { $group: { _id: null, totalRevenue: { $sum: "$amount" } } }
+    ]);
+    const previousRevenue = previousRevenueData.length ? previousRevenueData[0].totalRevenue : 0;
+
+    // Tính sự chênh lệch và phần trăm chênh lệch
+    const difference = totalRevenue - previousRevenue;
+    const percentageDifference = previousRevenue
+      ? ((difference / previousRevenue) * 100).toFixed(2)
+      : 0;
+
+    // Chuẩn hóa kết quả trả về
     const result = {
       totalRevenue, // Tổng doanh thu của toàn bộ tháng hoặc năm
+      previousRevenue, // Doanh thu tháng/năm trước
+      difference, // Chênh lệch doanh thu
+      percentageDifference: parseFloat(percentageDifference), // Phần trăm chênh lệch
       breakdown: revenueData.map(item => {
         let key;
         if (type === 'month') {
           const specificDate = new Date(startDate);
           specificDate.setDate(item._id); // Tăng ngày dựa trên `_id`
-          // Định dạng chỉ lấy ngày và tháng
           key = specificDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' });
         } else {
           key = `Tháng ${item._id}`;
@@ -410,15 +451,13 @@ const getOwnerRevenue = async (req, res) => {
         };
       })
     };
-    
+
     res.status(200).json(result);
   } catch (error) {
     console.error('Error in getOwnerRevenue:', error);
     res.status(500).json({ message: 'Server Error', error });
   }
 };
-
-
 const getOwnerBookings = async (req, res) => {
   try {
     const { owner_id, type, month, year } = req.query;
@@ -431,21 +470,38 @@ const getOwnerBookings = async (req, res) => {
     const defaultMonth = now.getMonth() + 1;
     const defaultYear = now.getFullYear();
 
-    let startDate, endDate;
+    let startDate, endDate, prevStartDate, prevEndDate;
 
     if (type === 'month') {
       const inputMonth = parseInt(month || defaultMonth, 10);
       const inputYear = parseInt(year || defaultYear, 10);
 
+      // Khoảng thời gian của tháng hiện tại
       startDate = new Date(inputYear, inputMonth - 1, 1);
       endDate = new Date(inputYear, inputMonth, 0);
       endDate.setHours(23, 59, 59, 999);
+
+      // Khoảng thời gian của tháng trước
+      if (inputMonth === 1) { // Nếu là tháng 1, chuyển về tháng 12 của năm trước
+        prevStartDate = new Date(inputYear - 1, 11, 1);
+        prevEndDate = new Date(inputYear - 1, 11, 31);
+      } else {
+        prevStartDate = new Date(inputYear, inputMonth - 2, 1);
+        prevEndDate = new Date(inputYear, inputMonth - 1, 0);
+      }
+      prevEndDate.setHours(23, 59, 59, 999);
     } else if (type === 'year') {
       const inputYear = parseInt(year || defaultYear, 10);
 
+      // Khoảng thời gian của năm hiện tại
       startDate = new Date(inputYear, 0, 1);
       endDate = new Date(inputYear, 11, 31);
       endDate.setHours(23, 59, 59, 999);
+
+      // Khoảng thời gian của năm trước
+      prevStartDate = new Date(inputYear - 1, 0, 1);
+      prevEndDate = new Date(inputYear - 1, 11, 31);
+      prevEndDate.setHours(23, 59, 59, 999);
     } else {
       return res.status(400).json({ message: 'type must be either "month" or "year".' });
     }
@@ -456,14 +512,27 @@ const getOwnerBookings = async (req, res) => {
     const fieldAvailabilities = await FieldAvailability.find({ field_id: { $in: fieldIds } }).select('_id');
     const fieldAvailabilityIds = fieldAvailabilities.map(fa => fa._id);
 
-    const matchCondition = {
+    if (!fieldAvailabilityIds.length) {
+      return res.status(404).json({ message: 'No availabilities found for the given owner.' });
+    }
+
+    // Điều kiện lọc Bill theo khoảng thời gian hiện tại
+    const matchConditionCurrent = {
       field_availability_id: { $in: fieldAvailabilityIds },
       order_time: { $gte: startDate, $lte: endDate },
       status: 'complete',
     };
 
+    // Điều kiện lọc Bill theo khoảng thời gian trước đó
+    const matchConditionPrevious = {
+      field_availability_id: { $in: fieldAvailabilityIds },
+      order_time: { $gte: prevStartDate, $lte: prevEndDate },
+      status: 'complete',
+    };
+
+    // Pipeline để đếm số lượt đặt hiện tại
     const bookingData = await Bill.aggregate([
-      { $match: matchCondition },
+      { $match: matchConditionCurrent },
       {
         $project: {
           order_time: 1,
@@ -481,10 +550,28 @@ const getOwnerBookings = async (req, res) => {
       { $sort: { _id: 1 } }
     ]);
 
+    // Tính tổng lượt đặt hiện tại
     const totalBookings = bookingData.reduce((sum, item) => sum + item.totalBookings, 0);
 
+    // Pipeline để đếm số lượt đặt tháng/năm trước
+    const previousBookingData = await Bill.aggregate([
+      { $match: matchConditionPrevious },
+      { $group: { _id: null, totalBookings: { $sum: 1 } } }
+    ]);
+    const previousBookings = previousBookingData.length ? previousBookingData[0].totalBookings : 0;
+
+    // Tính sự chênh lệch và phần trăm chênh lệch
+    const difference = totalBookings - previousBookings;
+    const percentageDifference = previousBookings
+      ? ((difference / previousBookings) * 100).toFixed(2)
+      : 0;
+
+    // Chuẩn hóa kết quả trả về
     const result = {
       totalBookings,
+      previousBookings,
+      difference,
+      percentageDifference: parseFloat(percentageDifference),
       breakdown: bookingData.map(item => {
         let key;
         if (type === 'month') {
@@ -507,7 +594,6 @@ const getOwnerBookings = async (req, res) => {
     res.status(500).json({ message: 'Server Error', error });
   }
 };
-
 
 const getFieldRevenue = async (req, res) => {
   try {

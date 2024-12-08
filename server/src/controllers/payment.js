@@ -11,7 +11,7 @@ const moment = require('moment'); // npm install moment
 const qs = require('qs');
 
 const payment = async (req, res) => {
-    const session = await mongoose.startSession(); // Tạo session cho transaction
+  const session = await mongoose.startSession(); // Tạo session cho transaction
 
   try {
     session.startTransaction(); // Bắt đầu transaction
@@ -63,7 +63,7 @@ const payment = async (req, res) => {
 
     // Lưu thông tin hóa đơn
     const saveOrder = new Bill({
-      field_availability_id: _id, 
+      field_availability_id: _id,
       user_name: req.user.name,
       user_email: req.user.email,
       user_id: req.user.id,
@@ -108,7 +108,7 @@ const payment = async (req, res) => {
     console.error('Transaction failed:', error.message);
     return res.status(500).json({ message: error.message });
   }
- }
+}
 
 cron.schedule('*/1 * * * *', async () => {
   const now = new Date();
@@ -151,57 +151,57 @@ cron.schedule('*/1 * * * *', async () => {
 console.log('Cron job scheduled to unlock fields every minute.');
 
 
-const callback = async (req , res) => {
-    console.log("Callback received");
-  
-    let result = {};
-    try {
-      const dataStr = req.body.data;
-      const reqMac = req.body.mac;
-  
-      const mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString();
-      if (reqMac !== mac) {
-        result = { return_code: -1, return_message: 'mac not equal' };
-      } else {
-        const dataJson = JSON.parse(dataStr,config.key2);
-        const { app_trans_id, embed_data } = dataJson;
-  
-        // Trích xuất field_id từ embed_data
-        const { field_id } = JSON.parse(embed_data);
-        console.log("Field ID from embed_data:", field_id);
-        console.log("update order's status = success where app_trans_id =", dataJson["app_trans_id"]);
-  
-        const session = await mongoose.startSession();
-        session.startTransaction();
-  
-        try {
-          const order = await Bill.findOne({ apptransid: app_trans_id }).session(session);
-          if (!order) throw new Error('Order not found');
-  
-          order.status = 'complete';
-          await order.save({ session });
-  
-          const fieldAvailability = await FieldAvailability.findById(field_id).session(session);
-          if (!fieldAvailability) throw new Error('FieldAvailability not found');
-  
-          fieldAvailability.is_available = false;
-          await fieldAvailability.save({ session });
-  
-          await session.commitTransaction();
-          result = { return_code: 1, return_message: 'success' };
-        } catch (error) {
-          await session.abortTransaction();
-          console.error('Transaction failed:', error.message);
-          result = { return_code: 0, return_message: error.message };
-        } finally {
-          session.endSession();
-        }
+const callback = async (req, res) => {
+  console.log("Callback received");
+
+  let result = {};
+  try {
+    const dataStr = req.body.data;
+    const reqMac = req.body.mac;
+
+    const mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString();
+    if (reqMac !== mac) {
+      result = { return_code: -1, return_message: 'mac not equal' };
+    } else {
+      const dataJson = JSON.parse(dataStr, config.key2);
+      const { app_trans_id, embed_data } = dataJson;
+
+      // Trích xuất field_id từ embed_data
+      const { field_id } = JSON.parse(embed_data);
+      console.log("Field ID from embed_data:", field_id);
+      console.log("update order's status = success where app_trans_id =", dataJson["app_trans_id"]);
+
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
+      try {
+        const order = await Bill.findOne({ apptransid: app_trans_id }).session(session);
+        if (!order) throw new Error('Order not found');
+
+        order.status = 'complete';
+        await order.save({ session });
+
+        const fieldAvailability = await FieldAvailability.findById(field_id).session(session);
+        if (!fieldAvailability) throw new Error('FieldAvailability not found');
+
+        fieldAvailability.is_available = false;
+        await fieldAvailability.save({ session });
+
+        await session.commitTransaction();
+        result = { return_code: 1, return_message: 'success' };
+      } catch (error) {
+        await session.abortTransaction();
+        console.error('Transaction failed:', error.message);
+        result = { return_code: 0, return_message: error.message };
+      } finally {
+        session.endSession();
       }
-    } catch (error) {
-      console.error('Callback processing error:', error.message);
-      result = { return_code: 0, return_message: error.message };
     }
-    res.json(result);
+  } catch (error) {
+    console.error('Callback processing error:', error.message);
+    result = { return_code: 0, return_message: error.message };
+  }
+  res.json(result);
 }
 
 const check = async (req, res) => {

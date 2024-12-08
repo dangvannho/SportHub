@@ -10,7 +10,13 @@ const UserSchema = new mongoose.Schema(
     profile_picture: { type: String },
     isVerified: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+UserSchema.virtual('bills', {
+  ref: 'Bill',
+  localField: '_id',
+  foreignField: 'user_id'
+});
 
 module.exports = mongoose.model("User", UserSchema);
