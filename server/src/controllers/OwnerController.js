@@ -324,15 +324,13 @@ const getOwnerRevenue = async (req, res) => {
 
     // Kiểm tra input bắt buộc
     if (!owner_id || !type) {
-      return res.status(400).json({ message: 'ownerId and type are required in query parameters.' });
+      return res.status(400).json({ EC: 1, EM: 'owner_id và type là bắt buộc.' });
     }
 
-    // Lấy thời gian mặc định nếu không có input
     const now = new Date();
     const defaultMonth = now.getMonth() + 1; // Tháng hiện tại (1-12)
     const defaultYear = now.getFullYear(); // Năm hiện tại
 
-    // Xử lý logic thời gian hiện tại
     let startDate, endDate, prevStartDate, prevEndDate;
 
     if (type === 'month') {
@@ -366,19 +364,21 @@ const getOwnerRevenue = async (req, res) => {
       prevEndDate = new Date(inputYear - 1, 11, 31);
       prevEndDate.setHours(23, 59, 59, 999);
     } else {
-      return res.status(400).json({ message: 'type must be either "month" or "year".' });
+      return res.status(400).json({ EC: 1, EM: 'type phải là "month" hoặc "year".' });
     }
 
-    // Lấy tất cả các Field thuộc ownerId
     const fields = await Field.find({ owner_id: owner_id }).select('_id');
     const fieldIds = fields.map(field => field._id);
 
-    // Lấy tất cả các FieldAvailability liên kết với các Field trên
+    if (!fieldIds.length) {
+      return res.status(404).json({ EC: 2, EM: 'Không tìm thấy sân nào thuộc chủ sân này.' });
+    }
+
     const fieldAvailabilities = await FieldAvailability.find({ field_id: { $in: fieldIds } }).select('_id');
     const fieldAvailabilityIds = fieldAvailabilities.map(fa => fa._id);
 
     if (!fieldAvailabilityIds.length) {
-      return res.status(404).json({ message: 'No availabilities found for the given owner.' });
+      return res.status(404).json({ EC: 3, EM: 'Không tìm thấy khung giờ khả dụng nào thuộc chủ sân này.' });
     }
 
     // Điều kiện lọc Bill theo khoảng thời gian hiện tại
@@ -414,7 +414,6 @@ const getOwnerRevenue = async (req, res) => {
       { $sort: { _id: 1 } } // Sắp xếp theo ngày hoặc tháng tăng dần
     ]);
 
-    // Tính tổng doanh thu toàn bộ khoảng thời gian hiện tại
     const totalRevenue = revenueData.reduce((sum, item) => sum + item.totalRevenue, 0);
 
     // Pipeline để tính doanh thu tháng/năm trước
@@ -430,7 +429,6 @@ const getOwnerRevenue = async (req, res) => {
       ? ((difference / previousRevenue) * 100).toFixed(2)
       : 0;
 
-    // Chuẩn hóa kết quả trả về
     const result = {
       totalRevenue, // Tổng doanh thu của toàn bộ tháng hoặc năm
       previousRevenue, // Doanh thu tháng/năm trước
@@ -452,18 +450,20 @@ const getOwnerRevenue = async (req, res) => {
       })
     };
 
-    res.status(200).json(result);
+    res.status(200).json({ EC: 0, EM: 'Thành công', data: result });
   } catch (error) {
     console.error('Error in getOwnerRevenue:', error);
-    res.status(500).json({ message: 'Server Error', error });
+    res.status(500).json({ EC: 99, EM: 'Lỗi máy chủ', error: error.message });
   }
 };
+
+
 const getOwnerBookings = async (req, res) => {
   try {
     const { owner_id, type, month, year } = req.query;
 
     if (!owner_id || !type) {
-      return res.status(400).json({ message: 'ownerId and type are required in query parameters.' });
+      return res.status(400).json({ EC: 1, EM: 'owner_id và type là bắt buộc.' });
     }
 
     const now = new Date();
@@ -503,17 +503,21 @@ const getOwnerBookings = async (req, res) => {
       prevEndDate = new Date(inputYear - 1, 11, 31);
       prevEndDate.setHours(23, 59, 59, 999);
     } else {
-      return res.status(400).json({ message: 'type must be either "month" or "year".' });
+      return res.status(400).json({ EC: 1, EM: 'type phải là "month" hoặc "year".' });
     }
 
     const fields = await Field.find({ owner_id: owner_id }).select('_id');
     const fieldIds = fields.map(field => field._id);
 
+    if (!fieldIds.length) {
+      return res.status(404).json({ EC: 2, EM: 'Không tìm thấy sân nào thuộc chủ sân này.' });
+    }
+
     const fieldAvailabilities = await FieldAvailability.find({ field_id: { $in: fieldIds } }).select('_id');
     const fieldAvailabilityIds = fieldAvailabilities.map(fa => fa._id);
 
     if (!fieldAvailabilityIds.length) {
-      return res.status(404).json({ message: 'No availabilities found for the given owner.' });
+      return res.status(404).json({ EC: 3, EM: 'Không tìm thấy khung giờ khả dụng nào thuộc chủ sân này.' });
     }
 
     // Điều kiện lọc Bill theo khoảng thời gian hiện tại
@@ -588,12 +592,13 @@ const getOwnerBookings = async (req, res) => {
       })
     };
 
-    res.status(200).json(result);
+    res.status(200).json({ EC: 0, EM: 'Thành công', data: result });
   } catch (error) {
     console.error('Error in getOwnerBookings:', error);
-    res.status(500).json({ message: 'Server Error', error });
+    res.status(500).json({ EC: 99, EM: 'Lỗi máy chủ', error: error.message });
   }
 };
+
 
 const getFieldRevenue = async (req, res) => {
   try {
