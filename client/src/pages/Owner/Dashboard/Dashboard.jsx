@@ -21,10 +21,14 @@ function Dashboard() {
   // State cho biểu đồ số lượng đặt sân
   const [chart1Data, setChart1Data] = useState([]);
   const [totalBooking, setTotalBooking] = useState(0);
+  const [comparePercentageBooking, setComparePercentageBooking] = useState(0);
+  const [compareBooking, setCompareBooking] = useState(0);
 
   // State cho biểu đồ doanh thu
   const [chart2Data, setChart2Data] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [comparePercentageRevenue, setComparePercentageRevenue] = useState(0);
+  const [compareRevenue, setCompareRevenue] = useState(0);
 
   useEffect(() => {
     fetchChart();
@@ -36,12 +40,16 @@ function Dashboard() {
       : bookingChart(ownerData.id, "year", null, year));
     setChart1Data(res.breakdown);
     setTotalBooking(res.totalBookings);
+    setCompareBooking(res.difference);
+    setComparePercentageBooking(res.percentageDifference);
 
     const res2 = await (typeTime === "month"
       ? revenueChart(ownerData.id, "month", month, year)
       : revenueChart(ownerData.id, "year", null, year));
     setChart2Data(res2.breakdown);
     setTotalRevenue(res2.totalRevenue);
+    setCompareRevenue(res2.difference);
+    setComparePercentageRevenue(res2.percentageDifference);
   };
 
   const generateYears = () => {
@@ -57,44 +65,98 @@ function Dashboard() {
       <div className="grid-item sales-summary">
         <div className="total-group">
           <div className="total-item">
-            <div className="header">
+            <div className="header-item">
               <p>Tổng số lượng đặt sân</p>
             </div>
             <div className="amount">
               <strong>{totalBooking} lượt đặt</strong>
             </div>
-            <div className="change positive">
-              <p>▲ +26% </p> <span>so với tháng trước</span>
-            </div>
+            {comparePercentageBooking > 0 ? (
+              <div className="change positive">
+                <p>
+                  &#9650; +{comparePercentageBooking}% (+{compareBooking} lượt
+                  đặt)
+                </p>
+                <span>
+                  {typeTime === "month"
+                    ? "so với tháng trước"
+                    : "so với năm trước"}
+                </span>
+              </div>
+            ) : (
+              <div className="change negative">
+                <p>
+                  &#9660; {comparePercentageBooking}% ({compareBooking} lượt
+                  đặt)
+                </p>
+                <span>
+                  {typeTime === "month"
+                    ? "so với tháng trước"
+                    : "so với năm trước"}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="total-item">
-            <div className="header">
+            <div className="header-item">
               <p>Tổng doanh thu</p>
             </div>
             <div className="amount">
-              <strong>{totalRevenue.toLocaleString("vi-VN")} VND</strong>
+              <strong>
+                {totalRevenue !== undefined && totalRevenue !== null
+                  ? totalRevenue.toLocaleString("vi-VN")
+                  : 0}
+                VND
+              </strong>
             </div>
-            <div className="change positive">
-              <p>&#9650; +26% </p> <span>so với tháng trước</span>
-            </div>
+
+            {comparePercentageRevenue > 0 ? (
+              <div className="change positive">
+                <p>
+                  &#9650; +{comparePercentageRevenue}% (+
+                  {compareRevenue !== undefined && compareRevenue !== null
+                    ? compareRevenue.toLocaleString("vi-VN")
+                    : 0}
+                  VND)
+                </p>
+                <span>
+                  {typeTime === "month"
+                    ? "so với tháng trước"
+                    : "so với năm trước"}
+                </span>
+              </div>
+            ) : (
+              <div className="change negative">
+                <p>
+                  &#9660; {comparePercentageRevenue}% (
+                  {compareRevenue !== undefined && compareRevenue !== null
+                    ? compareRevenue.toLocaleString("vi-VN")
+                    : 0}
+                  VND)
+                </p>
+                <span>
+                  {typeTime === "month"
+                    ? "so với tháng trước"
+                    : "so với năm trước"}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="total-item">
-            <div className="header">
+            <div className="header-item">
               <p>Tổng số sân</p>
             </div>
             <div className="amount">
               <strong>5 sân</strong>
-            </div>
-            <div className="change negative">
-              <p>&#9660; +26% </p> <span>so với tháng trước</span>
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid-item filter-container">
+        <strong>Mốc thời gian thống kê: </strong>
         <div className="group-filter">
           <div className="filter">
             <label htmlFor="chart-type-select">Chọn loại thời gian:</label>
