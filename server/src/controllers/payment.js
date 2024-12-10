@@ -62,7 +62,7 @@ const payment = async (req, res) => {
       embed_data: JSON.stringify(embed_data), // Gửi embed_data chứa _id
       amount: availability.price,
       callback_url:
-        "https://54b0-2001-ee1-db0a-4bf0-f194-95a6-d30-a4ae.ngrok-free.app/api/payment/callback",
+        "https://6c0d-171-243-224-241.ngrok-free.app/api/payment/callback",
       description: `Thanh toán tiền cho sân: ${Field_name}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`,
       bank_code: "",
     };
@@ -122,7 +122,7 @@ cron.schedule("*/1 * * * *", async () => {
   try {
     // Truy vấn từ bảng Bill để tìm các field chưa thanh toán (status != 'complete')
     const pendingBills = await Bill.find({
-      status: { $ne: "complete" }, // Lọc các hóa đơn không phải trạng thái 'complete'
+      status: { $ne: "pending" }, // Lọc các hóa đơn không phải trạng thái 'complete'
     }).select("field_availability_id");
 
     // Lấy danh sách field_availability_id từ hóa đơn
