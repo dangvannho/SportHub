@@ -394,11 +394,13 @@ const getRevenue = async (req, res) => {
     const matchConditionCurrent = {
       field_availability_id: { $in: fieldAvailabilityIds },
       order_time: { $gte: startDate, $lte: endDate },
+      status: 'complete', // Only completed bills
     };
 
     const matchConditionPrevious = {
       field_availability_id: { $in: fieldAvailabilityIds },
       order_time: { $gte: prevStartDate, $lte: prevEndDate },
+      status: 'complete', // Only completed bills
     };
 
     // Aggregate revenue for current period
@@ -481,13 +483,19 @@ const getRevenue = async (req, res) => {
       };
     });
 
+    // Prepare additional information
     const result = {
+      totalFields: fields.length, // Total fields for the owner
+      fields: fields.map(field => ({
+        field_id: field._id,
+        name: field.name
+      })),
       totalRevenue,
       previousRevenue,
       difference,
       revenuePercentage,
       breakdown,
-      topFields
+      topFields,
     };
 
     res.status(200).json({ EC: 0, EM: 'Thành công', data: result });
@@ -496,6 +504,7 @@ const getRevenue = async (req, res) => {
     res.status(500).json({ EC: 99, EM: 'Lỗi máy chủ', error: error.message });
   }
 };
+
 
 
 const getBookings = async (req, res) => {
