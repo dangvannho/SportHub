@@ -583,11 +583,13 @@ const getBookings = async (req, res) => {
     const matchConditionCurrent = {
       field_availability_id: { $in: fieldAvailabilityIds },
       order_time: { $gte: startDate, $lte: endDate },
+      status: 'complete', // Only completed bills
     };
 
     const matchConditionPrevious = {
       field_availability_id: { $in: fieldAvailabilityIds },
       order_time: { $gte: prevStartDate, $lte: prevEndDate },
+      status: 'complete', // Only completed bills
     };
 
     // Aggregate bookings for current period
