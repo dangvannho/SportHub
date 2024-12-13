@@ -318,6 +318,44 @@ const deleteFieldRate = async (req, res) => {
   }
 };
 
+// const getFieldsByOwnerId = async (req, res) => {
+//   try {
+//     const { owner_id } = req.query;
+
+//     // Kiểm tra input
+//     if (!owner_id) {
+//       return res.status(400).json({ EC: 1, EM: 'owner_id là bắt buộc.' });
+//     }
+
+//     // Tìm các sân thuộc chủ sân
+//     const fields = await Field.find({ owner_id }).select('_id name');
+
+//     if (!fields.length) {
+//       return res.status(404).json({ EC: 2, EM: 'Không tìm thấy sân nào thuộc chủ sân này.' });
+//     }
+
+//     // Format kết quả trả về
+//     const result = fields.map(field => ({
+//       field_id: field._id,
+//       name: field.name,
+//     }));
+
+//     return res.status(200).json({
+//       EC: 0,
+//       EM: 'Lấy danh sách sân thành công.',
+//       totalFields: result.length,
+//       fields: result,
+//     });
+//   } catch (error) {
+//     console.error('Error in getFieldsByOwnerId:', error);
+//     return res.status(500).json({
+//       EC: 99,
+//       EM: 'Lỗi máy chủ.',
+//       error: error.message,
+//     });
+//   }
+// };
+
 const getRevenue = async (req, res) => {
   try {
     const { owner_id, field_id, type, month, year } = req.query;
@@ -394,13 +432,13 @@ const getRevenue = async (req, res) => {
     const matchConditionCurrent = {
       field_availability_id: { $in: fieldAvailabilityIds },
       order_time: { $gte: startDate, $lte: endDate },
-      status: 'complete', // Only completed bills
+      status: "complete", // Only include completed bills
     };
 
     const matchConditionPrevious = {
       field_availability_id: { $in: fieldAvailabilityIds },
       order_time: { $gte: prevStartDate, $lte: prevEndDate },
-      status: 'complete', // Only completed bills
+      status: "complete", // Only include completed bills
     };
 
     // Aggregate revenue for current period
@@ -483,19 +521,13 @@ const getRevenue = async (req, res) => {
       };
     });
 
-    // Prepare additional information
     const result = {
-      totalFields: fields.length, // Total fields for the owner
-      fields: fields.map(field => ({
-        field_id: field._id,
-        name: field.name
-      })),
       totalRevenue,
       previousRevenue,
       difference,
       revenuePercentage,
       breakdown,
-      topFields,
+      topFields
     };
 
     res.status(200).json({ EC: 0, EM: 'Thành công', data: result });
@@ -504,8 +536,6 @@ const getRevenue = async (req, res) => {
     res.status(500).json({ EC: 99, EM: 'Lỗi máy chủ', error: error.message });
   }
 };
-
-
 
 const getBookings = async (req, res) => {
   try {
@@ -689,6 +719,7 @@ const getBookings = async (req, res) => {
 
 
 module.exports = {
+  getFieldsByOwnerId,
   getFieldsByOwnerId,
   generateAvailabilityRecords,
   addPriceSlot,
