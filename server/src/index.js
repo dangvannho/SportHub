@@ -39,7 +39,7 @@ const commentRoutes = require("./routes/CommentRoutes");
 
 const fieldAvailabilityRoutes = require("./routes/FieldAvailabilityRoutes");
 
-
+const paymentOS = require("./routes/PaymentRoutesOS");  
 
 // config env
 dotenv.config();
@@ -50,7 +50,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
 app.use(morgan("common"));
-
+app.use(bodyParser.json());
 // connect DB
 connectDB();
 // import models
@@ -71,10 +71,10 @@ app.use("/api/payment", paymentRoutes);
 require("./utils/setPaymentStatus");
 app.use("/api/comments", commentRoutes);
 
-app.use(bodyParser.json());
+app.use("/api/pm",paymentOS) ;
 
 app.use("/api/field_availability", fieldAvailabilityRoutes);
-
+app.use('/', express.static('public'));
 app.get("/", (req, res) => {
   res.send("Project");
 });
