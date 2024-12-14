@@ -61,6 +61,8 @@ const payment = async (req, res) => {
       item: JSON.stringify(items),
       embed_data: JSON.stringify(embed_data), // Gửi embed_data chứa _id
       amount: availability.price,
+      callback_url:
+        "https://3ed7-171-225-184-192.ngrok-free.app/api/payment/callback",
       callback_url: 'https://0769-2001-ee0-4cb6-47e0-51a5-6d10-5671-e588.ngrok-free.app/api/payment/callback',
       description: `Thanh toán tiền cho sân: ${Field_name}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`,
       bank_code: "",
@@ -116,10 +118,6 @@ const payment = async (req, res) => {
   }
 };
 
-
-
-
-
 const callback = async (req, res) => {
   console.log("Callback received");
 
@@ -145,7 +143,9 @@ const callback = async (req, res) => {
 
       try {
         // Tìm hóa đơn theo app_trans_id
-        const order = await Bill.findOne({ apptransid: app_trans_id }).session(session);
+        const order = await Bill.findOne({ apptransid: app_trans_id }).session(
+          session
+        );
         if (!order) throw new Error("Order not found");
 
         // Cập nhật trạng thái hóa đơn thành 'complete'
@@ -153,7 +153,9 @@ const callback = async (req, res) => {
         await order.save({ session });
 
         // Cập nhật thông tin sân
-        const fieldAvailability = await FieldAvailability.findById(field_id).session(session);
+        const fieldAvailability = await FieldAvailability.findById(
+          field_id
+        ).session(session);
         if (!fieldAvailability) throw new Error("FieldAvailability not found");
 
         // Đảm bảo sân đã thanh toán và khóa lại
@@ -184,7 +186,7 @@ const callback = async (req, res) => {
 
 
 const check = async (req, res) => {
-  const { apptransid,  } = req.body;
+  const { apptransid } = req.body;
 
   let postData = {
     appid: config.app_id,
@@ -195,12 +197,12 @@ const check = async (req, res) => {
   postData.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
   let postConfig = {
-    method: 'post',
+    method: "post",
     url: config.check,
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
-    data: qs.stringify(postData)
+    data: qs.stringify(postData),
   };
 
   try {
@@ -208,16 +210,14 @@ const check = async (req, res) => {
     console.log(result.data);
     return res.status(200).json(result.data);
   } catch (error) {
-    console.log('lỗi');
+    console.log("lỗi");
     console.log(error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-}
-
-
+};
 
 module.exports = {
- payment,
- callback,
- check
+  payment,
+  callback,
+  check,
 };
