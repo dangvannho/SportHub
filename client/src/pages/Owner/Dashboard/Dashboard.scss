@@ -22,7 +22,7 @@
   }
 
   .filter-container {
-    grid-column: 4 / 9;
+    grid-column: 4 / 10;
     grid-row: 2 / 3;
   }
 
@@ -62,19 +62,26 @@
       .header-item {
         p {
           font-size: 18px;
-          // color: #333;
           font-weight: 500;
           margin: 0;
+          color: orange;
         }
       }
 
       .amount {
         margin-top: 10px;
+        display: flex;
+        flex-direction: column;
 
         strong {
           font-size: 28px;
           font-weight: bold;
-          // color: #000;
+        }
+      }
+
+      .amount:last-child {
+        strong {
+          font-size: 20px;
         }
       }
 
@@ -82,7 +89,6 @@
         display: flex;
         margin-top: 10px;
         font-size: 14px;
-        // color: #666;
 
         p {
           margin-bottom: 0;
