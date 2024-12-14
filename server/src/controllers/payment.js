@@ -117,10 +117,6 @@ const payment = async (req, res) => {
   }
 };
 
-
-
-
-
 const callback = async (req, res) => {
   console.log("Callback received");
 
@@ -146,7 +142,9 @@ const callback = async (req, res) => {
 
       try {
         // Tìm hóa đơn theo app_trans_id
-        const order = await Bill.findOne({ apptransid: app_trans_id }).session(session);
+        const order = await Bill.findOne({ apptransid: app_trans_id }).session(
+          session
+        );
         if (!order) throw new Error("Order not found");
 
         // Cập nhật trạng thái hóa đơn thành 'complete'
@@ -154,7 +152,9 @@ const callback = async (req, res) => {
         await order.save({ session });
 
         // Cập nhật thông tin sân
-        const fieldAvailability = await FieldAvailability.findById(field_id).session(session);
+        const fieldAvailability = await FieldAvailability.findById(
+          field_id
+        ).session(session);
         if (!fieldAvailability) throw new Error("FieldAvailability not found");
 
         // Đảm bảo sân đã thanh toán và khóa lại
@@ -183,10 +183,6 @@ const callback = async (req, res) => {
   res.json(result);
 };
 
-
-
-
-
 cron.schedule("* * * * *", async () => {
   const now = new Date();
   const unlockTime = new Date(now.getTime() - 2 * 60 * 1000); // 2 phút trước
@@ -197,7 +193,9 @@ cron.schedule("* * * * *", async () => {
       status: { $ne: "pending" }, // Chỉ lấy hóa đơn chưa hoàn thành
     }).select("field_availability_id");
 
-    const pendingFieldIds = pendingBills.map((bill) => bill.field_availability_id);
+    const pendingFieldIds = pendingBills.map(
+      (bill) => bill.field_availability_id
+    );
 
     // Lấy danh sách các sân cần mở khóa
     const fieldsToUnlock = await FieldAvailability.find({
@@ -224,10 +222,8 @@ cron.schedule("* * * * *", async () => {
   }
 });
 
-
-
 const check = async (req, res) => {
-  const { apptransid, } = req.body;
+  const { apptransid } = req.body;
 
   let postData = {
     appid: config.app_id,
@@ -238,12 +234,12 @@ const check = async (req, res) => {
   postData.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
   let postConfig = {
-    method: 'post',
+    method: "post",
     url: config.check,
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      "Content-Type": "application/x-www-form-urlencoded",
     },
-    data: qs.stringify(postData)
+    data: qs.stringify(postData),
   };
 
   try {
@@ -251,16 +247,14 @@ const check = async (req, res) => {
     console.log(result.data);
     return res.status(200).json(result.data);
   } catch (error) {
-    console.log('lỗi');
+    console.log("lỗi");
     console.log(error);
-    return res.status(500).json({ message: 'Internal Server Error' });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-}
-
-
+};
 
 module.exports = {
   payment,
   callback,
-  check
+  check,
 };
