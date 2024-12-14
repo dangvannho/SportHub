@@ -491,35 +491,38 @@ const getRevenue = async (req, res) => {
       return { key, "Doanh thu": item.totalRevenue };
     });
 
-    // Get Top 3 Fields by Revenue
-    const fieldRevenueData = await Bill.aggregate([
-      { $match: matchConditionCurrent },
-      {
-        $lookup: {
-          from: 'fieldavailabilities',
-          localField: 'field_availability_id',
-          foreignField: '_id',
-          as: 'availability'
-        }
-      },
-      { $unwind: "$availability" },
-      {
-        $group: {
-          _id: "$availability.field_id",
-          totalRevenue: { $sum: "$amount" }
-        }
-      },
-      { $sort: { totalRevenue: -1 } },
-      { $limit: 3 }
-    ]);
+    // Top 3 Fields Logic
+    let topFields = [];
+    if (field_id === 'all') {
+      const fieldRevenueData = await Bill.aggregate([
+        { $match: matchConditionCurrent },
+        {
+          $lookup: {
+            from: 'fieldavailabilities',
+            localField: 'field_availability_id',
+            foreignField: '_id',
+            as: 'availability'
+          }
+        },
+        { $unwind: "$availability" },
+        {
+          $group: {
+            _id: "$availability.field_id",
+            totalRevenue: { $sum: "$amount" }
+          }
+        },
+        { $sort: { totalRevenue: -1 } },
+        { $limit: 3 }
+      ]);
 
-    const topFields = fieldRevenueData.map(fr => {
-      const field = fields.find(f => f._id.toString() === fr._id.toString());
-      return {
-        fieldName: field ? field.name : 'N/A',
-        totalRevenue: fr.totalRevenue
-      };
-    });
+      topFields = fieldRevenueData.map(fr => {
+        const field = fields.find(f => f._id.toString() === fr._id.toString());
+        return {
+          fieldName: field ? field.name : 'N/A',
+          totalRevenue: fr.totalRevenue
+        };
+      });
+    }
 
     const result = {
       totalRevenue,
@@ -537,11 +540,12 @@ const getRevenue = async (req, res) => {
   }
 };
 
+
 const getBookings = async (req, res) => {
   try {
     const { owner_id, field_id, type, month, year } = req.query;
 
-    // Input validation
+    // Validate required inputs
     if (!owner_id && !field_id) {
       return res.status(400).json({ EC: 1, EM: 'owner_id hoặc field_id là bắt buộc.' });
     }
@@ -553,7 +557,7 @@ const getBookings = async (req, res) => {
     const defaultMonth = now.getMonth() + 1;
     const defaultYear = now.getFullYear();
 
-    // Set up start and end date
+    // Set up date ranges
     let startDate, endDate, prevStartDate, prevEndDate;
     if (type === 'month') {
       const inputMonth = parseInt(month || defaultMonth, 10);
@@ -563,7 +567,7 @@ const getBookings = async (req, res) => {
       endDate = new Date(inputYear, inputMonth, 0);
       endDate.setHours(23, 59, 59, 999);
 
-      // Previous month range
+      // Calculate previous month range
       if (inputMonth === 1) {
         prevStartDate = new Date(inputYear - 1, 11, 1);
         prevEndDate = new Date(inputYear - 1, 11, 31);
@@ -587,7 +591,7 @@ const getBookings = async (req, res) => {
       return res.status(400).json({ EC: 1, EM: 'type phải là "month" hoặc "year".' });
     }
 
-    // Get Field IDs based on owner_id or specific field_id
+    // Retrieve Field IDs based on owner_id or specific field_id
     let fieldIds = [];
     let fields = [];
     if (field_id && field_id !== 'all') {
@@ -601,7 +605,7 @@ const getBookings = async (req, res) => {
       }
     }
 
-    // Get Field Availability IDs
+    // Retrieve Field Availability IDs
     const fieldAvailabilities = await FieldAvailability.find({ field_id: { $in: fieldIds } }).select('_id field_id');
     const fieldAvailabilityIds = fieldAvailabilities.map(fa => fa._id);
 
@@ -609,20 +613,20 @@ const getBookings = async (req, res) => {
       return res.status(404).json({ EC: 3, EM: 'Không tìm thấy khung giờ khả dụng nào.' });
     }
 
-    // Build match condition for current and previous period
+    // Build match conditions for current and previous periods
     const matchConditionCurrent = {
       field_availability_id: { $in: fieldAvailabilityIds },
       order_time: { $gte: startDate, $lte: endDate },
-      status: 'complete', // Only completed bills
+      status: 'complete',
     };
 
     const matchConditionPrevious = {
       field_availability_id: { $in: fieldAvailabilityIds },
       order_time: { $gte: prevStartDate, $lte: prevEndDate },
-      status: 'complete', // Only completed bills
+      status: 'complete',
     };
 
-    // Aggregate bookings for current period
+    // Fetch booking data for current period
     const bookingData = await Bill.aggregate([
       { $match: matchConditionCurrent },
       {
@@ -643,7 +647,7 @@ const getBookings = async (req, res) => {
 
     const totalBookings = bookingData.reduce((sum, item) => sum + item.totalBookings, 0);
 
-    // Aggregate bookings for previous period
+    // Fetch booking data for previous period
     const previousBookingData = await Bill.aggregate([
       { $match: matchConditionPrevious },
       {
@@ -658,7 +662,7 @@ const getBookings = async (req, res) => {
     const bookingDifference = totalBookings - previousBookings;
     const bookingPercentage = previousBookings === 0 ? 100 : parseFloat(((bookingDifference / previousBookings) * 100).toFixed(2));
 
-    // Format the result
+    // Format breakdown
     const breakdown = bookingData.map(item => {
       let key;
       if (type === 'month') {
@@ -671,7 +675,9 @@ const getBookings = async (req, res) => {
       return { key, "Số lượt đặt": item.totalBookings };
     });
 
-    // Get Top 3 Fields by Bookings
+   // Get Top 3 Fields by Revenue
+    let topFields = [];
+    if (field_id === 'all') {
     const fieldBookingData = await Bill.aggregate([
       { $match: matchConditionCurrent },
       {
@@ -693,14 +699,15 @@ const getBookings = async (req, res) => {
       { $limit: 3 }
     ]);
 
-    const topFields = fieldBookingData.map(fb => {
+    topFields = fieldBookingData.map(fb => {
       const field = fields.find(f => f._id.toString() === fb._id.toString());
       return {
         fieldName: field ? field.name : 'N/A',
         totalBookings: fb.totalBookings
       };
     });
-
+  }
+    // Prepare response
     const result = {
       totalBookings,
       previousBookings,
@@ -712,7 +719,7 @@ const getBookings = async (req, res) => {
 
     res.status(200).json({ EC: 0, EM: 'Thành công', data: result });
   } catch (error) {
-    console.error('Error in getOwnerBookings:', error);
+    console.error('Error in getBookings:', error);
     res.status(500).json({ EC: 99, EM: 'Lỗi máy chủ', error: error.message });
   }
 };
