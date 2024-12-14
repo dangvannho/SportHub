@@ -476,7 +476,10 @@ const getRevenue = async (req, res) => {
 
     const previousRevenue = previousRevenueData.length ? previousRevenueData[0].totalRevenue : 0;
     const difference = totalRevenue - previousRevenue;
-    const revenuePercentage = previousRevenue === 0 ? 100 : parseFloat(((difference / previousRevenue) * 100).toFixed(2));
+    const revenuePercentage = (previousRevenue === 0) 
+  ? (totalRevenue === 0 ? 0 : 100) 
+  : parseFloat(((difference / previousRevenue) * 100).toFixed(2));
+
 
     // Format the result
     const breakdown = revenueData.map(item => {
@@ -660,8 +663,10 @@ const getBookings = async (req, res) => {
 
     const previousBookings = previousBookingData.length ? previousBookingData[0].totalBookings : 0;
     const bookingDifference = totalBookings - previousBookings;
-    const bookingPercentage = previousBookings === 0 ? 100 : parseFloat(((bookingDifference / previousBookings) * 100).toFixed(2));
-
+    const bookingPercentage = (previousBookings === 0) 
+    ? (totalBookings === 0 ? 0 : 100) 
+    : parseFloat(((bookingDifference / previousBookings) * 100).toFixed(2));
+  
     // Format breakdown
     const breakdown = bookingData.map(item => {
       let key;
