@@ -58,7 +58,10 @@ const addOwner = async (req, res) => {
       citizen_identification_card,
       account_status,
       password,
+      payment_keys, // Thêm thông tin thanh toán từ request
     } = req.body;
+
+    // Xử lý hình ảnh hồ sơ (nếu có)
     const profile_picture = req.file
       ? await processImage(req.file.buffer)
       : null;
@@ -66,6 +69,7 @@ const addOwner = async (req, res) => {
     // Mã hóa mật khẩu
     const hashedPassword = await hashPassword(password);
 
+    // Tạo một đối tượng mới cho chủ sân
     const newOwner = new Owner({
       business_name,
       address,
@@ -75,13 +79,20 @@ const addOwner = async (req, res) => {
       citizen_identification_card,
       account_status,
       profile_picture,
+      payment_keys: payment_keys
+        ? {
+            client_id: payment_keys.client_id || null,
+            api_key: payment_keys.api_key || null,
+            checksum_key: payment_keys.checksum_key || null,
+          }
+        : {}, // Nếu không có payment_keys, lưu trống
     });
 
     await newOwner.save();
 
     res.status(200).json({
       EC: 1,
-      EM: "Thêm chủ sân thanh công",
+      EM: "Thêm chủ sân thành công",
       newOwner,
     });
   } catch (error) {
@@ -91,6 +102,7 @@ const addOwner = async (req, res) => {
     });
   }
 };
+
 
 const updateOwner = async (req, res) => {
   try {
@@ -102,31 +114,42 @@ const updateOwner = async (req, res) => {
       password,
       citizen_identification_card,
       account_status,
+      payment_keys, // Thêm thông tin thanh toán
     } = req.body;
 
     // Lấy thông tin chủ sở hữu hiện tại
     const owner = await Owner.findById(id);
     if (!owner) {
-      return res.status(404).json({ message: "Không tìm thấy chủ sân" });
+      return res.status(404).json({ EC: 0, EM: "Không tìm thấy chủ sân" });
     }
 
-    // Sử dụng hàm getProfilePicture để xử lý ảnh hồ sơ
+    // Xử lý hình ảnh hồ sơ (nếu có)
     const profile_picture = await getProfilePicture(req, owner.profile_picture);
 
     // Mã hóa mật khẩu nếu có thay đổi, nếu không giữ mật khẩu cũ
-    let hashedPassword = password
+    const hashedPassword = password
       ? await hashPassword(password)
       : owner.password;
 
+    // Cập nhật thông tin thanh toán nếu có
+    const updatedPaymentKeys = payment_keys
+      ? {
+          client_id: payment_keys.client_id || owner.payment_keys?.client_id,
+          api_key: payment_keys.api_key || owner.payment_keys?.api_key,
+          checksum_key: payment_keys.checksum_key || owner.payment_keys?.checksum_key,
+        }
+      : owner.payment_keys;
+
     // Tạo đối tượng updateData chứa các trường cần cập nhật
-    let updateData = {
+    const updateData = {
       business_name,
       address,
       phone_number,
-      password: hashedPassword, // Lưu mật khẩu đã mã hóa hoặc giữ mật khẩu cũ
+      password: hashedPassword,
       profile_picture, // Giữ hình ảnh cũ nếu không thay đổi
       citizen_identification_card,
       account_status,
+      payment_keys: updatedPaymentKeys, // Cập nhật hoặc giữ thông tin thanh toán cũ
     };
 
     const updatedOwner = await Owner.findByIdAndUpdate(id, updateData, {
@@ -135,7 +158,7 @@ const updateOwner = async (req, res) => {
 
     res.status(200).json({
       EC: 1,
-      EM: "Cập nhật thông tin chủ sân thành công",  
+      EM: "Cập nhật thông tin chủ sân thành công",
       data: updatedOwner,
     });
   } catch (error) {
