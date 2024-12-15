@@ -69,18 +69,15 @@ function HistoryBooking() {
     <div className="booking-history">
       <div className="booking-history-header">
         <h1>Lịch sử đặt sân</h1>
-        <p>3 lượt đặt sân gần đây</p>
       </div>
       <table>
         <thead>
           <tr>
             <th>Tên sân</th>
             <th>Địa điểm</th>
-            <th>Mã đặt sân</th>
             <th>Ngày</th>
             <th>Khung giờ</th>
             <th>Tổng tiền</th>
-            <th>Trạng thái</th>
           </tr>
         </thead>
         <tbody>
@@ -89,19 +86,12 @@ function HistoryBooking() {
               <td>
                 <div className="field-info">
                   <strong>{booking.name}</strong>
-                  <p>{booking.location}</p>
                 </div>
               </td>
               <td>{booking.location}</td>
-              <td>{booking.bookingId}</td>
               <td>{booking.date}</td>
               <td>{booking.time}</td>
               <td>{booking.total}</td>
-              <td>
-                <span className={`status ${booking.status.toLowerCase()}`}>
-                  {booking.status}
-                </span>
-              </td>
             </tr>
           ))}
         </tbody>
