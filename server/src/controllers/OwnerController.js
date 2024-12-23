@@ -477,8 +477,8 @@ const getRevenue = async (req, res) => {
     const previousRevenue = previousRevenueData.length ? previousRevenueData[0].totalRevenue : 0;
     const difference = totalRevenue - previousRevenue;
     const revenuePercentage = (previousRevenue === 0) 
-  ? (totalRevenue === 0 ? 0 : 100) 
-  : parseFloat(((difference / previousRevenue) * 100).toFixed(2));
+    ? (totalRevenue === 0 ? 0 : 100) 
+    : parseFloat(((difference / previousRevenue) * 100).toFixed(2));
 
 
     // Format the result

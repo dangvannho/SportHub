@@ -77,35 +77,51 @@ const getFieldById = async (req, res) => {
   }
 };
 
-// Tìm kiếm sân theo tên hoặc địa chỉ
+// Tìm kiếm sân theo type, name hoặc location
 const searchFields = async (req, res) => {
   try {
-    const query = req.query.query;
-    const page =
-      req.query.page && req.query.page > 0 ? parseInt(req.query.page) : 1;
-    const limit =
-      req.query.limit && req.query.limit > 0 ? parseInt(req.query.limit) : 9;
+    const { type = "all", name, location, page, limit } = req.query;
 
-    // Kiểm tra nếu query không phải là chuỗi hoặc không được cung cấp
-    if (!query || typeof query !== "string") {
-      return res.status(400).json({ error: "Query must be a valid string" });
+    // Khởi tạo giá trị phân trang
+    const currentPage = page && page > 0 ? parseInt(page) : 1;
+    const perPage = limit && limit > 0 ? parseInt(limit) : 9;
+
+    // Khởi tạo điều kiện tìm kiếm
+    const searchConditions = [];
+
+    // Thêm điều kiện type nếu khác "all"
+    if (type !== "all") {
+      searchConditions.push({ type });
     }
 
-    // Tìm kiếm sân theo tên hoặc địa chỉ
-    const fieldsQuery = Field.find({
-      $or: [
-        { name: { $regex: query, $options: "i" } },
-        { location: { $regex: query, $options: "i" } },
-      ],
-    }).populate({
+    // Thêm điều kiện name nếu được cung cấp
+    if (name && typeof name === "string") {
+      searchConditions.push({ name: { $regex: name, $options: "i" } });
+    }
+
+    // Thêm điều kiện location nếu được cung cấp
+    if (location && typeof location === "string") {
+      searchConditions.push({ location: { $regex: location, $options: "i" } });
+    }
+
+    // Nếu không có điều kiện nào được cung cấp, trả lỗi
+    if (searchConditions.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "At least one search parameter must be provided" });
+    }
+
+    // Tìm kiếm sân theo điều kiện
+    const fieldsQuery = Field.find({ $and: searchConditions }).populate({
       path: "owner_id",
       select: "business_name address phone_number email",
-    }); // Chỉ lấy các trường cần thiết từ Owner
+    });
 
     // Khởi tạo phân trang
-    const pagination = new Pagination(fieldsQuery, page, limit);
+    const pagination = new Pagination(fieldsQuery, currentPage, perPage);
     const paginatedResults = await pagination.paginate();
 
+    // Trả về kết quả
     res.status(200).json({
       message: "Tìm kiếm thành công",
       data: paginatedResults,
@@ -115,6 +131,7 @@ const searchFields = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 
 
