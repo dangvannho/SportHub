@@ -45,7 +45,7 @@
             font-size: 13px;
             text-align: center;
 
-            &.confirmed {
+            &.complete {
               background-color: #d4edda;
               color: #155724;
             }
@@ -55,7 +55,7 @@
               color: #856404;
             }
 
-            &.cancelled {
+            &.canceled {
               background-color: #f8d7da;
               color: #721c24;
             }

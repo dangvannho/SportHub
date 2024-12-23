@@ -145,9 +145,7 @@ const callback = async (req, res) => {
         const order = await Bill.findOne({ apptransid: app_trans_id }).session(
           session
         );
-        const order = await Bill.findOne({ apptransid: app_trans_id }).session(
-          session
-        );
+
         if (!order) throw new Error("Order not found");
 
         // Cập nhật trạng thái hóa đơn thành 'complete'
@@ -158,9 +156,7 @@ const callback = async (req, res) => {
         const fieldAvailability = await FieldAvailability.findById(
           field_id
         ).session(session);
-        const fieldAvailability = await FieldAvailability.findById(
-          field_id
-        ).session(session);
+
         if (!fieldAvailability) throw new Error("FieldAvailability not found");
 
         // Đảm bảo sân đã thanh toán và khóa lại
@@ -188,7 +184,6 @@ const callback = async (req, res) => {
   }
   res.json(result);
 };
-
 
 cron.schedule("* * * * *", async () => {
   const now = new Date();
@@ -231,7 +226,6 @@ cron.schedule("* * * * *", async () => {
 
 const check = async (req, res) => {
   const { apptransid } = req.body;
-  const { apptransid } = req.body;
 
   let postData = {
     appid: config.app_id,
@@ -243,10 +237,9 @@ const check = async (req, res) => {
 
   let postConfig = {
     method: "post",
-    method: "post",
+
     url: config.check,
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
       "Content-Type": "application/x-www-form-urlencoded",
     },
     data: qs.stringify(postData),
@@ -259,12 +252,10 @@ const check = async (req, res) => {
     return res.status(200).json(result.data);
   } catch (error) {
     console.log("lỗi");
-    console.log("lỗi");
+
     console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
-    return res.status(500).json({ message: "Internal Server Error" });
   }
-};
 };
 
 module.exports = {

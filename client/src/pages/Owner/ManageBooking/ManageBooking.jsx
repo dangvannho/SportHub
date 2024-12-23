@@ -12,7 +12,7 @@ function ManageBooking() {
       date: "24/11/2024",
       time: "18:00 - 20:00",
       total: "500,000 VND",
-      status: "Confirmed",
+      status: "Complete",
     },
     {
       id: 2,
@@ -32,7 +32,7 @@ function ManageBooking() {
       date: "22/11/2024",
       time: "19:00 - 21:00",
       total: "600,000 VND",
-      status: "Cancelled",
+      status: "Canceled",
     },
   ]);
 
@@ -47,12 +47,10 @@ function ManageBooking() {
           <tr>
             <th>Tên khách hàng</th>
             <th>Sân đặt</th>
-            <th>Mã đặt sân</th>
             <th>Ngày</th>
             <th>Khung giờ</th>
             <th>Tổng tiền</th>
             <th>Trạng thái</th>
-            <th>Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -60,7 +58,6 @@ function ManageBooking() {
             <tr key={booking.id}>
               <td>{booking.customerName}</td>
               <td>{booking.fieldName}</td>
-              <td>{booking.bookingId}</td>
               <td>{booking.date}</td>
               <td>{booking.time}</td>
               <td>{booking.total}</td>
@@ -68,12 +65,6 @@ function ManageBooking() {
                 <span className={`status ${booking.status.toLowerCase()}`}>
                   {booking.status}
                 </span>
-              </td>
-              <td>
-                <div className="actions">
-                  <button className="edit">Chỉnh sửa</button>
-                  <button className="cancel">Hủy</button>
-                </div>
               </td>
             </tr>
           ))}
