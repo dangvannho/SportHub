@@ -22,7 +22,7 @@
   }
 
   .filter-container {
-    grid-column: 4 / 9;
+    grid-column: 4 / 10;
     grid-row: 2 / 3;
   }
 
@@ -45,9 +45,11 @@
     justify-content: center;
 
     .total-item {
-      width: 350px;
+      width: 430px;
       height: 150px;
       background: #fff;
+      color: white;
+      background-color: #1f2154;
       border-radius: 16px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       padding: 10px 20px 0;
@@ -55,31 +57,31 @@
 
       &:hover {
         background-color: #1f2154;
-
-        .header p,
-        .amount strong,
-        .change p,
-        .change span {
-          color: white;
-        }
       }
 
-      .header {
+      .header-item {
         p {
           font-size: 18px;
-          color: #333;
           font-weight: 500;
           margin: 0;
+          color: orange;
         }
       }
 
       .amount {
         margin-top: 10px;
+        display: flex;
+        flex-direction: column;
 
         strong {
           font-size: 28px;
           font-weight: bold;
-          color: #000;
+        }
+      }
+
+      .amount:last-child {
+        strong {
+          font-size: 20px;
         }
       }
 
@@ -87,7 +89,6 @@
         display: flex;
         margin-top: 10px;
         font-size: 14px;
-        color: #666;
 
         p {
           margin-bottom: 0;
@@ -102,11 +103,11 @@
         }
 
         &.positive p {
-          color: #28a745; /* Màu xanh lá */
+          color: #28a745;
         }
 
         &.negative p {
-          color: #dc3545; /* Màu đỏ */
+          color: #dc3545;
         }
       }
     }
@@ -115,8 +116,10 @@
 
 .filter-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 5px 0;
 
   .group-filter {
     margin-top: 10px;

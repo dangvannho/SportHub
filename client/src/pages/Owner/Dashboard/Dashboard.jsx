@@ -7,6 +7,7 @@ import revenueChart from "~/services/Owner/revenueChart";
 import Chart from "./components/Chart/Chart";
 
 import "./Dashboard.scss";
+import getAllFieldOwner from "~/services/Field/getAllFieldOwner";
 
 function Dashboard() {
   const currentMonth = new Date().getMonth() + 1; // Tháng hiện tại
@@ -17,31 +18,71 @@ function Dashboard() {
   const [typeTime, setTypeTime] = useState("month");
   const [month, setMonth] = useState(currentMonth);
   const [year, setYear] = useState(currentYear);
+  const [totalField, setTotalField] = useState(0);
+  const [listField, setListField] = useState([]);
+  const [fieldId, setFieldId] = useState("all");
+  const [topField, setTopField] = useState([]);
 
   // State cho biểu đồ số lượng đặt sân
   const [chart1Data, setChart1Data] = useState([]);
   const [totalBooking, setTotalBooking] = useState(0);
+  const [comparePercentageBooking, setComparePercentageBooking] = useState(0);
+  const [compareBooking, setCompareBooking] = useState(0);
 
   // State cho biểu đồ doanh thu
   const [chart2Data, setChart2Data] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [comparePercentageRevenue, setComparePercentageRevenue] = useState(0);
+  const [compareRevenue, setCompareRevenue] = useState(0);
+
+  console.log(topField.length);
 
   useEffect(() => {
     fetchChart();
-  }, [typeTime, month, year]);
+  }, [fieldId, typeTime, month, year]);
+
+  useEffect(() => {
+    fetchAllFieldOwner();
+  }, []);
+
+  const fetchAllFieldOwner = async () => {
+    const res = await getAllFieldOwner(1, 100);
+    setTotalField(res.totalResults);
+    setListField(res.results);
+  };
 
   const fetchChart = async () => {
     const res = await (typeTime === "month"
-      ? bookingChart(ownerData.id, "month", month, year)
-      : bookingChart(ownerData.id, "year", null, year));
-    setChart1Data(res.breakdown);
-    setTotalBooking(res.totalBookings);
+      ? bookingChart(ownerData.id, fieldId, "month", month, year)
+      : bookingChart(ownerData.id, fieldId, "year", null, year));
+
+    if (res.EC == 0) {
+      setChart1Data(res.data.breakdown);
+      setTotalBooking(res.data.totalBookings);
+      setCompareBooking(res.data.bookingDifference);
+      setComparePercentageBooking(res.data.bookingPercentage);
+    } else {
+      setChart1Data([]);
+      setTotalBooking(0);
+      setCompareBooking(0);
+      setComparePercentageBooking(0);
+    }
 
     const res2 = await (typeTime === "month"
-      ? revenueChart(ownerData.id, "month", month, year)
-      : revenueChart(ownerData.id, "year", null, year));
-    setChart2Data(res2.breakdown);
-    setTotalRevenue(res2.totalRevenue);
+      ? revenueChart(ownerData.id, fieldId, "month", month, year)
+      : revenueChart(ownerData.id, fieldId, "year", null, year));
+    if (res2.EC == 0) {
+      setChart2Data(res2.data.breakdown);
+      setTotalRevenue(res2.data.totalRevenue);
+      setCompareRevenue(res2.data.difference);
+      setComparePercentageRevenue(res2.data.revenuePercentage);
+      setTopField(res2.data.topFields);
+    } else {
+      setChart2Data([]);
+      setTotalRevenue(0);
+      setCompareRevenue(0);
+      setComparePercentageRevenue(0);
+    }
   };
 
   const generateYears = () => {
@@ -57,45 +98,125 @@ function Dashboard() {
       <div className="grid-item sales-summary">
         <div className="total-group">
           <div className="total-item">
-            <div className="header">
+            <div className="header-item">
               <p>Tổng số lượng đặt sân</p>
             </div>
             <div className="amount">
               <strong>{totalBooking} lượt đặt</strong>
             </div>
-            <div className="change positive">
-              <p>▲ +26% </p> <span>so với tháng trước</span>
-            </div>
+            {comparePercentageBooking >= 0 ? (
+              <div className="change positive">
+                <p>
+                  &#9650; +{comparePercentageBooking}% (+{compareBooking} lượt
+                  đặt)
+                </p>
+                <span>
+                  {typeTime === "month"
+                    ? "so với tháng trước"
+                    : "so với năm trước"}
+                </span>
+              </div>
+            ) : (
+              <div className="change negative">
+                <p>
+                  &#9660; {comparePercentageBooking}% ({compareBooking} lượt
+                  đặt)
+                </p>
+                <span>
+                  {typeTime === "month"
+                    ? "so với tháng trước"
+                    : "so với năm trước"}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="total-item">
-            <div className="header">
+            <div className="header-item">
               <p>Tổng doanh thu</p>
             </div>
             <div className="amount">
-              <strong>{totalRevenue.toLocaleString("vi-VN")} VND</strong>
+              <strong>
+                {totalRevenue !== undefined && totalRevenue !== null
+                  ? totalRevenue.toLocaleString("vi-VN")
+                  : 0}
+                VND
+              </strong>
             </div>
-            <div className="change positive">
-              <p>&#9650; +26% </p> <span>so với tháng trước</span>
-            </div>
+
+            {comparePercentageRevenue >= 0 ? (
+              <div className="change positive">
+                <p>
+                  &#9650; +{comparePercentageRevenue}% (+
+                  {compareRevenue !== undefined && compareRevenue !== null
+                    ? compareRevenue.toLocaleString("vi-VN")
+                    : 0}
+                  VND)
+                </p>
+                <span>
+                  {typeTime === "month"
+                    ? "so với tháng trước"
+                    : "so với năm trước"}
+                </span>
+              </div>
+            ) : (
+              <div className="change negative">
+                <p>
+                  &#9660; {comparePercentageRevenue}% (
+                  {compareRevenue !== undefined && compareRevenue !== null
+                    ? compareRevenue.toLocaleString("vi-VN")
+                    : 0}
+                  VND)
+                </p>
+                <span>
+                  {typeTime === "month"
+                    ? "so với tháng trước"
+                    : "so với năm trước"}
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="total-item">
-            <div className="header">
-              <p>Tổng số sân</p>
+            <div className="header-item">
+              <p>Top 3 sân có doanh thu cao nhất</p>
             </div>
             <div className="amount">
-              <strong>5 sân</strong>
-            </div>
-            <div className="change negative">
-              <p>&#9660; +26% </p> <span>so với tháng trước</span>
+              {topField.length > 0 ? (
+                topField.map((item, index) => {
+                  return (
+                    <strong key={index}>
+                      {index + 1}. {item.fieldName}
+                    </strong>
+                  );
+                })
+              ) : (
+                <strong style={{ fontSize: "28px" }}>{topField.length}</strong>
+              )}
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid-item filter-container">
+        <strong style={{ color: "#1f2154" }}>Mốc thời gian thống kê: </strong>
         <div className="group-filter">
+          <div className="filter">
+            <label htmlFor="field-select">Chọn sân:</label>
+            <select
+              id="field-select"
+              value={fieldId}
+              onChange={(e) => setFieldId(e.target.value)}
+            >
+              <option value="all">Tất cả sân</option>
+              {listField.map((field) => (
+                <option key={field._id} value={field._id}>
+                  {field.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="filter">
             <label htmlFor="chart-type-select">Chọn loại thời gian:</label>
             <select
@@ -140,6 +261,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
       {/* Biểu đồ số lượng đặt sân */}
       <div className="grid-item total-revenue">
         <strong>Thống kê số lượng đặt sân</strong>

@@ -2,111 +2,170 @@ const FieldAvailability = require("../models/Field_Availability");
 const Field = require("../models/Field");
 const mongoose = require("mongoose");
 const Bill = require("../models/Bill");
-const cron = require("node-cron");
-const payOS = require('../utils/payos');
+const PayOS = require("@payos/node");
+const Owner = require("../models/Owner");
+const moment = require("moment");
+
+
+
+
+
+//https://fe44-2001-ee0-4cb6-47e0-44db-f4d5-41ba-d10a.ngrok-free.app/api/pm/callback
 
 const payment = async (req, res) => {
-    const session = await mongoose.startSession(); // Tạo session cho transaction
-    const YOUR_DOMAIN = "http://localhost:8081";
-    
-    try {
-      session.startTransaction(); // Bắt đầu transaction
-  
-      const { _id } = req.body; // Lấy ID sân từ request
-      if (!_id) {
-        return res.status(400).json({ EC: 0, EM: "Không tìm thấy dữ liệu" });
-      }
-  
-      // Truy vấn thông tin sân
-      const availability = await FieldAvailability.findById(_id)
-        .populate({ path: "field_id", select: "name" })
-        .session(session)
-        .lean();
-  
-      if (!availability) throw new Error("Không tìm thấy sân");
-      if (!availability.is_available) throw new Error("Sân đã được đặt");
-  
-      const transID = Math.floor(Math.random() * 1000000);
-      const availability_date = moment(availability.availability_date).format("DD-MM-YYYY");
-      const Field_name = availability.field_id?.name || "Không xác định";
-  
-      const amount = availability.price; // Giá tiền cần thanh toán
-      const description = `Thanh toán tiền cho sân: ${Field_name}, số tiền: ${amount}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`;
-  
-      const body = {
-        orderCode: transID,
-        amount: amount,
-        description: description,
-        returnUrl: `${YOUR_DOMAIN}/success.html`,
-        cancelUrl: `${YOUR_DOMAIN}/cancel.html`,
-      };
-  
-      // Lưu thông tin hóa đơn vào cơ sở dữ liệu
-      const saveOrder = new Bill({
-        field_availability_id: _id,
-        user_name: req.user.name,
-        user_email: req.user.email,
-        user_id: req.user.id,
-        apptransid: transID,
-        description: description,
-        amount: amount,
-        apptime: Date.now(),
-        order_time: Date.now(),
-        field_id: availability.field_id._id,
-        status: "pending",
-      });
-      await saveOrder.save({ session });
-  
-      // Cập nhật trạng thái sân
-      availability.is_available = false;
-      availability.lock_time = new Date();
-      await FieldAvailability.findByIdAndUpdate(
-        _id,
-        { is_available: false, lock_time: new Date() },
-        { session }
-      );
-  
-      // Commit transaction
-      await session.commitTransaction();
-      session.endSession();
-  
-      // Tạo link thanh toán
-      const paymentLinkResponse = await payOS.createPaymentLink(body);
-  
-      console.log("Payment link created:", paymentLinkResponse.checkoutUrl);
-      res.redirect(paymentLinkResponse.checkoutUrl);
-    } catch (error) {
-      // Rollback transaction nếu xảy ra lỗi
-      await session.abortTransaction();
-      session.endSession();
-  
-      console.error("Transaction failed:", error.message);
-      res.status(500).json({ message: error.message });
+  const session = await mongoose.startSession();
+  const YOUR_DOMAIN = "http://localhost:8081";
+  let transactionCommitted = false;
+
+  try {
+    session.startTransaction();
+
+    const { _id } = req.body;
+    if (!_id) {
+      return res.status(400).json({ EC: 0, EM: "Không tìm thấy dữ liệu" });
     }
-  };
+
   
 
 
+    const availability = await FieldAvailability.findById(_id)
+  .populate({
+    path: "field_id",
+    select: "name owner_id",
+    populate: { path: "owner_id", select: "business_name payment_keys" },
+  })
+  .lean()
+  .session(session);
+
+if (!availability) throw new Error("Không tìm thấy sân");
+if (!availability.is_available) throw new Error("Sân đã được đặt");
+
+const owner = availability.field_id.owner_id;
+
+console.log("Thông tin Owner:", owner  ); // Hiển thị thông tin Owner ra console
+
+if (!owner) throw new Error("Không tìm thấy thông tin owner");
+
+// Kiểm tra các trường `payment_keys`
+if (!owner.payment_keys || !owner.payment_keys.client_id || !owner.payment_keys.api_key || !owner.payment_keys.checksum_key) {
+  throw new Error("Thông tin thanh toán không đầy đủ. Vui lòng kiểm tra cài đặt.");
+}
+
+    
+    const transID = Math.floor(Math.random() * 1000000);
+    const availability_date = moment(availability.availability_date).format("DD-MM-YYYY");
+    const description = `ducanh`; //`Thanh toán tiền cho sân: ${availability.field_id.name}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`;
+
+    const body = {
+      orderCode: transID,
+      amount: 2000,//availability.price,
+      description: description,
+      returnUrl: `${YOUR_DOMAIN}/success.html`,
+      cancelUrl: `${YOUR_DOMAIN}/cancel.html`,
+
+    };
+
+    const saveOrder = new Bill({
+      field_availability_id: _id,
+      user_name: req.user.name,
+      user_email: req.user.email,
+      user_id: req.user.id,
+      apptransid: transID,
+      description: description,
+      amount: availability.price,
+      apptime: Date.now(),
+      order_time: Date.now(),
+      field_id: availability.field_id._id,
+      status: "pending",
+    });
+    await saveOrder.save({ session });
+
+    await FieldAvailability.findByIdAndUpdate(
+      _id,
+      { is_available: false, lock_time: new Date() },
+      { session }
+    );
+
+    await session.commitTransaction();
+    transactionCommitted = true;
+
+    const payOSInstance = new PayOS(
+      owner.payment_keys.client_id,
+      owner.payment_keys.api_key,
+      owner.payment_keys.checksum_key
+    );
+    
+    const paymentLinkResponse = await payOSInstance.createPaymentLink(body);
+    if (!paymentLinkResponse || !paymentLinkResponse.checkoutUrl) {
+      throw new Error("Không thể tạo link thanh toán");
+    }
+
+    console.log("Payment link created:", paymentLinkResponse.checkoutUrl);
+    return res.status(200).json("Payment link : ",paymentLinkResponse.checkoutUrl);
+  } catch (error) {
+    if (!transactionCommitted) {
+      await session.abortTransaction();
+    }
+    console.error("Transaction failed:", error.message);
+    res.status(500).json({ message: error.message });
+  } finally {
+    session.endSession();
+  }
+};
 
 
 
+const callback = async (req, res) => {
+  console.log(req.body);   
+  console.log('Receive hook'); 
 
+  const { data } = req.body; // Lấy dữ liệu từ webhook
 
+  if (!data || !data.orderCode) {
+    return res.status(400).json({ message: 'Mã giao dịch không được cung cấp' });
+  }
 
+  console.log("Status : ", data.desc);
 
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
+  try {
+    // Tìm hóa đơn theo app_trans_id
+    const order = await Bill.findOne({ apptransid: data.orderCode }).session(session);
+    if (!order) throw new Error("Order not found");
 
+    // Cập nhật trạng thái hóa đơn thành 'complete' nếu trạng thái là success
+    if (data.desc === 'success') {
+      order.status = "complete";
+    }
+    await order.save({ session });
 
+    // Cập nhật thông tin sân
+    const fieldAvailability = await FieldAvailability.findById(order.field_availability_id).session(session);
+    if (!fieldAvailability) throw new Error("FieldAvailability not found");
 
+    // Đảm bảo sân đã thanh toán và khóa lại
+    fieldAvailability.is_available = false; // Sân không còn khả dụng
+    fieldAvailability.lock_time = new Date(); // Cập nhật thời gian khóa
+    await fieldAvailability.save({ session });
 
+    // Commit transaction
+    await session.commitTransaction();
+    console.log("Transaction committed successfully.");
 
-
-
-
-
-
-
+    res.json({ return_code: 1, return_message: "success", order });
+  } catch (error) {
+    // Rollback nếu có lỗi
+    await session.abortTransaction();
+    console.error("Transaction failed:", error.message);
+    res.status(500).json({ return_code: 0, return_message: error.message });
+  } finally {
+    session.endSession();
+  }
+};
 
 module.exports = {
-  payment
-}   
+  payment,
+  callback
+}
