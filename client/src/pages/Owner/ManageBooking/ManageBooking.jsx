@@ -1,40 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import ReactPaginate from "react-paginate";
+import { jwtDecode } from "jwt-decode";
+
+import getAllHistoryBookingOwner from "~/services/Owner/getAllHistoryBookingOwner";
 import "./ManageBooking.scss";
 
 function ManageBooking() {
-  const [bookings] = useState([
-    {
-      id: 1,
-      customerName: "Nguyễn Văn A",
-      fieldName: "Sân bóng Hoàng Gia",
-      bookingId: "BK001",
-      date: "24/11/2024",
-      time: "18:00 - 20:00",
-      total: "500,000 VND",
-      status: "Complete",
-    },
-    {
-      id: 2,
-      customerName: "Trần Thị B",
-      fieldName: "Sân cỏ Việt Nhật",
-      bookingId: "BK002",
-      date: "23/11/2024",
-      time: "16:00 - 18:00",
-      total: "400,000 VND",
-      status: "Pending",
-    },
-    {
-      id: 3,
-      customerName: "Phạm Văn C",
-      fieldName: "Sân Đạt Phước",
-      bookingId: "BK003",
-      date: "22/11/2024",
-      time: "19:00 - 21:00",
-      total: "600,000 VND",
-      status: "Canceled",
-    },
-  ]);
+  const [listHitoryBooking, setListHistoryBooking] = useState([]);
+
+  const token = localStorage.getItem("accessToken");
+
+  const id = jwtDecode(token).id;
+
+  useEffect(() => {
+    fetchAllHistoryBooking();
+  }, []);
+
+  const fetchAllHistoryBooking = async () => {
+    const res = await getAllHistoryBookingOwner(id);
+    if (res.EC === 1) {
+      setListHistoryBooking(res.DT);
+    } else {
+      toast.error(res.EM);
+    }
+  };
 
   return (
     <div className="booking-management">
@@ -46,24 +36,30 @@ function ManageBooking() {
         <thead>
           <tr>
             <th>Tên khách hàng</th>
+            <th>Số điện thoại</th>
             <th>Sân đặt</th>
-            <th>Ngày</th>
+            <th>Giờ đặt</th>
+            <th>Ngày đặt</th>
             <th>Khung giờ</th>
             <th>Tổng tiền</th>
             <th>Trạng thái</th>
           </tr>
         </thead>
         <tbody>
-          {bookings.map((booking) => (
-            <tr key={booking.id}>
-              <td>{booking.customerName}</td>
-              <td>{booking.fieldName}</td>
-              <td>{booking.date}</td>
-              <td>{booking.time}</td>
-              <td>{booking.total}</td>
+          {listHitoryBooking.map((booking, index) => (
+            <tr key={index}>
+              <td>{booking.ten_khach_hang}</td>
+              <td>{booking.userPhone}</td>
               <td>
-                <span className={`status ${booking.status.toLowerCase()}`}>
-                  {booking.status}
+                <p className="field_name">{booking.ten_san}</p>
+              </td>
+              <td>{booking.gio_dat}</td>
+              <td>{booking.ngay_dat}</td>
+              <td>{booking.khung_gio}</td>
+              <td>{booking.tong_tien.toLocaleString("vi-VN")} VNĐ</td>
+              <td>
+                <span className={`status ${booking.trang_thai.toLowerCase()}`}>
+                  {booking.trang_thai}
                 </span>
               </td>
             </tr>

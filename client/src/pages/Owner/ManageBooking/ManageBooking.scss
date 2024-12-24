@@ -35,9 +35,17 @@
         }
 
         td {
+          width: 200px;
           padding: 12px;
           border-bottom: 1px solid #ddd;
           font-size: 15px;
+
+          .field_name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 200px;
+          }
 
           .status {
             padding: 5px 10px;

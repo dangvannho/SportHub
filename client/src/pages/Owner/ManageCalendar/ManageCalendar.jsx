@@ -55,6 +55,7 @@ function ManageCalendar() {
             }),
             status: item.is_available,
             timeId: item._id,
+            bookedBy: item.bookedBy,
           },
         }));
 
@@ -147,6 +148,15 @@ function ManageCalendar() {
               ×
             </button>
             <h3>Thông tin đặt sân</h3>
+            <p>
+              <strong>Tên người đặt: </strong>
+              {selectedSlot.extendedProps.bookedBy.name}
+            </p>
+
+            <p>
+              <strong>Số điện thoại: </strong>
+              {selectedSlot.extendedProps.bookedBy.phoneNumber}
+            </p>
 
             <p>
               <strong> Thời gian: </strong>

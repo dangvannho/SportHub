@@ -18,6 +18,7 @@
     }
 
     p {
+      font-size: 20px;
       margin: 0;
       color: #888;
     }
@@ -47,23 +48,16 @@
         }
 
         td {
+          width: 200px;
           padding: 12px;
           border-bottom: 1px solid #ddd;
-          font-size: 14px;
+          font-size: 16px;
 
-          .field-info {
-            display: flex;
-            flex-direction: column;
-
-            strong {
-              font-size: 16px;
-            }
-
-            p {
-              margin: 0;
-              color: #888;
-              font-size: 12px;
-            }
+          .field_name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 200px;
           }
 
           .status {
@@ -82,6 +76,10 @@
               color: #721c24;
             }
           }
+        }
+
+        .field_address {
+          width: 400px;
         }
       }
     }
