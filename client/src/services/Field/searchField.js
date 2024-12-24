@@ -1,9 +1,11 @@
 import httpRequest from "~/utils/httpRequest";
 
-const searchField = (query, page, limit) => {
+const searchField = (type, name, location, page, limit) => {
   return httpRequest.get("api/fields/search", {
     params: {
-      query,
+      type,
+      name,
+      location,
       page,
       limit,
     },

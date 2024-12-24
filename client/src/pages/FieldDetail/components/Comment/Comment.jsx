@@ -45,8 +45,12 @@ function Comment({ fieldId, onRatingChange }) {
     averageRating: 0,
     totalRatings: 0,
     ratingDetails: {
-      5: 0, 4: 0, 3: 0, 2: 0, 1: 0
-    }
+      5: 0,
+      4: 0,
+      3: 0,
+      2: 0,
+      1: 0,
+    },
   });
 
   useEffect(() => {
@@ -123,14 +127,14 @@ function Comment({ fieldId, onRatingChange }) {
     try {
       const [averageRes, statsRes] = await Promise.all([
         httpRequest.get(`/api/comments/average/${fieldId}`),
-        httpRequest.get(`/api/comments/stats/${fieldId}`)
+        httpRequest.get(`/api/comments/stats/${fieldId}`),
       ]);
 
       if (averageRes.EC === 1 && statsRes.EC === 1) {
         setRatingStats({
           averageRating: averageRes.DT.averageRating,
           totalRatings: averageRes.DT.totalRatings,
-          ratingDetails: statsRes.DT.ratingStats
+          ratingDetails: statsRes.DT.ratingStats,
         });
       }
     } catch (error) {
@@ -158,15 +162,19 @@ function Comment({ fieldId, onRatingChange }) {
     const user = JSON.parse(userStr);
 
     try {
-      const response = await httpRequest.post('/api/comments', {
-        field_id: fieldId,
-        comment_text: newComment,
-        rating: rating
-      }, {
-        headers: {
-          Authorization: `Bearer ${user.accessToken}`
+      const response = await httpRequest.post(
+        "/api/comments",
+        {
+          field_id: fieldId,
+          comment_text: newComment,
+          rating: rating,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user.accessToken}`,
+          },
         }
-      });
+      );
 
       if (response.EC === 1) {
         setNewComment("");
@@ -228,13 +236,15 @@ function Comment({ fieldId, onRatingChange }) {
 
       const response = await httpRequest.put(`/api/comments/${commentId}`, {
         comment_text: editCommentText,
-        rating: editRating
+        rating: editRating,
       });
 
       if (response.EC === 1) {
-        setComments(comments.map(comment =>
-          comment._id === commentId ? response.comment : comment
-        ));
+        setComments(
+          comments.map((comment) =>
+            comment._id === commentId ? response.comment : comment
+          )
+        );
         setEditingCommentId(null);
         setEditCommentText("");
         setEditRating(0);
@@ -259,7 +269,11 @@ function Comment({ fieldId, onRatingChange }) {
               <FaStar
                 key={index}
                 className="star"
-                color={index < Math.round(ratingStats.averageRating) ? "#ffc107" : "#e4e5e9"}
+                color={
+                  index < Math.round(ratingStats.averageRating)
+                    ? "#ffc107"
+                    : "#e4e5e9"
+                }
                 size={20}
               />
             ))}
@@ -274,7 +288,11 @@ function Comment({ fieldId, onRatingChange }) {
                 <div
                   className="rating-fill"
                   style={{
-                    width: `${(ratingStats.ratingDetails[star] / ratingStats.totalRatings) * 100 || 0}%`
+                    width: `${
+                      (ratingStats.ratingDetails[star] /
+                        ratingStats.totalRatings) *
+                        100 || 0
+                    }%`,
                   }}
                 ></div>
               </div>
@@ -303,11 +321,13 @@ function Comment({ fieldId, onRatingChange }) {
                   name="rating"
                   value={ratingValue}
                   onClick={() => setRating(ratingValue)}
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                 />
                 <FaStar
                   className="star"
-                  color={ratingValue <= (hover || rating) ? "#ffc107" : "#e4e5e9"}
+                  color={
+                    ratingValue <= (hover || rating) ? "#ffc107" : "#e4e5e9"
+                  }
                   size={24}
                   onMouseEnter={() => setHover(ratingValue)}
                   onMouseLeave={() => setHover(0)}
@@ -344,7 +364,8 @@ function Comment({ fieldId, onRatingChange }) {
                 <div className="user-content">
                   {comment.bill_id && (
                     <div className="booking-time">
-                      Ngày đặt sân: {new Date(comment.bill_id.order_time).toLocaleString()}
+                      Ngày đặt sân:{" "}
+                      {new Date(comment.bill_id.order_time).toLocaleString()}
                     </div>
                   )}
                   <div className="user-header">
@@ -355,12 +376,16 @@ function Comment({ fieldId, onRatingChange }) {
                           <FaStar
                             key={index}
                             className="star"
-                            color={index < (editHover || editRating) ? "#ffc107" : "#e4e5e9"}
+                            color={
+                              index < (editHover || editRating)
+                                ? "#ffc107"
+                                : "#e4e5e9"
+                            }
                             size={16}
                             onClick={() => setEditRating(index + 1)}
                             onMouseEnter={() => setEditHover(index + 1)}
                             onMouseLeave={() => setEditHover(0)}
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: "pointer" }}
                           />
                         ))}
                       </div>
@@ -370,7 +395,9 @@ function Comment({ fieldId, onRatingChange }) {
                           <FaStar
                             key={index}
                             className="star"
-                            color={index < comment.rating ? "#ffc107" : "#e4e5e9"}
+                            color={
+                              index < comment.rating ? "#ffc107" : "#e4e5e9"
+                            }
                             size={16}
                           />
                         ))}
@@ -414,22 +441,24 @@ function Comment({ fieldId, onRatingChange }) {
                 </div>
               </div>
             </div>
-            {currentUserId && comment.user_id._id === currentUserId && !editingCommentId && (
-              <div className="comment-actions">
-                <button
-                  onClick={() => handleStartEdit(comment)}
-                  className="edit-btn"
-                >
-                  Sửa
-                </button>
-                <button
-                  onClick={() => handleDeleteComment(comment._id)}
-                  className="delete-btn"
-                >
-                  Xóa
-                </button>
-              </div>
-            )}
+            {currentUserId &&
+              comment.user_id._id === currentUserId &&
+              !editingCommentId && (
+                <div className="comment-actions">
+                  <button
+                    onClick={() => handleStartEdit(comment)}
+                    className="edit-btn"
+                  >
+                    Sửa
+                  </button>
+                  <button
+                    onClick={() => handleDeleteComment(comment._id)}
+                    className="delete-btn"
+                  >
+                    Xóa
+                  </button>
+                </div>
+              )}
           </div>
         ))}
       </div>
