@@ -47,14 +47,12 @@ const getFieldAvailability = async (req, res) => {
         const bookingInfo = bookingMap[availability._id.toString()];
         if (bookingInfo) {
           availabilityObj.bookedBy = {
-            userId: bookingInfo.userId,
             name: bookingInfo.userName,
             phoneNumber: bookingInfo.phoneNumber,
           };
         }
       } else {
         availabilityObj.bookedBy = {
-          userId: null,
           name: "Không có",
           phoneNumber: null,
         };
