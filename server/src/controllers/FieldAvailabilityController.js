@@ -54,7 +54,7 @@ const getFieldAvailability = async (req, res) => {
       } else {
         availabilityObj.bookedBy = {
           name: "Không có",
-          phoneNumber: null,
+          phoneNumber: "Không có",
         };
       }
       return availabilityObj;
