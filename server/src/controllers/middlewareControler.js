@@ -9,9 +9,9 @@ const middlewareController = {
         if (err) {
           return res.status(403).json({ message: "Token is invalid" });
         }
-      console.log(user); 
-      req.user = user;
-      next();
+        console.log(user);
+        req.user = user;
+        next();
       });
     } else {
       return res.status(401).json({ message: "You are not authenticated" });

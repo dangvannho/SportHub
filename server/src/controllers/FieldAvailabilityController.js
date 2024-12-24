@@ -22,27 +22,26 @@ const getFieldAvailability = async (req, res) => {
     }
 
     const bills = await Bill.find({
-      field_availability_id: { $in: availabilities.map(a => a._id) },
-      status: 'complete'
+      field_availability_id: { $in: availabilities.map((a) => a._id) },
+      status: "complete",
     }).populate({
-      path: 'user_id',
-      select: 'name phone_number', // Chỉ lấy các trường cần thiết
+      path: "user_id",
+      select: "name phone_number", // Chỉ lấy các trường cần thiết
     });
 
-
     const bookingMap = {};
-    bills.forEach(bill => {
-      if (bill.user_id) { // Kiểm tra user_id không null
+    bills.forEach((bill) => {
+      if (bill.user_id) {
+        // Kiểm tra user_id không null
         bookingMap[bill.field_availability_id.toString()] = {
           userName: bill.user_id.name,
           phoneNumber: bill.user_id.phone_number,
-          userId: bill.user_id._id
+          userId: bill.user_id._id,
         };
       }
     });
 
-
-    const result = availabilities.map(availability => {
+    const result = availabilities.map((availability) => {
       const availabilityObj = availability.toObject();
       if (!availabilityObj.is_available) {
         const bookingInfo = bookingMap[availability._id.toString()];
@@ -50,14 +49,14 @@ const getFieldAvailability = async (req, res) => {
           availabilityObj.bookedBy = {
             userId: bookingInfo.userId,
             name: bookingInfo.userName,
-            phoneNumber: bookingInfo.phoneNumber
+            phoneNumber: bookingInfo.phoneNumber,
           };
         }
       } else {
         availabilityObj.bookedBy = {
           userId: null,
           name: "Không có",
-          phoneNumber: null
+          phoneNumber: null,
         };
       }
       return availabilityObj;
@@ -153,12 +152,14 @@ const getBillsUser = async (req, res) => {
       });
     }
 
-    // Truy vấn hóa đơn và populate dữ liệu liên quan
+    // Truy vấn hóa đơn, sắp xếp theo `order_time` và giới hạn 10 kết quả
     const bills = await Bill.find({ user_id })
+      .sort({ order_time: -1 }) // Sắp xếp giảm dần theo thời gian đặt
+      .limit(10) // Giới hạn 10 kết quả
       .populate({
         path: "field_availability_id",
         model: "FieldAvailability",
-        select: "field_id start_time end_time availability_date", // Chỉ lấy các trường cần thiết từ Field_Availability
+        select: "field_id start_time end_time availability_date", // Chỉ lấy các trường cần thiết từ FieldAvailability
         populate: {
           path: "field_id",
           model: "Field", // Liên kết với bảng Field
@@ -183,7 +184,9 @@ const getBillsUser = async (req, res) => {
         ten_san: field.name || "N/A",
         dia_diem: field.location || "N/A",
         loai_san: field.type || "N/A",
-        khung_gio: fieldAvailability.start_time + "-" + fieldAvailability.end_time || "N/A",
+        khung_gio:
+          fieldAvailability.start_time + "-" + fieldAvailability.end_time ||
+          "N/A",
         ngay_dat: fieldAvailability.availability_date
           ? new Date(fieldAvailability.availability_date).toLocaleDateString()
           : "N/A",
@@ -207,6 +210,7 @@ const getBillsUser = async (req, res) => {
     });
   }
 };
+
 const getBillsOwner = async (req, res) => {
   try {
     const { owner_id } = req.query;
@@ -268,9 +272,8 @@ const getBillsOwner = async (req, res) => {
           ? new Date(bill.order_time).toLocaleTimeString()
           : "N/A",
         khung_gio:
-          fieldAvailability?.start_time +
-          "-" +
-          fieldAvailability?.end_time || "N/A",
+          fieldAvailability?.start_time + "-" + fieldAvailability?.end_time ||
+          "N/A",
         tong_tien: bill.amount || 0,
         trang_thai: bill.status || "N/A",
       };
