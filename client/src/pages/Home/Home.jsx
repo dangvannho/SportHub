@@ -1,4 +1,10 @@
 import { useState, useEffect } from "react";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { AppContext } from "~/context/AppContext";
+import routeConfig from "~/config/routeConfig";
+import getAllField from "~/services/Field/getAllField";
 import StarIcon from "~/components/StarIcon/StarIcon";
 import featureImage1 from "~/assets/img/feature-1.png";
 import featureImage2 from "~/assets/img/feature-2.png";
@@ -6,10 +12,43 @@ import "./Home.scss";
 
 function Home() {
   const [loadImg, setLoadImg] = useState(false);
+  const [selectedTypeField, setSelectedTypeField] = useState("all");
+  const [fieldName, setFieldName] = useState("");
+  const [fieldAddress, setFieldAddress] = useState("");
+  const [listTypeField, setListTypeField] = useState([]);
+
+  const { setSearchCriteria } = useContext(AppContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoadImg(true);
+    fetchAllTypeField();
+    resetSearch();
   }, []);
+
+  const fetchAllTypeField = async () => {
+    const data = await getAllField(1, 9);
+    setListTypeField(data.totalFieldsByType);
+  };
+
+  const resetSearch = () => {
+    setSearchCriteria({
+      typeField: "all",
+      fieldName: "",
+      fieldAddress: "",
+    });
+  };
+
+  const handleSearch = () => {
+    setSearchCriteria({
+      typeField: selectedTypeField,
+      fieldName,
+      fieldAddress,
+    });
+
+    navigate(routeConfig.sportFields);
+  };
+
   return (
     <div className="home-wrapper">
       <div className={`hero ${loadImg ? "load" : ""}`}>
@@ -25,12 +64,15 @@ function Home() {
           <div className="search-container">
             <div className="row g-0 form-group">
               <div className="col">
-                <select className="form-select">
-                  <option selected>Bóng đá</option>
-                  <option value="1">Tennis</option>
-                  <option value="2">Gold</option>
-                  <option value="3">Cầu lông</option>
-                  <option value="4">Bóng bàn</option>
+                <select
+                  className="form-select"
+                  value={selectedTypeField}
+                  onChange={(e) => setSelectedTypeField(e.target.value)}
+                >
+                  <option value="all">Tất cả các sân</option>
+                  {listTypeField.map((item, index) => {
+                    return <option key={index}>{item._id}</option>;
+                  })}
                 </select>
               </div>
 
@@ -39,6 +81,8 @@ function Home() {
                   type="text"
                   className="form-control"
                   placeholder="Nhập tên sân"
+                  value={fieldName}
+                  onChange={(e) => setFieldName(e.target.value)}
                 />
               </div>
 
@@ -47,10 +91,12 @@ function Home() {
                   type="type"
                   className="form-control"
                   placeholder="Nhập khu vực"
+                  value={fieldAddress}
+                  onChange={(e) => setFieldAddress(e.target.value)}
                 />
               </div>
             </div>
-            <div className="btn btn-warning btn-search">
+            <div className="btn btn-warning btn-search" onClick={handleSearch}>
               <span>Tìm kiếm</span>
               <i className="fa-solid fa-magnifying-glass"></i>
             </div>

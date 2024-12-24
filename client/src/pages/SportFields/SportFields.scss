@@ -43,11 +43,11 @@
     font-weight: 400;
     color: #1976d2;
     border-bottom: 2px solid #eee;
-    cursor: pointer;
+    // cursor: pointer;
 
-    &:hover {
-      color: #f9b90f;
-    }
+    // &:hover {
+    //   color: #f9b90f;
+    // }
 
     &.active {
       color: #f9b90f;
@@ -74,8 +74,8 @@
 
   .search-field {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 20px;
+    justify-content: center;
+    margin: 28px 0;
   }
 
   .field-group {
@@ -94,21 +94,48 @@
 }
 
 .search-field {
-  input {
-    background-color: #fff;
-    height: 30px;
-    padding: 15px 5px;
-    border-radius: 5px 0 0 5px;
-    border: 1px solid var(--primary-color);
-  }
-
-  .search-button {
+  .search-box {
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 0 10px;
-    border-radius: 0 5px 5px 0;
-    background-color: var(--primary-color);
+    gap: 10px;
+
+    input,
+    select {
+      width: 220px;
+      height: 45px;
+      padding: 0 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #333;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 5px rgba(58, 172, 237, 0.5);
+      }
+    }
+
+    .search-button {
+      padding: 0 20px;
+      height: 45px;
+      border: none;
+      border-radius: 5px;
+      background-color: var(--primary-color);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #163b75;
+      }
+
+      &:active {
+        background-color: #122f5a;
+      }
+    }
   }
 }
 

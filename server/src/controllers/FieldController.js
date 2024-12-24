@@ -80,7 +80,7 @@ const getFieldById = async (req, res) => {
 // Tìm kiếm sân theo type, name hoặc location
 const searchFields = async (req, res) => {
   try {
-    const { type = "all", name, location, page, limit } = req.query;
+    const { type = "all", name = "", location = "", page, limit } = req.query;
 
     // Khởi tạo giá trị phân trang
     const currentPage = page && page > 0 ? parseInt(page) : 1;
@@ -90,29 +90,25 @@ const searchFields = async (req, res) => {
     const searchConditions = [];
 
     // Thêm điều kiện type nếu khác "all"
-    if (type !== "all") {
+    if (type !== "all" && type.trim() !== "") {
       searchConditions.push({ type });
     }
 
-    // Thêm điều kiện name nếu được cung cấp
-    if (name && typeof name === "string") {
+    // Thêm điều kiện name nếu không phải chuỗi rỗng
+    if (name.trim() !== "") {
       searchConditions.push({ name: { $regex: name, $options: "i" } });
     }
 
-    // Thêm điều kiện location nếu được cung cấp
-    if (location && typeof location === "string") {
+    // Thêm điều kiện location nếu không phải chuỗi rỗng
+    if (location.trim() !== "") {
       searchConditions.push({ location: { $regex: location, $options: "i" } });
     }
 
-    // Nếu không có điều kiện nào được cung cấp, trả lỗi
-    if (searchConditions.length === 0) {
-      return res
-        .status(400)
-        .json({ error: "At least one search parameter must be provided" });
-    }
+    // Nếu không có điều kiện nào và type="all", bỏ qua điều kiện lọc
+    const query = searchConditions.length > 0 ? { $and: searchConditions } : {};
 
     // Tìm kiếm sân theo điều kiện
-    const fieldsQuery = Field.find({ $and: searchConditions }).populate({
+    const fieldsQuery = Field.find(query).populate({
       path: "owner_id",
       select: "business_name address phone_number email",
     });
@@ -131,8 +127,6 @@ const searchFields = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-
 
 
 //CRUD Fields

@@ -23,6 +23,8 @@ function Dashboard() {
   const [fieldId, setFieldId] = useState("all");
   const [topField, setTopField] = useState([]);
 
+  console.log(totalField);
+
   // State cho biểu đồ số lượng đặt sân
   const [chart1Data, setChart1Data] = useState([]);
   const [totalBooking, setTotalBooking] = useState(0);

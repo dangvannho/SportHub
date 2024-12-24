@@ -12,9 +12,22 @@ export const AppProvider = ({ children }) => {
     const savedOwner = localStorage.getItem("owner");
     return savedOwner ? JSON.parse(savedOwner) : null;
   });
+
+  const [searchCriteria, setSearchCriteria] = useState({
+    typeField: "all",
+    fieldName: "",
+    fieldAddress: "",
+  });
   return (
     <AppContext.Provider
-      value={{ userData, setUserData, ownerData, setOwnerData }}
+      value={{
+        userData,
+        setUserData,
+        ownerData,
+        setOwnerData,
+        searchCriteria,
+        setSearchCriteria,
+      }}
     >
       {children}
     </AppContext.Provider>
