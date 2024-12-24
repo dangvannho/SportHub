@@ -5,6 +5,8 @@ const {
   getFieldAvailability,
   updateFieldAvailabilityStatus,
   deleteFieldAvailability,
+  getBillsUser,
+  getBillsOwner,
 } = require("../controllers/FieldAvailabilityController");
 
 router.get("/availability", getFieldAvailability);
@@ -18,4 +20,7 @@ router.delete(
   middlewareController.verifyToken,
   deleteFieldAvailability
 );
+router.get("/bills_user", middlewareController.verifyToken, getBillsUser);
+
+router.get("/bills_owner", middlewareController.verifyToken, getBillsOwner);
 module.exports = router;
