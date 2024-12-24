@@ -224,6 +224,7 @@ const getBillsOwner = async (req, res) => {
 
     // Truy vấn các hóa đơn liên quan đến owner_id
     const bills = await Bill.find()
+      .sort({ order_time: -1 })
       .populate({
         path: "field_availability_id",
         model: "FieldAvailability",
