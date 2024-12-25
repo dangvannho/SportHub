@@ -62,7 +62,7 @@ const payment = async (req, res) => {
       embed_data: JSON.stringify(embed_data), // Gửi embed_data chứa _id
       amount: availability.price,
       callback_url:
-        "https://59e1-2001-ee0-4b75-3a80-51c3-1cee-21ab-a5e5.ngrok-free.app/api/payment/callback",
+        "https://f905-2001-ee0-4b75-3a80-1076-7339-19e6-9dd5.ngrok-free.app/api/payment/callback",
       description: `Thanh toán tiền cho sân: ${Field_name}, số tiền: ${availability.price}, từ ${availability.start_time} đến ${availability.end_time} vào ngày ${availability_date}`,
       bank_code: "",
     };

@@ -43,20 +43,31 @@ const getFieldAvailability = async (req, res) => {
 
     const result = availabilities.map((availability) => {
       const availabilityObj = availability.toObject();
+
       if (!availabilityObj.is_available) {
         const bookingInfo = bookingMap[availability._id.toString()];
+
         if (bookingInfo) {
+          // Có thông tin booking
           availabilityObj.bookedBy = {
             name: bookingInfo.userName,
             phoneNumber: bookingInfo.phoneNumber,
           };
+        } else {
+          // Không có thông tin booking, chuyển sang trường hợp "Không có"
+          availabilityObj.bookedBy = {
+            name: "Không có",
+            phoneNumber: "Không có",
+          };
         }
       } else {
+        // Trường hợp is_available = true
         availabilityObj.bookedBy = {
           name: "Không có",
           phoneNumber: "Không có",
         };
       }
+
       return availabilityObj;
     });
 
