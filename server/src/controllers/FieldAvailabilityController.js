@@ -211,7 +211,7 @@ const getBillsUser = async (req, res) => {
 
 const getBillsOwner = async (req, res) => {
   try {
-    const { owner_id } = req.query;
+    const { owner_id, page, limit } = req.query;
 
     if (!owner_id) {
       return res.status(400).json({
@@ -220,30 +220,34 @@ const getBillsOwner = async (req, res) => {
       });
     }
 
-    // Truy vấn các hóa đơn liên quan đến owner_id
+    // Define page and limit with default values if not provided
+    const currentPage = page && page > 0 ? parseInt(page) : 1;
+    const itemsPerPage = limit && limit > 0 ? parseInt(limit) : 10;
+
+    // Query bills with related data
     const bills = await Bill.find()
       .sort({ order_time: -1 })
       .populate({
         path: "field_availability_id",
         model: "FieldAvailability",
-        select: "field_id start_time end_time availability_date", // Lấy thông tin cần thiết
+        select: "field_id start_time end_time availability_date",
         populate: {
           path: "field_id",
-          model: "Field", // Liên kết đến bảng Field
-          match: { owner_id }, // Lọc các field theo owner_id
-          select: "name location type", // Lấy thông tin field cần thiết
+          model: "Field",
+          match: { owner_id },
+          select: "name location type",
         },
       })
       .populate({
         path: "user_id",
         model: "User",
-        select: "name email phone_number", // Lấy thông tin user liên quan
+        select: "name email phone_number",
       })
-      .select("order_time amount status"); // Chọn thông tin hóa đơn cần trả về
+      .select("order_time amount status");
 
-    // Lọc các hóa đơn không thuộc owner_id
+    // Filter bills related to owner_id
     const filteredBills = bills.filter(
-      (bill) => bill.field_availability_id?.field_id // Kiểm tra field_id tồn tại
+      (bill) => bill.field_availability_id?.field_id
     );
 
     if (!filteredBills || filteredBills.length === 0) {
@@ -253,8 +257,15 @@ const getBillsOwner = async (req, res) => {
       });
     }
 
-    // Định dạng kết quả trả về
-    const result = filteredBills.map((bill) => {
+    // Calculate total items and implement pagination
+    const totalItems = filteredBills.length;
+    const paginatedBills = filteredBills.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+
+    // Format the result
+    const result = paginatedBills.map((bill) => {
       const fieldAvailability = bill.field_availability_id;
       const field = fieldAvailability?.field_id;
       const user = bill.user_id;
@@ -281,6 +292,12 @@ const getBillsOwner = async (req, res) => {
     res.status(200).json({
       EC: 1,
       EM: "Lấy danh sách hóa đơn thành công",
+      pagination: {
+        totalItems,
+        currentPage,
+        itemsPerPage,
+        totalPages: Math.ceil(totalItems / itemsPerPage),
+      },
       DT: result,
     });
   } catch (error) {
@@ -291,6 +308,7 @@ const getBillsOwner = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   getFieldAvailability,

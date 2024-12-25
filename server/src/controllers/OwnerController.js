@@ -543,7 +543,6 @@ const getRevenue = async (req, res) => {
   }
 };
 
-
 const getBookings = async (req, res) => {
   try {
     const { owner_id, field_id, type, month, year } = req.query;
