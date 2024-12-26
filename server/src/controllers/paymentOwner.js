@@ -4,10 +4,9 @@ const PayOS = require("../utils/payos");
 const Owner = require("../models/Owner");
 const payos = require("../utils/payos");
 
-
 const payment = async (req, res) => {
   const session = await mongoose.startSession();
-  const YOUR_DOMAIN = 'http://localhost:8081';
+  const YOUR_DOMAIN = "http://localhost:8081";
   let transactionCommitted = false;
 
   try {
@@ -20,7 +19,7 @@ const payment = async (req, res) => {
       amount: 2000,
       description: description,
       returnUrl: `${YOUR_DOMAIN}/successOwner.html`,
-      cancelUrl: `${YOUR_DOMAIN}/cancelOwner.html`
+      cancelUrl: `${YOUR_DOMAIN}/cancelOwner.html`,
     };
 
     const saveOrder = new Bill({
@@ -31,7 +30,7 @@ const payment = async (req, res) => {
       description: description,
       amount: 2000,
       order_time: Date.now(),
-      status: 'pending'
+      status: "pending",
     });
     await saveOrder.save({ session });
     await session.commitTransaction();
@@ -40,7 +39,7 @@ const payment = async (req, res) => {
     const paymentLinkResponse = await PayOS.createPaymentLink(body);
     const paymentlink = paymentLinkResponse.checkoutUrl;
     console.log("Payment link created:", paymentlink);
-    return res.status(200).json({ paymentlink , apptransid : orderCode });
+    return res.status(200).json({ paymentlink, apptransid: orderCode });
   } catch (error) {
     if (!transactionCommitted) {
       await session.abortTransaction();
@@ -52,36 +51,50 @@ const payment = async (req, res) => {
   }
 };
 
-
 const callback = async (req, res) => {
+  // console.log(req.body);
+  // console.log('Receive hook');
+  // res.json({ message: 'ok' });
+
   console.log(req.body);
-  console.log('Receive hook');
+  console.log("Receive hook");
 
   const { data } = req.body;
   if (!data || !data.orderCode) {
-    return res.status(400).json({ message: 'Mã giao dịch không được cung cấp' });
+    return res
+      .status(400)
+      .json({ message: "Mã giao dịch không được cung cấp" });
   }
 
   console.log("Status:", data.desc);
   console.log("Order code:", data.orderCode);
-  
+
   const session = await mongoose.startSession();
   session.startTransaction();
   let transactionCommitted = false;
 
   try {
-    const order = await Bill.findOne({ apptransid: data.orderCode }).session(session);
+    const order = await Bill.findOne({ apptransid: data.orderCode }).session(
+      session
+    );
     if (!order) {
       await session.abortTransaction();
-      return res.status(400).json({ message: "Không tìm thấy đơn hàng với mã giao dịch: " + data.orderCode });
+      return res
+        .status(400)
+        .json({
+          message:
+            "Không tìm thấy đơn hàng với mã giao dịch: " + data.orderCode,
+        });
     }
 
-    if (order.status === 'complete') {
+    if (order.status === "complete") {
       await session.abortTransaction();
-      return res.status(400).json({ message: 'Đơn hàng đã được hoàn tất trước đó.' });
+      return res
+        .status(400)
+        .json({ message: "Đơn hàng đã được hoàn tất trước đó." });
     }
 
-    if (String(data.desc).toLowerCase() === 'success') {
+    if (String(data.desc).toLowerCase() === "success") {
       order.status = "complete";
     } else {
       order.status = "failed";
@@ -118,7 +131,7 @@ const callback = async (req, res) => {
 
     res.status(400).json({
       return_code: 1,
-      return_message: 'Xử lý không thành công. Chi tiết: ' + error.message,
+      return_message: "Xử lý không thành công. Chi tiết: " + error.message,
       EC: EC,
       EM: EM,
     });
@@ -131,30 +144,25 @@ const callback = async (req, res) => {
 const check = async (req, res) => {
   const { apptransid } = req.body;
   if (!apptransid) {
-    return res.status(400).json({ message: 'Order ID không được cung cấp' });
+    return res.status(400).json({ message: "Order ID không được cung cấp" });
   }
 
   try {
     const response = await PayOS.getPaymentLinkInformation(apptransid);
     console.log("PayOS transaction status response:", response);
-    if (response.status=='PAID') {
+    if (response.status == "PAID") {
       res.status(200).json({ EC: 1, EM: "Đã thanh toán" });
-    }
-    else {
+    } else {
       res.status(200).json({ EC: 0, EM: "Chưa thanh toán" });
     }
-
   } catch (error) {
     console.error("Error checking transaction status:", error);
-    return res.status(500).json({ message: 'Transaction status check failed' });
+    return res.status(500).json({ message: "Transaction status check failed" });
   }
 };
-
 
 module.exports = {
   payment,
   callback,
-  check
+  check,
 };
-
-
