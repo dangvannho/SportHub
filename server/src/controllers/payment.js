@@ -185,44 +185,44 @@ const callback = async (req, res) => {
   res.json(result);
 };
 
-cron.schedule("* * * * *", async () => {
-  const now = new Date();
-  const unlockTime = new Date(now.getTime() - 2 * 60 * 1000); // 2 phút trước
+// cron.schedule("* * * * *", async () => {
+//   const now = new Date();
+//   const unlockTime = new Date(now.getTime() - 2 * 60 * 1000); // 2 phút trước
 
-  try {
-    // Lấy danh sách các hóa đơn chưa hoàn thành (status khác 'complete')
-    const pendingBills = await Bill.find({
-      status: { $ne: "pending" }, // Chỉ lấy hóa đơn chưa hoàn thành
-    }).select("field_availability_id");
+//   try {
+//     // Lấy danh sách các hóa đơn chưa hoàn thành (status khác 'complete')
+//     const pendingBills = await Bill.find({
+//       status: { $ne: "pending" }, // Chỉ lấy hóa đơn chưa hoàn thành
+//     }).select("field_availability_id");
 
-    const pendingFieldIds = pendingBills.map(
-      (bill) => bill.field_availability_id
-    );
+//     const pendingFieldIds = pendingBills.map(
+//       (bill) => bill.field_availability_id
+//     );
 
-    // Lấy danh sách các sân cần mở khóa
-    const fieldsToUnlock = await FieldAvailability.find({
-      _id: { $nin: pendingFieldIds }, // Không phải sân có hóa đơn đang xử lý
-      lock_time: { $lte: unlockTime }, // Đã bị khóa hơn 2 phút
-      is_available: false, // Sân hiện không khả dụng
-    });
+//     // Lấy danh sách các sân cần mở khóa
+//     const fieldsToUnlock = await FieldAvailability.find({
+//       _id: { $nin: pendingFieldIds }, // Không phải sân có hóa đơn đang xử lý
+//       lock_time: { $lte: unlockTime }, // Đã bị khóa hơn 2 phút
+//       is_available: false, // Sân hiện không khả dụng
+//     });
 
-    if (fieldsToUnlock.length === 0) {
-      console.log("No fields to unlock.");
-      return;
-    }
+//     if (fieldsToUnlock.length === 0) {
+//       console.log("No fields to unlock.");
+//       return;
+//     }
 
-    // Cập nhật trạng thái các sân cần mở khóa
-    const fieldIdsToUnlock = fieldsToUnlock.map((field) => field._id);
-    const result = await FieldAvailability.updateMany(
-      { _id: { $in: fieldIdsToUnlock } },
-      { $set: { is_available: true, lock_time: null } } // Đặt lại trạng thái sân
-    );
+//     // Cập nhật trạng thái các sân cần mở khóa
+//     const fieldIdsToUnlock = fieldsToUnlock.map((field) => field._id);
+//     const result = await FieldAvailability.updateMany(
+//       { _id: { $in: fieldIdsToUnlock } },
+//       { $set: { is_available: true, lock_time: null } } // Đặt lại trạng thái sân
+//     );
 
-    console.log(`Unlocked unpaid fields: ${result.modifiedCount}`);
-  } catch (err) {
-    console.error("Error unlocking fields:", err.message);
-  }
-});
+//     console.log(`Unlocked unpaid fields: ${result.modifiedCount}`);
+//   } catch (err) {
+//     console.error("Error unlocking fields:", err.message);
+//   }
+// });
 
 const check = async (req, res) => {
   const { apptransid } = req.body;
