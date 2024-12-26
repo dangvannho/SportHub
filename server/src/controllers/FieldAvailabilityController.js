@@ -319,7 +319,131 @@ const getBillsOwner = async (req, res) => {
     });
   }
 };
+const getBillsOwnerAdmin = async (req, res) => {
+  try {
+    const { user_id, page, limit } = req.query;
 
+    if (!user_id) {
+      return res.status(400).json({
+        EC: 0,
+        EM: "Thiếu user_id",
+      });
+    }
+
+    // Định nghĩa page và limit với giá trị mặc định
+    const currentPage = page && page > 0 ? parseInt(page) : 1;
+    const itemsPerPage = limit && limit > 0 ? parseInt(limit) : 10;
+
+    // Tìm hóa đơn từ bảng Bill theo user_id
+    const query = { user_id }; // Điều kiện tìm kiếm theo user_id
+    const totalItems = await Bill.countDocuments(query); // Tổng số hóa đơn
+    const bills = await Bill.find(query)
+      .sort({ order_time: -1 }) // Sắp xếp giảm dần theo thời gian đặt
+      .skip((currentPage - 1) * itemsPerPage) // Bỏ qua các bản ghi trước đó
+      .limit(itemsPerPage) // Giới hạn số lượng bản ghi
+      .select("user_name user_email description order_time amount status"); // Chọn các trường cần thiết
+
+    if (!bills || bills.length === 0) {
+      return res.status(404).json({
+        EC: 0,
+        EM: "Không tìm thấy hóa đơn nào",
+      });
+    }
+
+    // Format kết quả
+    const result = bills.map((bill) => ({
+      name: bill.user_name || "N/A",
+      userEmail: bill.user_email || "N/A",
+      description: bill.description || "N/A",
+      ngay_dat: bill.order_time
+        ? new Date(bill.order_time).toLocaleDateString()
+        : "N/A",
+      gio_dat: bill.order_time
+        ? new Date(bill.order_time).toLocaleTimeString()
+        : "N/A",
+      tong_tien: bill.amount || 0,
+      trang_thai: bill.status || "N/A",
+    }));
+
+    // Phản hồi dữ liệu
+    res.status(200).json({
+      EC: 1,
+      EM: "Lấy danh sách hóa đơn thành công",
+      pagination: {
+        totalItems,
+        currentPage,
+        itemsPerPage,
+        totalPages: Math.ceil(totalItems / itemsPerPage),
+      },
+      DT: result,
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy hóa đơn theo user_id:", error);
+    res.status(500).json({
+      EC: 0,
+      EM: `Lỗi server: ${error.message}`,
+    });
+  }
+};
+const getBillsAdmin = async (req, res) => {
+  try {
+    const { page, limit } = req.query;
+
+    // Định nghĩa page và limit với giá trị mặc định
+    const currentPage = page && page > 0 ? parseInt(page) : 1;
+    const itemsPerPage = limit && limit > 0 ? parseInt(limit) : 10;
+
+    // Tìm hóa đơn có field_availability_id = null
+    const query = { field_availability_id: null }; // Điều kiện tìm kiếm
+    const totalItems = await Bill.countDocuments(query); // Tổng số hóa đơn
+    const bills = await Bill.find(query)
+      .sort({ order_time: -1 }) // Sắp xếp giảm dần theo thời gian đặt
+      .skip((currentPage - 1) * itemsPerPage) // Bỏ qua các bản ghi trước đó
+      .limit(itemsPerPage) // Giới hạn số lượng bản ghi
+      .select("user_name user_email description order_time amount status"); // Chọn các trường cần thiết
+
+    if (!bills || bills.length === 0) {
+      return res.status(404).json({
+        EC: 0,
+        EM: "Không tìm thấy hóa đơn nào với field_availability_id = null",
+      });
+    }
+
+    // Format kết quả
+    const result = bills.map((bill) => ({
+      name: bill.user_name || "N/A",
+      userEmail: bill.user_email || "N/A",
+      description: bill.description || "N/A",
+      ngay_dat: bill.order_time
+        ? new Date(bill.order_time).toLocaleDateString()
+        : "N/A",
+      gio_dat: bill.order_time
+        ? new Date(bill.order_time).toLocaleTimeString()
+        : "N/A",
+      tong_tien: bill.amount || 0,
+      trang_thai: bill.status || "N/A",
+    }));
+
+    // Phản hồi dữ liệu
+    res.status(200).json({
+      EC: 1,
+      EM: "Lấy danh sách hóa đơn thành công",
+      pagination: {
+        totalItems,
+        currentPage,
+        itemsPerPage,
+        totalPages: Math.ceil(totalItems / itemsPerPage),
+      },
+      DT: result,
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy hóa đơn:", error);
+    res.status(500).json({
+      EC: 0,
+      EM: `Lỗi server: ${error.message}`,
+    });
+  }
+};
 
 module.exports = {
   getFieldAvailability,
@@ -327,4 +451,6 @@ module.exports = {
   deleteFieldAvailability,
   getBillsUser,
   getBillsOwner,
+  getBillsOwnerAdmin,
+  getBillsAdmin,
 };
