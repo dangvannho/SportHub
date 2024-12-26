@@ -10,18 +10,8 @@
     <div class="main-box">
         <h4 class="payment-titlte">Thanh toán thất bại</h4>
         <p>Nếu có bất kỳ câu hỏi nào, hãy gửi email tới <a href="mailto:support@payos.vn">support@payos.vn</a></p>
-        <a href="#" id="return-page-btn">Trở về </a>
+        <a href="http://localhost:5173/owner/manageField" id="return-page-btn">Trở về trang Tạo Link thanh toán</a>
     </div>
-    <script>
-      document.addEventListener('DOMContentLoaded', (event) => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const fieldId = urlParams.get('field_id');
-        if (fieldId) {
-          const returnPageBtn = document.getElementById('return-page-btn');
-          returnPageBtn.href = `http://localhost:5173/booking/${fieldId}`;
-        }
-      });
-    </script>
     <script src="script.js"></script>
 </body>
 </html>

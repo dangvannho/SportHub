@@ -22,6 +22,8 @@ function ManageCalendar() {
 
   const [timeId, setTimeId] = useState("");
 
+  console.log(selectedSlot?.extendedProps?.status);
+
   const filterPastEvents = (events) => {
     const currentTime = new Date();
     return events.filter((event) => new Date(event.start) > currentTime);
@@ -168,35 +170,43 @@ function ManageCalendar() {
             </p>
             <div className="group-status">
               <strong>Trạng thái: </strong>
+              {selectedSlot.extendedProps.status ? (
+                <>
+                  <div className="item-status">
+                    <input
+                      type="radio"
+                      name="status"
+                      value={selectedSlot.extendedProps.status}
+                      checked={status === false}
+                      onChange={() => handleStatusChange(false)}
+                    />
+                    <label>Đã đặt</label>
+                  </div>
+                  <div className="item-status">
+                    <input
+                      type="radio"
+                      name="status"
+                      value={selectedSlot.extendedProps.status}
+                      checked={status === true}
+                      onChange={() => handleStatusChange(true)}
+                    />
 
-              <div className="item-status">
-                <input
-                  type="radio"
-                  name="status"
-                  value={selectedSlot.extendedProps.status}
-                  checked={status === false}
-                  onChange={() => handleStatusChange(false)}
-                />
-
-                <label>Đã đặt</label>
-              </div>
-
-              <div className="item-status">
-                <input
-                  type="radio"
-                  name="status"
-                  value={selectedSlot.extendedProps.status}
-                  checked={status === true}
-                  onChange={() => handleStatusChange(true)}
-                />
-
-                <label>Chưa đặt</label>
-              </div>
+                    <label>Chưa đặt</label>
+                  </div>
+                </>
+              ) : (
+                <span style={{ marginLeft: "5px" }}>Đã đặt</span>
+              )}
             </div>
             <div className="action-btn">
-              <button className="btn btn-warning" onClick={handleUpdateStatus}>
-                Sửa
-              </button>
+              {selectedSlot.extendedProps.status && (
+                <button
+                  className="btn btn-warning"
+                  onClick={handleUpdateStatus}
+                >
+                  Sửa
+                </button>
+              )}
               <button className="btn btn-danger" onClick={handleDeleteTime}>
                 Xoá
               </button>

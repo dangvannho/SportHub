@@ -11,9 +11,8 @@ cron.schedule('* * * * *', async () => {
     // Tìm các đơn hàng có trạng thái 'pending' và thời gian tạo trước 15 phút
     const orders = await Order.find({
       status: 'pending',
-      apptime: { $lt: fifteenMinutesAgo }
+      order_time: { $lt: fifteenMinutesAgo }
     });
-
     // Cập nhật trạng thái của các đơn hàng này thành 'canceled'
     for (const order of orders) {
       order.status = 'canceled';

@@ -41,6 +41,8 @@ const fieldAvailabilityRoutes = require("./routes/FieldAvailabilityRoutes");
 
 const paymentOS = require("./routes/PaymentRoutesOS");  
 
+const paymentOwner = require("./routes/PaymentOwnerRoutes");
+
 // config env
 dotenv.config();
 const port = process.env.PORT || 4000;
@@ -73,6 +75,8 @@ app.use("/api/comments", commentRoutes);
 
 app.use("/api/pm",paymentOS) ;
 
+app.use("/api/pmo", paymentOwner);
+
 app.use("/api/field_availability", fieldAvailabilityRoutes);
 app.use('/', express.static('public'));
 app.get("/", (req, res) => {
@@ -82,11 +86,19 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 
 const httpServer = createServer(app);
+
 const io = socketIO.init(httpServer);
 
 httpServer.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+
+
+
+
+
+
 //json web token
 
 //////////////////////PAYMENT////////////////////////////////////////////////////////////////////////////
