@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const Bill = require("../models/Bill");
 const PayOS = require("../utils/payos");
 const Owner = require("../models/Owner");
+const payos = require("../utils/payos");
+
 
 const payment = async (req, res) => {
   const session = await mongoose.startSession();
@@ -38,7 +40,7 @@ const payment = async (req, res) => {
     const paymentLinkResponse = await PayOS.createPaymentLink(body);
     const paymentlink = paymentLinkResponse.checkoutUrl;
     console.log("Payment link created:", paymentlink);
-    return res.status(200).json({ paymentlink });
+    return res.status(200).json({ paymentlink , apptransid : orderCode });
   } catch (error) {
     if (!transactionCommitted) {
       await session.abortTransaction();
@@ -126,13 +128,33 @@ const callback = async (req, res) => {
   }
 };
 
-module.exports = {
-  payment,
-  callback
+const check = async (req, res) => {
+  const { apptransid } = req.body;
+  if (!apptransid) {
+    return res.status(400).json({ message: 'Order ID không được cung cấp' });
+  }
+
+  try {
+    const response = await PayOS.getPaymentLinkInformation(apptransid);
+    console.log("PayOS transaction status response:", response);
+    if (response.status=='PAID') {
+      res.status(200).json({ EC: 1, EM: "Đã thanh toán" });
+    }
+    else {
+      res.status(200).json({ EC: 0, EM: "Chưa thanh toán" });
+    }
+
+  } catch (error) {
+    console.error("Error checking transaction status:", error);
+    return res.status(500).json({ message: 'Transaction status check failed' });
+  }
 };
 
 
 module.exports = {
   payment,
-  callback
+  callback,
+  check
 };
+
+
