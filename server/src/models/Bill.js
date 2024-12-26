@@ -14,6 +14,10 @@ const billSchema = new Schema({
     type: Schema.Types.ObjectId, // Tham chiếu đến User
     ref: 'User',
   },
+  owner_id: { 
+    type: Schema.Types.ObjectId, // Tham chiếu đến User
+    ref: 'Owner',
+  },
   user_name: {
     type: String, 
   },
@@ -26,9 +30,7 @@ const billSchema = new Schema({
   amount: {
     type: Number,
   },
-  apptime: {
-    type: Number,
-  },
+ 
   order_time: {
     type: Date,
     default: Date.now,
