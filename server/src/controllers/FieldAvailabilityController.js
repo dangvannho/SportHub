@@ -234,9 +234,9 @@ const getBillsOwner = async (req, res) => {
     // Define page and limit with default values if not provided
     const currentPage = page && page > 0 ? parseInt(page) : 1;
     const itemsPerPage = limit && limit > 0 ? parseInt(limit) : 10;
-
+    const query = { field_availability_id: { $ne: null } };
     // Query bills with related data
-    const bills = await Bill.find()
+    const bills = await Bill.find(query)
       .sort({ order_time: -1 })
       .populate({
         path: "field_availability_id",
