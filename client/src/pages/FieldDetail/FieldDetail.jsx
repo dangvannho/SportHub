@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MdOutlineStar } from "react-icons/md";
 import { IoMdCalendar } from "react-icons/io";
-import getFieldDetail from "~/services/Field/getFieldDetail";
+import { toast } from "react-toastify";
 
 import Comment from "./components/Comment/Comment";
+import totalComment from "~/services/Comment/totalComment";
+import averageStar from "~/services/Comment/averageStar";
+import getFieldDetail from "~/services/Field/getFieldDetail";
 import routeConfig from "~/config/routeConfig";
 import "./FieldDetail.scss";
 
@@ -13,11 +16,15 @@ function FieldDetail() {
   const [fieldDetail, setFieldDetail] = useState({});
   const [images, setImages] = useState([]);
   const [currentImage, setCurrentImage] = useState("");
+  const [totalCommentValue, setTotalCommentValue] = useState(0);
+  const [averageStarValue, setAverageStarValue] = useState(0);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchFieldDetail();
+    fetchTotalComment();
+    fetchAverageStar();
   }, []);
 
   const fetchFieldDetail = async () => {
@@ -27,6 +34,24 @@ function FieldDetail() {
     setCurrentImage(data.images[0]);
   };
 
+  const fetchTotalComment = async () => {
+    const data = await totalComment(id);
+    if (data.EC === 1) {
+      setTotalCommentValue(data.DT.totalComments);
+    } else {
+      toast.error(data.EM);
+    }
+  };
+
+  const fetchAverageStar = async () => {
+    const data = await averageStar(id);
+    if (data.EC === 1) {
+      setAverageStarValue(data.DT.averageRating);
+    } else {
+      toast.error(data.EM);
+    }
+  };
+
   return (
     <div className="field-detail-wrapper">
       <div className="heading">
@@ -34,10 +59,10 @@ function FieldDetail() {
 
         <ul className="heading-desc">
           <li className="star">
-            4.6
+            {averageStarValue}
             <MdOutlineStar color="#f9b90f" />
           </li>
-          <li className="item-desc">100 Đánh giá</li>
+          <li className="item-desc">{totalCommentValue} Đánh giá</li>
           <li className="item-desc">{fieldDetail?.owner_id?.business_name}</li>
           <li className="item-desc">{fieldDetail.location}</li>
         </ul>

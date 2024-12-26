@@ -93,10 +93,14 @@
   color: #333;
   font-size: 1.2em;
   text-align: center;
+  font-weight: bold;
 }
 
 .booking-summary p {
   margin: 12px 0;
+}
+
+.booking-summary strong {
   color: #666666;
 }
 
@@ -115,7 +119,7 @@
 }
 
 .action-btn .btn {
-  width: calc(100% / 3);
+  flex: 1;
 }
 
 .btn-closed {
