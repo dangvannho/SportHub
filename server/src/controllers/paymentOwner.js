@@ -65,6 +65,7 @@ const callback = async (req, res) => {
   
   const session = await mongoose.startSession();
   session.startTransaction();
+  let transactionCommitted = false;
 
   try {
     const order = await Bill.findOne({ apptransid: data.orderCode }).session(session);
@@ -87,26 +88,47 @@ const callback = async (req, res) => {
     console.log("Order status updated to:", order.status);
 
     await session.commitTransaction();
+    transactionCommitted = true;
     console.log("Transaction committed successfully.");
 
     const updatedOrder = await Bill.findById(order._id);
     console.log("Updated order status after commit:", updatedOrder.status);
 
+    const EC = 1;
+    const EM = "Thành công";
+
     res.status(200).json({
-      return_code: 1,
+      return_code: 0,
       return_message: "success",
+      EC: EC,
+      EM: EM,
       order: updatedOrder,
     });
+    console.log("EC: ", EC, "EM: ", EM);
   } catch (error) {
-    await session.abortTransaction();
+    if (!transactionCommitted) {
+      await session.abortTransaction();
+    }
     console.error("Transaction failed:", error.message);
+
+    const EC = 0;
+    const EM = "Thất bại";
+
     res.status(400).json({
-      return_code: 0,
+      return_code: 1,
       return_message: 'Xử lý không thành công. Chi tiết: ' + error.message,
+      EC: EC,
+      EM: EM,
     });
+    console.log("EC: ", EC, "EM: ", EM);
   } finally {
     session.endSession();
   }
+};
+
+module.exports = {
+  payment,
+  callback
 };
 
 
