@@ -7,7 +7,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import viLocale from "@fullcalendar/core/locales/vi";
 
 import getTimeField from "~/services/Field/getTimeField";
-import payment from "~/services/Payment/Payment";
+import payment from "~/services/Payment/payment";
 import "tippy.js/dist/tippy.css";
 import "./Booking.css";
 
@@ -18,6 +18,8 @@ function Booking() {
   const [filteredEvents, setFilteredEvents] = useState([]);
 
   const [timeId, setTimeId] = useState("");
+
+  console.log(timeId);
 
   const filterPastEvents = (events) => {
     const currentTime = new Date();
@@ -69,7 +71,7 @@ function Booking() {
   const handlePayment = async () => {
     setSelectedSlot(null);
     const res = await payment(timeId);
-    const link = res.order_url;
+    const link = res.paymentLink;
     window.open(link, "_blank");
   };
 

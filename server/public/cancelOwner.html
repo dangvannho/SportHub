@@ -13,10 +13,15 @@
         Nếu có bất kỳ câu hỏi nào, hãy gửi email tới
         <a href="mailto:support@payos.vn">support@payos.vn</a>
       </p>
-      <a href="http://localhost:5173/owner/manageField" id="return-page-btn"
-        >Trở về trang Tạo Link thanh toán</a
-      >
+      <button id="return-page-btn">Trở về trang Tạo Link thanh toán</button>
     </div>
+    <script>
+      document
+        .getElementById("return-page-btn")
+        .addEventListener("click", function () {
+          window.close();
+        });
+    </script>
     <script src="script.js"></script>
   </body>
 </html>

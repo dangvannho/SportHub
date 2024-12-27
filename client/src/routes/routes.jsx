@@ -20,6 +20,7 @@ import ManageField from "~/pages/Owner/ManageField/ManageField";
 import EditProfileOwner from "~/pages/Owner/EditProfileOwner/EditProfileOwner";
 import ManageCalendar from "~/pages/Owner/ManageCalendar/ManageCalendar";
 import ManageBooking from "~/pages/Owner/ManageBooking/ManageBooking";
+import HistoryPayment from "~/pages/Owner/HistoryPayment/HistoryPayment";
 
 // Admin
 import ManageCustomer from "~/pages/Admin/ManageCustomer/ManageCustomer";
@@ -149,6 +150,15 @@ const listRoute = [
     component: (
       <OwnerRoute>
         <ManageBooking />
+      </OwnerRoute>
+    ),
+    layout: OwnerLayout,
+  },
+  {
+    path: routeConfig.historyPayment,
+    component: (
+      <OwnerRoute>
+        <HistoryPayment />
       </OwnerRoute>
     ),
     layout: OwnerLayout,

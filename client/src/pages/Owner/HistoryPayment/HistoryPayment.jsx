@@ -1,27 +1,30 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import ReactPaginate from "react-paginate";
+import { jwtDecode } from "jwt-decode";
 
-import getBill from "~/services/Admin/getBill";
-import "~/pages/Owner/ManageBooking/ManageBooking.scss";
-import "./ManagePayment.scss";
+import historyPayment from "~/services/Owner/historyPayment";
+import "../ManageBooking/ManageBooking.scss";
 
-function ManagePayment() {
-  const [listBill, setLisBill] = useState([]);
+function HistoryPayment() {
+  const [listHitoryPayment, setListHistoryPayment] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
+
+  const token = localStorage.getItem("accessToken");
+  const id = jwtDecode(token).id;
 
   const itemsPerPage = 10;
 
   useEffect(() => {
-    fetchAllBill();
+    fetchAllHistoryPayment();
   }, [currentPage]);
 
-  const fetchAllBill = async () => {
-    const res = await getBill(currentPage, itemsPerPage);
+  const fetchAllHistoryPayment = async () => {
+    const res = await historyPayment(id, currentPage, itemsPerPage);
     if (res.EC === 1) {
       setTotalPage(res.pagination.totalPages);
-      setLisBill(res.DT);
+      setListHistoryPayment(res.DT);
     } else {
       toast.error(res.EM);
     }
@@ -35,12 +38,12 @@ function ManagePayment() {
   return (
     <div className="booking-management">
       <div className="header-booking">
-        <h4>Danh sách thanh toán</h4>
+        <h4>Lịch sử thanh toán</h4>
       </div>
+
       <table>
         <thead>
           <tr>
-            <th>Tên chủ sân</th>
             <th>Ngày thanh toán</th>
             <th>Giờ thanh toán</th>
             <th>Nội dung thanh toán</th>
@@ -49,11 +52,8 @@ function ManagePayment() {
           </tr>
         </thead>
         <tbody>
-          {listBill.map((booking, index) => (
+          {listHitoryPayment.map((booking, index) => (
             <tr key={index}>
-              <td>
-                <p className="field_name">{booking.name}</p>
-              </td>
               <td>{booking.ngay_dat}</td>
               <td>{booking.gio_dat}</td>
               <td>{booking.description}</td>
@@ -93,4 +93,4 @@ function ManagePayment() {
   );
 }
 
-export default ManagePayment;
+export default HistoryPayment;

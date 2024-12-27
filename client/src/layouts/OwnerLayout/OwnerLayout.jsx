@@ -1,5 +1,6 @@
 import { IoMdFootball } from "react-icons/io";
 import { FaUserEdit } from "react-icons/fa";
+import { AiOutlineTransaction } from "react-icons/ai";
 import { TbBrandBooking } from "react-icons/tb";
 import { MdOutlineDashboard } from "react-icons/md";
 import { useContext } from "react";
@@ -29,6 +30,12 @@ function OwnerLayout({ children }) {
       title: "Quản lý đặt sân",
       path: routeConfig.manageBooking,
       icon: <TbBrandBooking size={25} />,
+    },
+
+    {
+      title: "Lịch sử thanh toán",
+      path: routeConfig.historyPayment,
+      icon: <AiOutlineTransaction size={20} />,
     },
 
     {

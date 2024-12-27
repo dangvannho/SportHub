@@ -1,9 +1,7 @@
 import httpRequest from "~/utils/httpRequest";
 
 const payment = (_id) => {
-  console.log(_id);
-
-  return httpRequest.post("api/payment", { _id });
+  return httpRequest.post("api/pm", { _id });
 };
 
 export default payment;

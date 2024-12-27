@@ -2,12 +2,14 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { FcPlus } from "react-icons/fc";
 import { AiTwotoneCloseCircle } from "react-icons/ai";
+import { toast } from "react-toastify";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 
+import paymentOwner from "~/services/Payment/paymentOwner";
+import paymentCheck from "~/services/Payment/paymentCheck";
 import createField from "~/services/Field/createField";
 import "./ModalCreateField.scss";
-import { toast } from "react-toastify";
 
 function ModalCreateField({
   showModalAdd,
@@ -62,6 +64,7 @@ function ModalCreateField({
     reset();
   };
 
+  // Xử lý thêm sân
   const handleAddField = async () => {
     const trimNameField = nameField.trim();
     const trimLocation = location.trim();
@@ -77,21 +80,33 @@ function ModalCreateField({
       return;
     }
 
-    const res = await createField(
-      trimNameField,
-      trimLocation,
-      trimDescription,
-      images,
-      typeField
-    );
+    const res = await paymentOwner();
+    const link = res.paymentlink;
+    window.open(link, "_blank");
 
-    if (res.EC === 1) {
-      toast.success(res.EM);
-      fetchAllFieldOwner();
-      handleClose();
-    } else {
-      toast.error(res.EM);
-    }
+    setTimeout(async () => {
+      const check = await paymentCheck(res.apptransid);
+      if (check.EC === 1) {
+        // Gọi API thêm sân
+        const res2 = await createField(
+          trimNameField,
+          trimLocation,
+          trimDescription,
+          images,
+          typeField
+        );
+
+        if (res2.EC === 1) {
+          toast.success(res2.EM);
+          fetchAllFieldOwner();
+          handleClose();
+        } else {
+          toast.error(res2.EM);
+        }
+      } else {
+        toast.error("Thanh toán chưa hoàn tất!");
+      }
+    }, 20000); // Đợi 10 giây trước khi kiểm tra
   };
 
   return (

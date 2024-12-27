@@ -18,6 +18,7 @@ const routeConfig = {
   manageBooking: "/owner/manageBooking",
   manageCalendar: "/owner/manageCalendar/:id",
   editProfileOwner: "/owner/editProfile",
+  historyPayment: "/owner/historyPayment",
   notFound: "*",
 };
 

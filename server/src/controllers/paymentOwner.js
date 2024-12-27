@@ -79,12 +79,9 @@ const callback = async (req, res) => {
     );
     if (!order) {
       await session.abortTransaction();
-      return res
-        .status(400)
-        .json({
-          message:
-            "Không tìm thấy đơn hàng với mã giao dịch: " + data.orderCode,
-        });
+      return res.status(400).json({
+        message: "Không tìm thấy đơn hàng với mã giao dịch: " + data.orderCode,
+      });
     }
 
     if (order.status === "complete") {

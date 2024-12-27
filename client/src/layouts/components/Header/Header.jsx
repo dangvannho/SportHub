@@ -32,9 +32,9 @@ function Header() {
             Giới thiệu
           </a>
 
-          <NavLink to="/b" className="navlink">
+          <a href="#footer" className="navlink">
             Chính sách
-          </NavLink>
+          </a>
 
           <a href="#footer" className="navlink">
             Liên hệ

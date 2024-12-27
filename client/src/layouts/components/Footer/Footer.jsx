@@ -16,8 +16,7 @@ function Footer() {
 
                 <ul className="policy-group">
                   <li>Chính sách bảo mật</li>
-                  <li>Chính sách huỷ (đổi trả)</li>
-                  <li>Chính sách kiểm hàng</li>
+                  <li>Chính sách quyền riêng tư</li>
                   <li>Chính sách thanh toán</li>
                 </ul>
               </div>
