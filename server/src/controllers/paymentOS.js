@@ -134,12 +134,9 @@ const callback = async (req, res) => {
     // Tìm hóa đơn theo app_trans_id
     const order = await Bill.findOne({ apptransid: data.orderCode });
     if (!order) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Không tìm thấy đơn hàng với mã giao dịch: " + data.orderCode,
-        });
+      return res.status(400).json({
+        message: "Không tìm thấy đơn hàng với mã giao dịch: " + data.orderCode,
+      });
     }
 
     // Kiểm tra trạng thái trước khi cập nhật
@@ -163,11 +160,9 @@ const callback = async (req, res) => {
       order.field_availability_id
     );
     if (!fieldAvailability) {
-      return res
-        .status(400)
-        .json({
-          message: "Không tìm thấy sân với ID: " + order.field_availability_id,
-        });
+      return res.status(400).json({
+        message: "Không tìm thấy sân với ID: " + order.field_availability_id,
+      });
     }
 
     // Đảm bảo sân đã thanh toán và khóa lại
