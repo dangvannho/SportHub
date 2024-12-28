@@ -89,7 +89,7 @@ function Dashboard() {
 
   const generateYears = () => {
     const years = [];
-    for (let year = currentYear - 5; year <= currentYear; year++) {
+    for (let year = currentYear - 5; year <= currentYear + 1; year++) {
       years.push(year);
     }
     return years;

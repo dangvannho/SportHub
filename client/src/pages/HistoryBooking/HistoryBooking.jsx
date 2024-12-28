@@ -29,7 +29,7 @@ function HistoryBooking() {
     <div className="booking-history">
       <div className="booking-history-header">
         <h1>Lịch sử đặt sân</h1>
-        <p>{listHitoryBooking.length} lượt đặt sân gần nhất</p>
+        <p>10 lượt đặt sân gần nhất</p>
       </div>
       <table>
         <thead>
