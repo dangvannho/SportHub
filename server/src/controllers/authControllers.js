@@ -34,28 +34,27 @@ const generateAccessToken = (user) => {
     {
       id: user.id,
       name: user.name || user.business_name,
-      email: user.email, 
+      email: user.email,
       user_role: user.user_role || "owner",
     },
     process.env.JWT_ACCESS_KEY,
     {
-      expiresIn: "1h",
+      expiresIn: "10h",
     }
   );
 };
-
 
 const generateRefreshToken = (user) => {
   return jwt.sign(
     {
       id: user.id,
       name: user.name || user.business_name,
-      email: user.email, 
+      email: user.email,
       user_role: user.user_role || "owner",
     },
     process.env.JWT_REFRESH_KEY,
     {
-      expiresIn: "1d",
+      expiresIn: "2d",
     }
   );
 };

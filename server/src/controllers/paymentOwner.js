@@ -16,7 +16,7 @@ const payment = async (req, res) => {
     const description = `Thanh toan dang ky san`;
     const body = {
       orderCode: orderCode,
-      amount: 2000,
+      amount: 10000,
       description: description,
       returnUrl: `${YOUR_DOMAIN}/successOwner.html`,
       cancelUrl: `${YOUR_DOMAIN}/cancelOwner.html`,
@@ -28,7 +28,7 @@ const payment = async (req, res) => {
       user_email: req.user.email,
       apptransid: orderCode, // Đồng bộ orderCode với apptransid
       description: description,
-      amount: 2000,
+      amount: body.amount,
       order_time: Date.now(),
       status: "pending",
     });

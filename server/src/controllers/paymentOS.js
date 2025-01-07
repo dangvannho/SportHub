@@ -59,7 +59,7 @@ const payment = async (req, res) => {
 
     const body = {
       orderCode: transID,
-      amount: 2000, //availability.price,
+      amount: availability.price,
       description: description,
       returnUrl: `${YOUR_DOMAIN}/success.html?field_id=${availability.field_id._id}`,
       cancelUrl: `${YOUR_DOMAIN}/cancel.html?field_id=${availability.field_id._id}`,
@@ -115,8 +115,9 @@ const payment = async (req, res) => {
 
 const callback = async (req, res) => {
   // console.log(req.body);
-  // console.log('Receive hook');
-  // res.json({ message: 'ok' });
+  // console.log("Receive hook");
+  // res.json({ message: "ok" });
+
   console.log(req.body);
   console.log("Receive hook");
 
