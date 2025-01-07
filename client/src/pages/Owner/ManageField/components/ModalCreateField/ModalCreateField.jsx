@@ -84,9 +84,11 @@ function ModalCreateField({
     const link = res.paymentlink;
     window.open(link, "_blank");
 
-    setTimeout(async () => {
+    const interval = setInterval(async () => {
       const check = await paymentCheck(res.apptransid);
+
       if (check.EC === 1) {
+        clearInterval(interval);
         // Gọi API thêm sân
         const res2 = await createField(
           trimNameField,
@@ -100,13 +102,9 @@ function ModalCreateField({
           toast.success(res2.EM);
           fetchAllFieldOwner();
           handleClose();
-        } else {
-          toast.error(res2.EM);
         }
-      } else {
-        toast.error("Thanh toán chưa hoàn tất!");
       }
-    }, 20000); // Đợi 10 giây trước khi kiểm tra
+    }, 5000); // Kiểm tra mỗi 5 giây
   };
 
   return (
